@@ -195,7 +195,8 @@
         "Unlimited projects",
         "Dedicated support"
       ],
-      "cta": "Upgrade to Business"
+      "cta": "Upgrade to Business",
+      "excelPreviewLabel": "Preview of your Excel export"
     }
   },
   "footer": {

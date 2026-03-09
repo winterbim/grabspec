@@ -195,7 +195,8 @@
         "Proyectos ilimitados",
         "Soporte dedicado"
       ],
-      "cta": "Actualizar a Business"
+      "cta": "Actualizar a Business",
+      "excelPreviewLabel": "Vista previa de su export Excel"
     }
   },
   "footer": {

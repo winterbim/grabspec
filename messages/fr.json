@@ -195,7 +195,8 @@
         "Multi-projets illimités",
         "Support dédié"
       ],
-      "cta": "Passer à Business"
+      "cta": "Passer à Business",
+      "excelPreviewLabel": "Aperçu de votre export Excel"
     }
   },
   "footer": {

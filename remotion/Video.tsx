@@ -692,7 +692,168 @@ const SceneBonus: React.FC = () => {
 };
 
 /* ════════════════════════════════════════════════════════════════
-   SCENE 7 — PRICING (32–38s, frames 960–1139)
+   SCENE 7 — BUSINESS EXCEL (32–38s, frames 960–1139)
+   Shows the branded Excel export with company logo + project details
+   ════════════════════════════════════════════════════════════════ */
+const SceneBusinessExcel: React.FC = () => {
+  const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const titleOp = anim(f, 0, 15, 0, 1);
+  const titleY = anim(f, 0, 15, 20, 0);
+
+  // Excel mockup animation
+  const excelOp = anim(f, 20, 35, 0, 1);
+  const excelScale = anim(f, 20, 35, 0.95, 1);
+
+  // Company header reveal
+  const headerOp = anim(f, 35, 50, 0, 1);
+  const headerY = anim(f, 35, 50, -20, 0);
+
+  // Logo pop
+  const logoScale = spring({ frame: f - 40, fps, config: { damping: 12, mass: 0.6 } });
+
+  // Project details
+  const projOp = anim(f, 55, 70, 0, 1);
+  const projX = anim(f, 55, 70, 30, 0);
+
+  // Data rows
+  const dataOp = anim(f, 75, 90, 0, 1);
+
+  // Highlight glow
+  const glowOp = anim(f, 100, 115, 0, 0.6);
+  const glowOp2 = anim(f, 115, 130, 0.6, 0);
+  const totalGlow = Math.max(glowOp - (1 - glowOp2) + glowOp2, 0);
+
+  // Badge
+  const badgeOp = anim(f, 120, 135, 0, 1);
+  const badgeScale = spring({ frame: f - 120, fps, config: { damping: 10, mass: 0.5 } });
+
+  const outOp = anim(f, 165, 179, 1, 0);
+
+  const excelRows = [
+    ["Eurosmart Basin Mixer", "GROHE", "33265003", "Plomberie", "Robinetterie"],
+    ["Sigma30 Actuator Plate", "GEBERIT", "115.883.KH.1", "Plomberie", "WC"],
+    ["iC60N 16A", "SCHNEIDER", "A9F74216", "Electricité", "Disjoncteur"],
+    ["Talis E Basin Mixer", "HANSGROHE", "71710000", "Plomberie", "Robinetterie"],
+  ];
+
+  return (
+    <AbsoluteFill style={{
+      background: "linear-gradient(160deg, #050d1a 0%, #0c1929 40%, #111827 100%)",
+      fontFamily: FONT, padding: 80, opacity: outOp,
+    }}>
+      <div style={{ opacity: titleOp, transform: `translateY(${titleY}px)`, display: "flex", alignItems: "center", gap: 20, marginBottom: 40 }}>
+        <div style={{
+          width: 52, height: 52, borderRadius: 14,
+          background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 24, fontWeight: 900, color: "#fff",
+        }}>B</div>
+        <div>
+          <div style={{ fontSize: 40, fontWeight: 800, color: "#fff", letterSpacing: -1 }}>Excel personnalisé Business</div>
+          <div style={{ fontSize: 20, color: "rgba(255,255,255,0.45)", marginTop: 4 }}>Votre entreprise sur chaque export</div>
+        </div>
+      </div>
+
+      {/* Excel mockup */}
+      <div style={{
+        opacity: excelOp, transform: `scale(${excelScale})`,
+        background: "#fff", borderRadius: 16, overflow: "hidden",
+        boxShadow: `0 25px 80px rgba(0,0,0,0.5), 0 0 ${totalGlow * 60}px rgba(124,58,237,${totalGlow * 0.3})`,
+        border: "1px solid rgba(255,255,255,0.1)",
+      }}>
+        {/* Company header section */}
+        <div style={{
+          opacity: headerOp, transform: `translateY(${headerY}px)`,
+          padding: "24px 32px", background: "#fafbfc",
+          borderBottom: "3px solid #2563eb",
+          display: "flex", justifyContent: "space-between", alignItems: "flex-start",
+        }}>
+          {/* Left: logo + company info */}
+          <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+            <div style={{
+              transform: `scale(${logoScale})`,
+              width: 64, height: 64, borderRadius: 12,
+              background: "linear-gradient(135deg, #1e3a5f, #2563eb)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            }}>
+              <span style={{ fontSize: 28, fontWeight: 900, color: "#fff" }}>AC</span>
+            </div>
+            <div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: "#1e3a5f" }}>ACME Construction SA</div>
+              <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>Rue du Commerce 42, 1003 Lausanne</div>
+              <div style={{ fontSize: 12, color: "#64748b" }}>+41 21 555 00 00 — info@acme-construction.ch</div>
+            </div>
+          </div>
+
+          {/* Right: project details */}
+          <div style={{ opacity: projOp, transform: `translateX(${projX}px)`, textAlign: "right" }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: "#1e3a5f" }}>Projet Villa Dupont</div>
+            <div style={{ display: "flex", gap: 20, marginTop: 6 }}>
+              <div>
+                <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, letterSpacing: 1 }}>N° PROJET</div>
+                <div style={{ fontSize: 13, color: "#475569", fontWeight: 600 }}>P-2024-087</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, letterSpacing: 1 }}>CLIENT</div>
+                <div style={{ fontSize: 13, color: "#475569", fontWeight: 600 }}>M. Dupont</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, letterSpacing: 1 }}>ARCHITECTE</div>
+                <div style={{ fontSize: 13, color: "#475569", fontWeight: 600 }}>Studio Arch SA</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>09.03.2026</div>
+          </div>
+        </div>
+
+        {/* Data table */}
+        <div style={{ opacity: dataOp }}>
+          {/* Table header */}
+          <div style={{ display: "flex", background: "#2563eb", padding: "10px 20px" }}>
+            {["Nom", "Fabricant", "Référence", "Lot", "Catégorie"].map((h) => (
+              <div key={h} style={{ flex: 1, color: "#fff", fontSize: 13, fontWeight: 700 }}>{h}</div>
+            ))}
+          </div>
+          {/* Table rows */}
+          {excelRows.map((row, i) => (
+            <div key={i} style={{
+              display: "flex", padding: "10px 20px",
+              background: i % 2 === 1 ? "#f1f5f9" : "#fff",
+            }}>
+              {row.map((cell, j) => (
+                <div key={j} style={{ flex: 1, fontSize: 13, color: "#334155", fontFamily: j >= 2 ? MONO : FONT }}>{cell}</div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Business badge */}
+      {badgeOp > 0 && (
+        <div style={{
+          opacity: badgeOp, transform: `scale(${badgeScale})`,
+          marginTop: 30, display: "flex", alignItems: "center", gap: 16,
+        }}>
+          <div style={{
+            background: "linear-gradient(135deg, rgba(124,58,237,0.12), rgba(124,58,237,0.06))",
+            border: "1px solid rgba(124,58,237,0.25)",
+            borderRadius: 14, padding: "16px 32px",
+            display: "flex", alignItems: "center", gap: 12,
+          }}>
+            <span style={{ fontSize: 24 }}>✨</span>
+            <span style={{ color: "#a78bfa", fontSize: 20, fontWeight: 800 }}>Exclusif Business — Vos exports à votre image</span>
+          </div>
+        </div>
+      )}
+    </AbsoluteFill>
+  );
+};
+
+/* ════════════════════════════════════════════════════════════════
+   SCENE 8 — PRICING (38–44s, frames 1140–1319)
    ════════════════════════════════════════════════════════════════ */
 const ScenePricing: React.FC = () => {
   const f = useCurrentFrame();
@@ -702,9 +863,9 @@ const ScenePricing: React.FC = () => {
   const titleY = anim(f, 0, 15, 20, 0);
 
   const plans = [
-    { name: "Gratuit", price: "0€", features: ["3 recherches / jour", "Export ZIP", "Convertisseur PDF"], color: "#64748b", delay: 20 },
-    { name: "Pro", price: "19€/mois", features: ["50 recherches / jour", "Export ZIP + Excel", "Support prioritaire"], color: "#2563eb", featured: true, delay: 30 },
-    { name: "Business", price: "49€/mois", features: ["Recherches illimitées", "API access", "Multi-projets"], color: "#7c3aed", delay: 40 },
+    { name: "Gratuit", price: "0 CHF", features: ["3 recherches / jour", "Export ZIP", "Convertisseur PDF gratuit"], color: "#64748b", delay: 20 },
+    { name: "Pro", price: "9.90 CHF", features: ["Recherches illimitées", "Bibliothèque + nomenclature", "Support prioritaire"], color: "#2563eb", featured: true, delay: 30 },
+    { name: "Business", price: "29.90 CHF", features: ["Logo entreprise sur exports", "Détails projet complets", "Excel brandé + multi-projets"], color: "#7c3aed", delay: 40 },
   ];
 
   const outOp = anim(f, 165, 179, 1, 0);
@@ -864,7 +1025,7 @@ const SceneCTA: React.FC = () => {
 };
 
 /* ════════════════════════════════════════════════════════════════
-   MAIN COMPOSITION — 45 seconds, 1350 frames @ 30fps
+   MAIN COMPOSITION — 51 seconds, 1530 frames @ 30fps
    ════════════════════════════════════════════════════════════════ */
 export const GrabSpecPromo: React.FC = () => {
   return (
@@ -875,8 +1036,9 @@ export const GrabSpecPromo: React.FC = () => {
       <Sequence from={420} durationInFrames={180}><SceneNomenclature /></Sequence>
       <Sequence from={600} durationInFrames={180}><SceneExport /></Sequence>
       <Sequence from={780} durationInFrames={180}><SceneBonus /></Sequence>
-      <Sequence from={960} durationInFrames={180}><ScenePricing /></Sequence>
-      <Sequence from={1140} durationInFrames={210}><SceneCTA /></Sequence>
+      <Sequence from={960} durationInFrames={180}><SceneBusinessExcel /></Sequence>
+      <Sequence from={1140} durationInFrames={180}><ScenePricing /></Sequence>
+      <Sequence from={1320} durationInFrames={210}><SceneCTA /></Sequence>
     </AbsoluteFill>
   );
 };

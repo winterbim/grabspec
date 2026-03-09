@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { PricingCard } from '@/components/pricing/PricingCard';
+import { BusinessExcelPreview } from '@/components/pricing/BusinessExcelPreview';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getSessionId } from '@/lib/db';
@@ -118,12 +119,15 @@ export default function PricingPage() {
               loading={loading}
               onSelect={() => handleSelect('pro')}
             />
-            <PricingCard
-              planKey="business"
-              price={businessPrice}
-              loading={loading}
-              onSelect={() => handleSelect('business')}
-            />
+            <div>
+              <PricingCard
+                planKey="business"
+                price={businessPrice}
+                loading={loading}
+                onSelect={() => handleSelect('business')}
+              />
+              <BusinessExcelPreview />
+            </div>
           </div>
         </div>
       </main>
