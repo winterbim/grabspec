@@ -1,16 +1,22 @@
 import type { LocalProduct } from '@/lib/db';
-import type { NomenclatureVars } from '@/types';
+import type { NomenclatureVars, CompanyProfile, ProjectDetails } from '@/types';
 
 interface DownloadZipOptions {
   products: LocalProduct[];
   template: string;
   projectName: string;
+  locale?: string;
+  company?: CompanyProfile | null;
+  projectDetails?: ProjectDetails | null;
   onProgress: (percent: number) => void;
 }
 
 interface DownloadExcelOptions {
   products: LocalProduct[];
   projectName: string;
+  locale?: string;
+  company?: CompanyProfile | null;
+  projectDetails?: ProjectDetails | null;
 }
 
 async function fetchAsArrayBuffer(url: string): Promise<ArrayBuffer | null> {
@@ -40,6 +46,9 @@ export async function downloadZip({
   products,
   template,
   projectName,
+  locale,
+  company,
+  projectDetails,
   onProgress,
 }: DownloadZipOptions): Promise<void> {
   const [JSZip, { saveAs }, { generateExcel }, { applyNomenclature }] = await Promise.all([
@@ -53,7 +62,13 @@ export async function downloadZip({
   const total = products.length;
   let done = 0;
 
-  const excelData = await generateExcel(products);
+  const excelData = await generateExcel({
+    products,
+    locale,
+    projectName,
+    company,
+    projectDetails,
+  });
   zip.file(`${projectName || 'GrabSpec'}_recap.xlsx`, excelData);
 
   for (const [index, product] of products.entries()) {
@@ -90,13 +105,22 @@ export async function downloadZip({
 export async function downloadExcelOnly({
   products,
   projectName,
+  locale,
+  company,
+  projectDetails,
 }: DownloadExcelOptions): Promise<void> {
   const [{ saveAs }, { generateExcel }] = await Promise.all([
     import('file-saver'),
     import('@/lib/excel'),
   ]);
 
-  const data = await generateExcel(products);
+  const data = await generateExcel({
+    products,
+    locale,
+    projectName,
+    company,
+    projectDetails,
+  });
   const blob = new Blob([data as BlobPart], {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   });

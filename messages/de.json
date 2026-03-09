@@ -111,6 +111,26 @@
       "category": "Kategorie",
       "manufacturer": "Hersteller",
       "reference": "Referenz"
+    },
+    "company": {
+      "title": "Firmendaten",
+      "companyName": "Firmenname",
+      "address": "Adresse",
+      "zipCode": "PLZ",
+      "city": "Ort",
+      "country": "Land",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "website": "Website",
+      "logoTooLarge": "Das Logo darf 2 MB nicht überschreiten"
+    },
+    "projectDetails": {
+      "title": "Projektdetails",
+      "projectNumber": "Projekt-Nr.",
+      "siteAddress": "Baustellenadresse",
+      "client": "Bauherr",
+      "architect": "Architekt",
+      "phase": "Phase"
     }
   },
   "converter": {
@@ -169,9 +189,10 @@
       "description": "Für Teams",
       "features": [
         "Alles in Pro",
+        "Firmenlogo & Daten auf Exporten",
+        "Vollständige Projektdetails (Bauherr, Architekt, etc.)",
+        "Personalisiertes Excel mit Firmenkopf",
         "Unbegrenzte Projekte",
-        "Excel-Export",
-        "API-Zugang",
         "Dedizierter Support"
       ],
       "cta": "Auf Business upgraden"

@@ -111,6 +111,26 @@
       "category": "Catégorie",
       "manufacturer": "Fabricant",
       "reference": "Référence"
+    },
+    "company": {
+      "title": "Coordonnées entreprise",
+      "companyName": "Nom de l'entreprise",
+      "address": "Adresse",
+      "zipCode": "Code postal",
+      "city": "Ville",
+      "country": "Pays",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "website": "Site web",
+      "logoTooLarge": "Le logo ne doit pas dépasser 2 Mo"
+    },
+    "projectDetails": {
+      "title": "Détails du projet",
+      "projectNumber": "N° de projet",
+      "siteAddress": "Adresse du chantier",
+      "client": "Maître d'ouvrage",
+      "architect": "Architecte",
+      "phase": "Phase"
     }
   },
   "converter": {
@@ -169,9 +189,10 @@
       "description": "Pour les équipes",
       "features": [
         "Tout Pro inclus",
+        "Logo & coordonnées entreprise sur les exports",
+        "Détails projet complets (maître d'ouvrage, architecte, etc.)",
+        "Excel personnalisé avec en-tête entreprise",
         "Multi-projets illimités",
-        "Export Excel des specs",
-        "Accès API",
         "Support dédié"
       ],
       "cta": "Passer à Business"

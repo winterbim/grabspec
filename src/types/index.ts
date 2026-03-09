@@ -50,6 +50,26 @@ export interface PlanInfo {
   searchesLeft: number;
 }
 
+export interface CompanyProfile {
+  name: string;
+  address: string;
+  zipCode: string;
+  city: string;
+  country: string;
+  phone: string;
+  email: string;
+  website: string;
+  logo: string | null; // base64 data URL
+}
+
+export interface ProjectDetails {
+  projectNumber: string;
+  siteAddress: string;
+  client: string;
+  architect: string;
+  phase: string;
+}
+
 export const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
 export const FREE_DAILY_LIMIT = 3;

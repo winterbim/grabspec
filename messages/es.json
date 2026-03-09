@@ -111,6 +111,26 @@
       "category": "Categoría",
       "manufacturer": "Fabricante",
       "reference": "Referencia"
+    },
+    "company": {
+      "title": "Datos de la empresa",
+      "companyName": "Nombre de la empresa",
+      "address": "Dirección",
+      "zipCode": "Código postal",
+      "city": "Ciudad",
+      "country": "País",
+      "phone": "Teléfono",
+      "email": "Correo electrónico",
+      "website": "Sitio web",
+      "logoTooLarge": "El logo no debe superar los 2 MB"
+    },
+    "projectDetails": {
+      "title": "Detalles del proyecto",
+      "projectNumber": "N° de proyecto",
+      "siteAddress": "Dirección de la obra",
+      "client": "Cliente",
+      "architect": "Arquitecto",
+      "phase": "Fase"
     }
   },
   "converter": {
@@ -169,9 +189,10 @@
       "description": "Para equipos",
       "features": [
         "Todo en Pro",
+        "Logo y datos de empresa en los exports",
+        "Detalles completos del proyecto (cliente, arquitecto, etc.)",
+        "Excel personalizado con encabezado de empresa",
         "Proyectos ilimitados",
-        "Exportación Excel",
-        "Acceso API",
         "Soporte dedicado"
       ],
       "cta": "Actualizar a Business"

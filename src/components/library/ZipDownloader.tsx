@@ -1,23 +1,44 @@
 'use client';
 
-import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useState, useEffect } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import { toast } from 'sonner';
 import { Download, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import type { LocalProduct } from '@/lib/db';
+import { getCompanyProfile, getProjectDetails, getStoredPlan } from '@/lib/db';
+import type { CompanyProfile, ProjectDetails } from '@/types';
 
 interface ZipDownloaderProps {
   selectedProducts: LocalProduct[];
   template: string;
   projectName: string;
+  projectId?: string | null;
 }
 
-export function ZipDownloader({ selectedProducts, template, projectName }: ZipDownloaderProps) {
+export function ZipDownloader({ selectedProducts, template, projectName, projectId }: ZipDownloaderProps) {
   const t = useTranslations('library.download');
+  const locale = useLocale();
   const [progress, setProgress] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [company, setCompany] = useState<CompanyProfile | null>(null);
+  const [details, setDetails] = useState<ProjectDetails | null>(null);
+  const [isBusiness, setIsBusiness] = useState(false);
+
+  useEffect(() => {
+    getStoredPlan().then((plan) => {
+      setIsBusiness(plan === 'business');
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isBusiness) return;
+    getCompanyProfile().then(setCompany);
+    if (projectId) {
+      getProjectDetails(projectId).then(setDetails);
+    }
+  }, [isBusiness, projectId]);
 
   const handleDownloadZip = async () => {
     if (selectedProducts.length === 0) return;
@@ -29,6 +50,9 @@ export function ZipDownloader({ selectedProducts, template, projectName }: ZipDo
         products: selectedProducts,
         template,
         projectName,
+        locale,
+        company: isBusiness ? company : null,
+        projectDetails: isBusiness ? details : null,
         onProgress: (pct) => setProgress(pct),
       });
     } catch {
@@ -44,7 +68,13 @@ export function ZipDownloader({ selectedProducts, template, projectName }: ZipDo
     setIsGenerating(true);
     try {
       const { downloadExcelOnly } = await import('@/lib/download');
-      await downloadExcelOnly({ products: selectedProducts, projectName });
+      await downloadExcelOnly({
+        products: selectedProducts,
+        projectName,
+        locale,
+        company: isBusiness ? company : null,
+        projectDetails: isBusiness ? details : null,
+      });
     } catch {
       toast.error(t('error') ?? 'Download failed');
     } finally {

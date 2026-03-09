@@ -111,6 +111,26 @@
       "category": "Category",
       "manufacturer": "Manufacturer",
       "reference": "Reference"
+    },
+    "company": {
+      "title": "Company details",
+      "companyName": "Company name",
+      "address": "Address",
+      "zipCode": "Zip code",
+      "city": "City",
+      "country": "Country",
+      "phone": "Phone",
+      "email": "Email",
+      "website": "Website",
+      "logoTooLarge": "Logo must not exceed 2 MB"
+    },
+    "projectDetails": {
+      "title": "Project details",
+      "projectNumber": "Project number",
+      "siteAddress": "Site address",
+      "client": "Client",
+      "architect": "Architect",
+      "phase": "Phase"
     }
   },
   "converter": {
@@ -169,9 +189,10 @@
       "description": "For teams",
       "features": [
         "Everything in Pro",
+        "Company logo & details on exports",
+        "Full project details (client, architect, etc.)",
+        "Branded Excel with company header",
         "Unlimited projects",
-        "Excel specs export",
-        "API access",
         "Dedicated support"
       ],
       "cta": "Upgrade to Business"

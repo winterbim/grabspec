@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import type { SearchStatus } from '@/types';
+import type { SearchStatus, CompanyProfile, ProjectDetails } from '@/types';
 
 export interface LocalProduct {
   id: string;
@@ -78,4 +78,32 @@ export async function getStoredPlan(): Promise<string> {
 
 export async function setStoredPlan(plan: string): Promise<void> {
   await db.settings.put({ key: 'plan', value: plan });
+}
+
+export async function getCompanyProfile(): Promise<CompanyProfile | null> {
+  const setting = await db.settings.get('companyProfile');
+  if (!setting) return null;
+  try {
+    return JSON.parse(setting.value) as CompanyProfile;
+  } catch {
+    return null;
+  }
+}
+
+export async function setCompanyProfile(profile: CompanyProfile): Promise<void> {
+  await db.settings.put({ key: 'companyProfile', value: JSON.stringify(profile) });
+}
+
+export async function getProjectDetails(projectId: string): Promise<ProjectDetails | null> {
+  const setting = await db.settings.get(`projectDetails:${projectId}`);
+  if (!setting) return null;
+  try {
+    return JSON.parse(setting.value) as ProjectDetails;
+  } catch {
+    return null;
+  }
+}
+
+export async function setProjectDetails(projectId: string, details: ProjectDetails): Promise<void> {
+  await db.settings.put({ key: `projectDetails:${projectId}`, value: JSON.stringify(details) });
 }

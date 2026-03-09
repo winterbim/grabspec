@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { BookOpen } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
@@ -9,11 +9,14 @@ import { ProjectSelector } from '@/components/library/ProjectSelector';
 import { LibraryGrid } from '@/components/library/LibraryGrid';
 import { NomenclatureConfig } from '@/components/library/NomenclatureConfig';
 import { ZipDownloader } from '@/components/library/ZipDownloader';
+import { CompanySettings } from '@/components/library/CompanySettings';
+import { ProjectDetailsForm } from '@/components/library/ProjectDetailsForm';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useLibraryStore } from '@/stores/libraryStore';
 import { DEFAULT_TEMPLATE } from '@/lib/nomenclature';
+import { getStoredPlan } from '@/lib/db';
 
 export default function LibraryPage() {
   const t = useTranslations('library');
@@ -56,6 +59,11 @@ export default function LibraryPage() {
   };
 
   const hasSelection = selectedIds.size > 0;
+  const [isBusiness, setIsBusiness] = useState(false);
+
+  useEffect(() => {
+    getStoredPlan().then((plan) => setIsBusiness(plan === 'business'));
+  }, []);
 
   if (isLoading) {
     return (
@@ -82,6 +90,15 @@ export default function LibraryPage() {
               />
             </div>
           </div>
+
+          {isBusiness && (
+            <div className="mb-6 grid gap-4 md:grid-cols-2">
+              <CompanySettings />
+              {currentProjectId && (
+                <ProjectDetailsForm projectId={currentProjectId} />
+              )}
+            </div>
+          )}
 
           {filteredProducts.length > 0 && (
             <div className="mb-4 flex items-center gap-3">
@@ -129,6 +146,7 @@ export default function LibraryPage() {
                   selectedProducts={selectedProducts}
                   template={template}
                   projectName={currentProject?.name ?? 'GrabSpec'}
+                  projectId={currentProjectId}
                 />
               </div>
             </div>
