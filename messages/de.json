@@ -138,7 +138,7 @@
     "checkoutError": "Fehler beim Erstellen der Checkout-Sitzung",
     "free": {
       "name": "Kostenlos",
-      "price": "0€",
+      "price": "0 CHF",
       "description": "Zum Einstieg",
       "features": [
         "3 Produktsuchen pro Tag",
@@ -149,8 +149,8 @@
     },
     "pro": {
       "name": "Pro",
-      "priceMonthly": "7,99€",
-      "priceYearly": "59,99€",
+      "priceMonthly": "9.90 CHF/Mt.",
+      "priceYearly": "8.25 CHF/Mt.",
       "description": "Für Profis",
       "features": [
         "Unbegrenzte Suchen",
@@ -164,8 +164,8 @@
     },
     "business": {
       "name": "Business",
-      "priceMonthly": "24,99€",
-      "priceYearly": "199,99€",
+      "priceMonthly": "29.90 CHF/Mt.",
+      "priceYearly": "24.90 CHF/Mt.",
       "description": "Für Teams",
       "features": [
         "Alles in Pro",

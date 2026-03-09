@@ -138,7 +138,7 @@
     "checkoutError": "Failed to create checkout session",
     "free": {
       "name": "Free",
-      "price": "$0",
+      "price": "0 CHF",
       "description": "To get started",
       "features": [
         "3 product searches per day",
@@ -149,8 +149,8 @@
     },
     "pro": {
       "name": "Pro",
-      "priceMonthly": "$8.99",
-      "priceYearly": "$69.99",
+      "priceMonthly": "CHF 9.90/mo",
+      "priceYearly": "CHF 8.25/mo",
       "description": "For professionals",
       "features": [
         "Unlimited searches",
@@ -164,8 +164,8 @@
     },
     "business": {
       "name": "Business",
-      "priceMonthly": "$27.99",
-      "priceYearly": "$219.99",
+      "priceMonthly": "CHF 29.90/mo",
+      "priceYearly": "CHF 24.90/mo",
       "description": "For teams",
       "features": [
         "Everything in Pro",

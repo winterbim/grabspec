@@ -138,7 +138,7 @@
     "checkoutError": "Impossible de créer la session de paiement",
     "free": {
       "name": "Gratuit",
-      "price": "0€",
+      "price": "0 CHF",
       "description": "Pour découvrir",
       "features": [
         "3 recherches produit par jour",
@@ -149,8 +149,8 @@
     },
     "pro": {
       "name": "Pro",
-      "priceMonthly": "7,99€",
-      "priceYearly": "59,99€",
+      "priceMonthly": "9.90 CHF/mois",
+      "priceYearly": "8.25 CHF/mois",
       "description": "Pour les professionnels",
       "features": [
         "Recherches illimitées",
@@ -164,8 +164,8 @@
     },
     "business": {
       "name": "Business",
-      "priceMonthly": "24,99€",
-      "priceYearly": "199,99€",
+      "priceMonthly": "29.90 CHF/mois",
+      "priceYearly": "24.90 CHF/mois",
       "description": "Pour les équipes",
       "features": [
         "Tout Pro inclus",

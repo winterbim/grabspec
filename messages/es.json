@@ -138,7 +138,7 @@
     "checkoutError": "Error al crear la sesión de pago",
     "free": {
       "name": "Gratis",
-      "price": "0€",
+      "price": "0 CHF",
       "description": "Para empezar",
       "features": [
         "3 búsquedas de productos por día",
@@ -149,8 +149,8 @@
     },
     "pro": {
       "name": "Pro",
-      "priceMonthly": "7,99€",
-      "priceYearly": "59,99€",
+      "priceMonthly": "9.90 CHF/mes",
+      "priceYearly": "8.25 CHF/mes",
       "description": "Para profesionales",
       "features": [
         "Búsquedas ilimitadas",
@@ -164,8 +164,8 @@
     },
     "business": {
       "name": "Business",
-      "priceMonthly": "24,99€",
-      "priceYearly": "199,99€",
+      "priceMonthly": "29.90 CHF/mes",
+      "priceYearly": "24.90 CHF/mes",
       "description": "Para equipos",
       "features": [
         "Todo en Pro",
