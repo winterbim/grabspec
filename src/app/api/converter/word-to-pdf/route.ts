@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { convertWordToPdf, getOutputFilename } from '@/lib/converter';
 import { MAX_FILE_SIZE } from '@/types';
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
