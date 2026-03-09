@@ -1,0 +1,192 @@
+{
+  "common": {
+    "appName": "GrabSpec",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "download": "Download",
+    "search": "Search",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "free": "Free",
+    "month": "month",
+    "year": "year",
+    "or": "or",
+    "upgradeRequired": "Upgrade to Pro to continue"
+  },
+  "nav": {
+    "finder": "Product Search",
+    "library": "Library",
+    "converter": "Converter",
+    "pricing": "Pricing"
+  },
+  "landing": {
+    "hero": {
+      "title": "Find product photos and datasheets for any product in 10 seconds",
+      "subtitle": "Paste a product list, GrabSpec automatically fetches HD photos and technical datasheets. Download everything as a ZIP with custom naming.",
+      "cta": "Try for free",
+      "ctaSecondary": "View pricing",
+      "noCard": "No credit card required"
+    },
+    "features": {
+      "title": "Everything you need",
+      "search": {
+        "title": "Smart batch search",
+        "description": "Paste 20 products at once. GrabSpec finds HD photos and technical datasheets from manufacturer websites."
+      },
+      "nomenclature": {
+        "title": "Automatic file naming",
+        "description": "Set up a naming template per project. All your files are renamed automatically on download."
+      },
+      "converter": {
+        "title": "PDF ↔ Word Converter",
+        "description": "Convert your PDF documents to Word and back for free. Fast, secure, no sign-up required."
+      }
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "step1": { "title": "Paste your list", "description": "One product per line: name, reference, or both." },
+      "step2": { "title": "GrabSpec searches", "description": "HD photos and datasheets are found automatically." },
+      "step3": { "title": "Download as ZIP", "description": "All files, named according to your project template." }
+    },
+    "cta": {
+      "title": "Ready to save time?",
+      "subtitle": "3 free searches per day. No credit card required.",
+      "button": "Get started"
+    }
+  },
+  "finder": {
+    "title": "Product Search",
+    "placeholder": "Paste your product list, one per line...\n\nExample:\nGrohe Eurosmart 33265003\nGeberit Sigma 50\nBosch WAX32M40",
+    "productCount": "{count} product(s)",
+    "searchButton": "Search {count} product(s)",
+    "searching": "Searching...",
+    "progress": "{done}/{total} products processed",
+    "examples": "Examples:",
+    "status": {
+      "found": "Found",
+      "partial": "Partial",
+      "notFound": "Not found",
+      "searching": "Searching...",
+      "error": "Error"
+    },
+    "actions": {
+      "viewSpecs": "View specs",
+      "photoHD": "HD Photo",
+      "datasheet": "Datasheet",
+      "addToLibrary": "Add to library"
+    },
+    "limitReached": "Daily limit reached (3/day). Upgrade to Pro for unlimited searches.",
+    "emptyResults": "No results found for this product."
+  },
+  "library": {
+    "title": "My Library",
+    "empty": "Your library is empty. Run a search to add products.",
+    "project": "Project",
+    "allProducts": "All products",
+    "newProject": "New project",
+    "projectName": "Project name",
+    "nomenclature": {
+      "title": "File naming",
+      "template": "Naming template",
+      "preview": "Preview",
+      "variables": "Available variables",
+      "example": "Example: {example}"
+    },
+    "download": {
+      "title": "Download",
+      "selectAll": "Select all",
+      "selected": "{count} product(s) selected",
+      "zipButton": "Download ZIP ({count} files)",
+      "excelOnly": "Download Excel only",
+      "includeExcel": "Include Excel summary",
+      "generating": "Generating ZIP...",
+      "zipContents": "The ZIP will contain: Excel summary + photos + PDF datasheets"
+    },
+    "product": {
+      "lot": "Category",
+      "category": "Category",
+      "manufacturer": "Manufacturer",
+      "reference": "Reference"
+    }
+  },
+  "converter": {
+    "title": "PDF ↔ Word Converter",
+    "subtitle": "Convert your documents for free. Fast, secure, no sign-up required.",
+    "dropzone": "Drop your PDF or Word file here",
+    "dropzoneOr": "or click to select",
+    "maxSize": "Max size: 20 MB",
+    "converting": "Converting...",
+    "done": "Conversion complete!",
+    "downloadResult": "Download result",
+    "pdfToWord": "PDF → Word",
+    "wordToPdf": "Word → PDF",
+    "convertAnother": "Convert another file",
+    "autoDetect": "Conversion type is detected automatically.",
+    "secure": "Your files are deleted after 1 hour."
+  },
+  "pricing": {
+    "title": "Simple and transparent pricing",
+    "subtitle": "Start for free, upgrade to Pro when you need it.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "yearlyDiscount": "2 months free",
+    "stripeNotConfigured": "Stripe is not configured",
+    "checkoutError": "Failed to create checkout session",
+    "free": {
+      "name": "Free",
+      "price": "$0",
+      "description": "To get started",
+      "features": [
+        "3 product searches per day",
+        "Unlimited PDF ↔ Word converter",
+        "Direct download"
+      ],
+      "cta": "Get started"
+    },
+    "pro": {
+      "name": "Pro",
+      "priceMonthly": "$8.99",
+      "priceYearly": "$69.99",
+      "description": "For professionals",
+      "features": [
+        "Unlimited searches",
+        "Personal library",
+        "Custom file naming",
+        "ZIP export",
+        "Priority support"
+      ],
+      "cta": "Upgrade to Pro",
+      "popular": "Most popular"
+    },
+    "business": {
+      "name": "Business",
+      "priceMonthly": "$27.99",
+      "priceYearly": "$219.99",
+      "description": "For teams",
+      "features": [
+        "Everything in Pro",
+        "Unlimited projects",
+        "Excel specs export",
+        "API access",
+        "Dedicated support"
+      ],
+      "cta": "Upgrade to Business"
+    }
+  },
+  "footer": {
+    "product": "Product",
+    "legal": "Legal notice",
+    "privacy": "Privacy policy",
+    "terms": "Terms of service",
+    "contact": "Contact",
+    "madeWith": "Made with ❤️ for professionals"
+  },
+  "metadata": {
+    "title": "GrabSpec — Product photos & datasheets in 10 seconds",
+    "description": "Paste a product list, automatically retrieve HD photos and PDF technical datasheets. ZIP export with custom naming convention."
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "common": {
+    "appName": "GrabSpec",
+    "loading": "Laden...",
+    "error": "Ein Fehler ist aufgetreten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "download": "Herunterladen",
+    "search": "Suchen",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "free": "Kostenlos",
+    "month": "Monat",
+    "year": "Jahr",
+    "or": "oder",
+    "upgradeRequired": "Upgrade auf Pro erforderlich"
+  },
+  "nav": {
+    "finder": "Produktsuche",
+    "library": "Bibliothek",
+    "converter": "Konverter",
+    "pricing": "Preise"
+  },
+  "landing": {
+    "hero": {
+      "title": "Finden Sie Produktfotos und Datenblätter für jedes Produkt in 10 Sekunden",
+      "subtitle": "Fügen Sie eine Produktliste ein, GrabSpec ruft automatisch HD-Fotos und technische Datenblätter ab. Laden Sie alles als ZIP mit individueller Benennung herunter.",
+      "cta": "Kostenlos testen",
+      "ctaSecondary": "Preise ansehen",
+      "noCard": "Keine Kreditkarte erforderlich"
+    },
+    "features": {
+      "title": "Alles was Sie brauchen",
+      "search": {
+        "title": "Intelligente Stapelsuche",
+        "description": "Fügen Sie 20 Produkte auf einmal ein. GrabSpec findet HD-Fotos und technische Datenblätter von Herstellerwebsites."
+      },
+      "nomenclature": {
+        "title": "Automatische Dateibenennung",
+        "description": "Richten Sie eine Benennungsvorlage pro Projekt ein. Alle Dateien werden beim Download automatisch umbenannt."
+      },
+      "converter": {
+        "title": "PDF ↔ Word Konverter",
+        "description": "Konvertieren Sie PDF-Dokumente kostenlos in Word und umgekehrt. Schnell, sicher, ohne Registrierung."
+      }
+    },
+    "howItWorks": {
+      "title": "So funktioniert's",
+      "step1": { "title": "Liste einfügen", "description": "Ein Produkt pro Zeile: Name, Referenz oder beides." },
+      "step2": { "title": "GrabSpec sucht", "description": "HD-Fotos und Datenblätter werden automatisch gefunden." },
+      "step3": { "title": "Als ZIP herunterladen", "description": "Alle Dateien, benannt nach Ihrer Projektvorlage." }
+    },
+    "cta": {
+      "title": "Bereit Zeit zu sparen?",
+      "subtitle": "3 kostenlose Suchen pro Tag. Keine Kreditkarte erforderlich.",
+      "button": "Jetzt starten"
+    }
+  },
+  "finder": {
+    "title": "Produktsuche",
+    "placeholder": "Fügen Sie Ihre Produktliste ein, eines pro Zeile...\n\nBeispiel:\nGrohe Eurosmart 33265003\nGeberit Sigma 50\nBosch WAX32M40",
+    "productCount": "{count} Produkt(e)",
+    "searchButton": "{count} Produkt(e) suchen",
+    "searching": "Suche läuft...",
+    "progress": "{done}/{total} Produkte verarbeitet",
+    "examples": "Beispiele:",
+    "status": {
+      "found": "Gefunden",
+      "partial": "Teilweise",
+      "notFound": "Nicht gefunden",
+      "searching": "Suche...",
+      "error": "Fehler"
+    },
+    "actions": {
+      "viewSpecs": "Spezifikationen",
+      "photoHD": "HD-Foto",
+      "datasheet": "Datenblatt",
+      "addToLibrary": "Zur Bibliothek"
+    },
+    "limitReached": "Tageslimit erreicht (3/Tag). Upgrade auf Pro für unbegrenzte Suchen.",
+    "emptyResults": "Keine Ergebnisse für dieses Produkt gefunden."
+  },
+  "library": {
+    "title": "Meine Bibliothek",
+    "empty": "Ihre Bibliothek ist leer. Starten Sie eine Suche, um Produkte hinzuzufügen.",
+    "project": "Projekt",
+    "allProducts": "Alle Produkte",
+    "newProject": "Neues Projekt",
+    "projectName": "Projektname",
+    "nomenclature": {
+      "title": "Dateibenennung",
+      "template": "Benennungsvorlage",
+      "preview": "Vorschau",
+      "variables": "Verfügbare Variablen",
+      "example": "Beispiel: {example}"
+    },
+    "download": {
+      "title": "Herunterladen",
+      "selectAll": "Alle auswählen",
+      "selected": "{count} Produkt(e) ausgewählt",
+      "zipButton": "ZIP herunterladen ({count} Dateien)",
+      "excelOnly": "Nur Excel herunterladen",
+      "includeExcel": "Excel-Zusammenfassung einschließen",
+      "generating": "ZIP wird erstellt...",
+      "zipContents": "Das ZIP enthält: Excel-Zusammenfassung + Fotos + technische Datenblätter"
+    },
+    "product": {
+      "lot": "Los",
+      "category": "Kategorie",
+      "manufacturer": "Hersteller",
+      "reference": "Referenz"
+    }
+  },
+  "converter": {
+    "title": "PDF ↔ Word Konverter",
+    "subtitle": "Konvertieren Sie Ihre Dokumente kostenlos. Schnell, sicher, ohne Registrierung.",
+    "dropzone": "PDF- oder Word-Datei hierher ziehen",
+    "dropzoneOr": "oder klicken zum Auswählen",
+    "maxSize": "Maximale Größe: 20 MB",
+    "converting": "Konvertierung läuft...",
+    "done": "Konvertierung abgeschlossen!",
+    "downloadResult": "Ergebnis herunterladen",
+    "pdfToWord": "PDF → Word",
+    "wordToPdf": "Word → PDF",
+    "convertAnother": "Weitere Datei konvertieren",
+    "autoDetect": "Der Konvertierungstyp wird automatisch erkannt.",
+    "secure": "Ihre Dateien werden nach 1 Stunde gelöscht."
+  },
+  "pricing": {
+    "title": "Einfache und transparente Preise",
+    "subtitle": "Starten Sie kostenlos, upgraden Sie auf Pro wenn nötig.",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
+    "yearlyDiscount": "2 Monate gratis",
+    "stripeNotConfigured": "Stripe ist nicht konfiguriert",
+    "checkoutError": "Fehler beim Erstellen der Checkout-Sitzung",
+    "free": {
+      "name": "Kostenlos",
+      "price": "0€",
+      "description": "Zum Einstieg",
+      "features": [
+        "3 Produktsuchen pro Tag",
+        "Unbegrenzter PDF ↔ Word Konverter",
+        "Direkter Download"
+      ],
+      "cta": "Starten"
+    },
+    "pro": {
+      "name": "Pro",
+      "priceMonthly": "7,99€",
+      "priceYearly": "59,99€",
+      "description": "Für Profis",
+      "features": [
+        "Unbegrenzte Suchen",
+        "Persönliche Bibliothek",
+        "Individuelle Dateibenennung",
+        "ZIP-Export",
+        "Prioritäts-Support"
+      ],
+      "cta": "Auf Pro upgraden",
+      "popular": "Am beliebtesten"
+    },
+    "business": {
+      "name": "Business",
+      "priceMonthly": "24,99€",
+      "priceYearly": "199,99€",
+      "description": "Für Teams",
+      "features": [
+        "Alles in Pro",
+        "Unbegrenzte Projekte",
+        "Excel-Export",
+        "API-Zugang",
+        "Dedizierter Support"
+      ],
+      "cta": "Auf Business upgraden"
+    }
+  },
+  "footer": {
+    "product": "Produkt",
+    "legal": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "contact": "Kontakt",
+    "madeWith": "Mit ❤️ für Profis gemacht"
+  },
+  "metadata": {
+    "title": "GrabSpec — Produktfotos & Datenblätter in 10 Sekunden",
+    "description": "Fügen Sie eine Produktliste ein und erhalten Sie automatisch HD-Fotos und technische PDF-Datenblätter. ZIP-Export mit individueller Nomenklatur."
+  }
+}
