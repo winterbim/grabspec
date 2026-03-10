@@ -123,6 +123,8 @@
     "cancel": "Cancelar",
     "deleted": "Eliminado",
     "photo": "Foto",
+    "download_named": "Descargar con nomenclatura",
+    "download_error": "No se pudo descargar",
     "open_in_new_tab": "Abrir en una pestaña nueva",
     "select_product": "Seleccionar producto",
     "nomenclature": {

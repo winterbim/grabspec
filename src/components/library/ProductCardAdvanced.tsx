@@ -10,6 +10,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -26,6 +27,9 @@ import { getCategoryLabel, type ProductCategory } from '@/lib/smart-categories';
 
 interface ProductCardProps {
   product: LocalProduct;
+  template: string;
+  projectName: string;
+  fileIndex: number;
   onDelete: (id: string) => Promise<void>;
   onRestore: (id: string) => Promise<void>;
   onPermanentDelete: (id: string) => Promise<void>;
@@ -36,6 +40,9 @@ interface ProductCardProps {
 
 export function ProductCardAdvanced({
   product,
+  template,
+  projectName,
+  fileIndex,
   onDelete,
   onRestore,
   onPermanentDelete,
@@ -91,6 +98,23 @@ export function ProductCardAdvanced({
   const openPreview = useCallback((type: 'image' | 'pdf', url: string, label: string) => {
     setPreview({ type, url, label });
   }, []);
+
+  const handleDownloadPreview = useCallback(async () => {
+    if (!preview) return;
+
+    try {
+      const { downloadSingleAsset } = await import('@/lib/download');
+      await downloadSingleAsset({
+        product,
+        template,
+        projectName,
+        index: fileIndex - 1,
+        kind: preview.type === 'image' ? 'photo' : 'pdf',
+      });
+    } catch {
+      toast.error(t('download_error'));
+    }
+  }, [preview, product, template, projectName, fileIndex, t]);
 
   return (
     <div
@@ -311,7 +335,7 @@ export function ProductCardAdvanced({
             </div>
           ) : preview?.type === 'pdf' ? (
             <iframe
-              src={preview.url}
+              src={`${preview.url}#toolbar=0&navpanes=0`}
               title={`${product.resolvedName ?? product.inputName} PDF`}
               className="h-[70vh] w-full rounded-lg border"
             />
@@ -319,6 +343,9 @@ export function ProductCardAdvanced({
 
           {preview && (
             <DialogFooter>
+              <Button onClick={handleDownloadPreview}>
+                {t('download_named')}
+              </Button>
               <a
                 href={preview.url}
                 target="_blank"

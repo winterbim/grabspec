@@ -178,10 +178,13 @@ export default function LibraryPage() {
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {filteredProducts.map((product) => (
+              {filteredProducts.map((product, index) => (
                 <ProductCardAdvanced
                   key={product.id}
                   product={product}
+                  template={template}
+                  projectName={currentProject?.name ?? 'GrabSpec'}
+                  fileIndex={index + 1}
                   isSelected={selectedIds.has(product.id)}
                   onToggleSelect={toggleSelect}
                   onDelete={deleteProduct}

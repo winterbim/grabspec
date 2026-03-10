@@ -123,6 +123,8 @@
     "cancel": "Cancel",
     "deleted": "Deleted",
     "photo": "Photo",
+    "download_named": "Download with naming",
+    "download_error": "Download failed",
     "open_in_new_tab": "Open in new tab",
     "select_product": "Select product",
     "nomenclature": {

@@ -1,5 +1,6 @@
 import type { LocalProduct } from '@/lib/db';
 import type { NomenclatureVars, CompanyProfile, ProjectDetails } from '@/types';
+import { applyNomenclature } from '@/lib/nomenclature';
 
 interface DownloadZipOptions {
   products: LocalProduct[];
@@ -40,6 +41,28 @@ function buildVars(product: LocalProduct, projectName: string, index: number): N
     NUM: String(index + 1).padStart(3, '0'),
     DATE: new Date().toISOString().split('T')[0],
   };
+}
+
+function getFileExtension(url: string, fallback: string): string {
+  const pathname = url.split('?')[0] ?? url;
+  const extension = pathname.split('.').pop()?.toLowerCase();
+  return extension && /^[a-z0-9]+$/.test(extension) ? extension : fallback;
+}
+
+function buildProductFilename(
+  product: LocalProduct,
+  template: string,
+  projectName: string,
+  index: number,
+  fileType: 'PHOTO' | 'FT',
+  url: string
+): string {
+  const vars = {
+    ...buildVars(product, projectName, index),
+    TYPE: fileType,
+  };
+  const ext = fileType === 'PHOTO' ? getFileExtension(url, 'jpg') : 'pdf';
+  return applyNomenclature(template, vars, ext);
 }
 
 export async function downloadZip({
@@ -100,6 +123,50 @@ export async function downloadZip({
 
   const blob = await zip.generateAsync({ type: 'blob' });
   saveAs(blob, `${projectName || 'GrabSpec'}.zip`);
+}
+
+interface DownloadSingleAssetOptions {
+  product: LocalProduct;
+  template: string;
+  projectName: string;
+  index: number;
+  kind: 'photo' | 'pdf';
+}
+
+export async function downloadSingleAsset({
+  product,
+  template,
+  projectName,
+  index,
+  kind,
+}: DownloadSingleAssetOptions): Promise<void> {
+  const [{ saveAs }] = await Promise.all([import('file-saver')]);
+
+  const url =
+    kind === 'photo'
+      ? (product.photoBlobUrl ?? product.photoUrl)
+      : (product.datasheetBlobUrl ?? product.datasheetUrl);
+
+  if (!url) {
+    throw new Error('Missing file URL');
+  }
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Failed to fetch file');
+  }
+
+  const blob = await response.blob();
+  const filename = buildProductFilename(
+    product,
+    template,
+    projectName,
+    index,
+    kind === 'photo' ? 'PHOTO' : 'FT',
+    url
+  );
+
+  saveAs(blob, filename);
 }
 
 export async function downloadExcelOnly({
