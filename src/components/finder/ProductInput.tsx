@@ -98,6 +98,12 @@ export function ProductInput({ onSearch, isSearching, plan, searchesLeft }: Prod
         </p>
       )}
 
+      {isFreePlan && searchesLeft === 0 && (
+        <p className="text-sm text-amber-700">
+          {t('limitReached')}
+        </p>
+      )}
+
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm text-slate-500">{t('examples')}</span>
         {EXAMPLES.map((example) => (

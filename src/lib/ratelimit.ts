@@ -19,6 +19,19 @@ const ratelimit = redis
     })
   : null;
 
+function getActivePlan(planData: string | null): { plan: string; expiresAt: string } | null {
+  if (!planData) return null;
+
+  try {
+    const parsed = JSON.parse(planData) as { plan?: string; expiresAt?: string };
+    if (!parsed.plan || !parsed.expiresAt) return null;
+    if (new Date(parsed.expiresAt) <= new Date()) return null;
+    return { plan: parsed.plan, expiresAt: parsed.expiresAt };
+  } catch {
+    return null;
+  }
+}
+
 export async function checkRateLimit(sessionId: string): Promise<{
   allowed: boolean;
   remaining: number;
@@ -27,12 +40,9 @@ export async function checkRateLimit(sessionId: string): Promise<{
     return { allowed: true, remaining: FREE_DAILY_LIMIT };
   }
 
-  const planData = await redis.get<string>(`plan:${sessionId}`);
-  if (planData) {
-    const parsed = JSON.parse(planData) as { plan: string; expiresAt: string };
-    if (parsed.plan !== 'free' && new Date(parsed.expiresAt) > new Date()) {
-      return { allowed: true, remaining: 999 };
-    }
+  const activePlan = getActivePlan(await redis.get<string>(`plan:${sessionId}`));
+  if (activePlan?.plan !== 'free') {
+    return { allowed: true, remaining: 999 };
   }
 
   const result = await ratelimit.limit(sessionId);
@@ -47,17 +57,16 @@ export async function getPlanFromKV(sessionId: string): Promise<{
     return { plan: 'free', searchesLeft: FREE_DAILY_LIMIT };
   }
 
-  const planData = await redis.get<string>(`plan:${sessionId}`);
-  if (planData) {
-    const parsed = JSON.parse(planData) as { plan: string; expiresAt: string };
-    if (new Date(parsed.expiresAt) > new Date()) {
-      return { plan: parsed.plan, searchesLeft: 999 };
-    }
+  const activePlan = getActivePlan(await redis.get<string>(`plan:${sessionId}`));
+  if (activePlan) {
+    return { plan: activePlan.plan, searchesLeft: activePlan.plan === 'free' ? FREE_DAILY_LIMIT : 999 };
   }
 
-  const ratelimitKey = `grabspec:ratelimit:${sessionId}`;
-  const used = await redis.get<number>(ratelimitKey);
-  const remaining = Math.max(0, FREE_DAILY_LIMIT - (used || 0));
+  if (!ratelimit) {
+    return { plan: 'free', searchesLeft: FREE_DAILY_LIMIT };
+  }
+
+  const { remaining } = await ratelimit.getRemaining(sessionId);
 
   return { plan: 'free', searchesLeft: remaining };
 }

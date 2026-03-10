@@ -72,5 +72,21 @@ export function useSession(): SessionState {
     return () => { cancelled = true; };
   }, [initSession]);
 
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const syncPlan = () => {
+      void refreshPlan();
+    };
+
+    window.addEventListener('focus', syncPlan);
+    document.addEventListener('visibilitychange', syncPlan);
+
+    return () => {
+      window.removeEventListener('focus', syncPlan);
+      document.removeEventListener('visibilitychange', syncPlan);
+    };
+  }, [sessionId, refreshPlan]);
+
   return { sessionId, plan, searchesLeft, isLoading, refreshPlan };
 }
