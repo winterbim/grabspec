@@ -60,6 +60,8 @@
   },
   "finder": {
     "title": "Produktsuche",
+    "search_help_label": "Suchhilfe",
+    "usageTip": "Fugen Sie ein Produkt pro Zeile ein. Der Free-Tarif zahlt jedes Produkt einzeln, nicht jede eingereichte Liste.",
     "placeholder": "Fügen Sie Ihre Produktliste ein, eines pro Zeile...\n\nBeispiel:\nGrohe Eurosmart 33265003\nGeberit Sigma 50\nBosch WAX32M40",
     "productCount": "{count} Produkt(e)",
     "searchesRemaining": "Free-Tarif: {count} Produktsuche(n) heute verbleibend",
@@ -94,6 +96,7 @@
     "projectName": "Projektname",
     "search": "Suchen",
     "filters": "Filter",
+    "searchTip": "Durchsuchen Sie Ihre Bibliothek und verfeinern Sie dann mit Filtern, um Fotos, PDFs, Kategorien oder geloschte Elemente schneller zu finden.",
     "results": "{count} von {total} Produkt(en)",
     "category": "Kategorie",
     "manufacturer": "Hersteller",
@@ -130,12 +133,14 @@
     "nomenclature": {
       "title": "Dateibenennung",
       "template": "Benennungsvorlage",
+      "help": "Definieren Sie hier Ihr BIM-Benennungsschema. ZIP-Exporte und Einzeldownloads verwenden dieselbe Nomenklatur.",
       "preview": "Vorschau",
       "variables": "Verfügbare Variablen",
       "example": "Beispiel: {example}"
     },
     "download": {
       "title": "Herunterladen",
+      "help": "Das ZIP verwendet die aktive Nomenklatur, gruppiert Fotos und Datenblatter, und die Excel-Datei dient als Projektubersicht.",
       "selectAll": "Alle auswählen",
       "selected": "{count} Produkt(e) ausgewählt",
       "zipButton": "ZIP herunterladen ({count} Dateien)",
@@ -174,6 +179,8 @@
   "converter": {
     "title": "PDF ↔ Word Konverter",
     "subtitle": "Konvertieren Sie Ihre Dokumente kostenlos. Schnell, sicher, ohne Registrierung.",
+    "help_label": "Konvertierungshilfe",
+    "usageTip": "Laden Sie eine PDF-, DOC- oder DOCX-Datei hoch. Der Typ wird automatisch erkannt und die konvertierte Datei steht danach zum Download bereit.",
     "dropzone": "PDF- oder Word-Datei hierher ziehen",
     "dropzoneOr": "oder klicken zum Auswählen",
     "maxSize": "Maximale Größe: 20 MB",
@@ -189,6 +196,7 @@
   "pricing": {
     "title": "Einfache und transparente Preise",
     "subtitle": "Starten Sie kostenlos, upgraden Sie auf Pro wenn nötig.",
+    "usageTip": "Wahlen Sie einen monatlichen oder jahrlichen Tarif und fahren Sie dann mit Stripe fort. Aktuelle Umgebung: Stripe lauft im Testmodus, solange keine Live-Schlussel konfiguriert sind.",
     "monthly": "Monatlich",
     "yearly": "Jährlich",
     "yearlyDiscount": "2 Monate gratis",

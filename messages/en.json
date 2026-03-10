@@ -60,6 +60,8 @@
   },
   "finder": {
     "title": "Product Search",
+    "search_help_label": "Search help",
+    "usageTip": "Paste one product per line. The free plan counts each product individually, not each submitted list.",
     "placeholder": "Paste your product list, one per line...\n\nExample:\nGrohe Eurosmart 33265003\nGeberit Sigma 50\nBosch WAX32M40",
     "productCount": "{count} product(s)",
     "searchesRemaining": "Free plan: {count} product search(es) left today",
@@ -94,6 +96,7 @@
     "projectName": "Project name",
     "search": "Search",
     "filters": "Filters",
+    "searchTip": "Search your library, then refine with filters to quickly find photos, PDFs, categories, or deleted items.",
     "results": "{count} of {total} product(s)",
     "category": "Category",
     "manufacturer": "Manufacturer",
@@ -130,12 +133,14 @@
     "nomenclature": {
       "title": "File naming",
       "template": "Naming template",
+      "help": "Define your BIM naming format here. ZIP exports and single-file downloads both reuse the same naming convention.",
       "preview": "Preview",
       "variables": "Available variables",
       "example": "Example: {example}"
     },
     "download": {
       "title": "Download",
+      "help": "The ZIP uses the active naming template, groups photos and datasheets, and the Excel file acts as a project summary.",
       "selectAll": "Select all",
       "selected": "{count} product(s) selected",
       "zipButton": "Download ZIP ({count} files)",
@@ -174,6 +179,8 @@
   "converter": {
     "title": "PDF ↔ Word Converter",
     "subtitle": "Convert your documents for free. Fast, secure, no sign-up required.",
+    "help_label": "Conversion help",
+    "usageTip": "Drop a PDF, DOC, or DOCX file. The conversion type is detected automatically and the converted file is available for download after processing.",
     "dropzone": "Drop your PDF or Word file here",
     "dropzoneOr": "or click to select",
     "maxSize": "Max size: 20 MB",
@@ -189,6 +196,7 @@
   "pricing": {
     "title": "Simple and transparent pricing",
     "subtitle": "Start for free, upgrade to Pro when you need it.",
+    "usageTip": "Choose a monthly or yearly plan, then continue to Stripe. Current environment: Stripe payments are running in test mode until live keys are configured.",
     "monthly": "Monthly",
     "yearly": "Yearly",
     "yearlyDiscount": "2 months free",

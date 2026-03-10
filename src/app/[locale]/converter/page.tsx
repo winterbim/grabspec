@@ -10,6 +10,7 @@ import { DropZone } from '@/components/converter/DropZone';
 import { ConversionProgress } from '@/components/converter/ConversionProgress';
 import { DownloadResult } from '@/components/converter/DownloadResult';
 import { Button } from '@/components/ui/button';
+import { HelpTip } from '@/components/ui/help-tip';
 import { useConverter } from '@/hooks/useConverter';
 
 export default function ConverterPage() {
@@ -45,6 +46,10 @@ export default function ConverterPage() {
             {t('title')}
           </h1>
           <p className="mt-3 text-lg text-slate-600">{t('subtitle')}</p>
+          <div className="mt-4 flex items-center justify-center gap-2 text-sm text-slate-600">
+            <span>{t('help_label')}</span>
+            <HelpTip content={t('usageTip')} />
+          </div>
         </div>
 
         {state === 'idle' && <DropZone onFileSelect={handleFileSelect} />}

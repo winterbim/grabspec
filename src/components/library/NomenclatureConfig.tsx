@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { HelpTip } from '@/components/ui/help-tip';
 import { AVAILABLE_VARS, buildNomenclaturePreview } from '@/lib/nomenclature';
 
 interface NomenclatureConfigProps {
@@ -48,9 +49,12 @@ export function NomenclatureConfig({ template, onTemplateChange }: NomenclatureC
   return (
     <div className="space-y-3">
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700">
-          {t('template')}
-        </label>
+        <div className="mb-1 flex items-center gap-2">
+          <label className="block text-sm font-medium text-slate-700">
+            {t('template')}
+          </label>
+          <HelpTip content={t('help')} />
+        </div>
         <Input
           ref={inputRef}
           value={localTemplate}

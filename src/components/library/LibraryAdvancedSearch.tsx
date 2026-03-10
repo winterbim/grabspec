@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { HelpTip } from '@/components/ui/help-tip';
 import type { SearchFilter, SortBy } from '@/lib/library-search';
 import { getAllCategories, type ProductCategory } from '@/lib/smart-categories';
 
@@ -57,7 +58,8 @@ export function LibraryAdvancedSearch({ onSearch, onClear, isLoading }: LibraryS
 
   return (
     <Dialog>
-      <div className="flex gap-2 items-center mb-4">
+      <div className="mb-4 flex items-center gap-2">
+        <HelpTip content={t('searchTip')} />
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input

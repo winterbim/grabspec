@@ -8,6 +8,7 @@ import { Footer } from '@/components/layout/Footer';
 import { PricingCard } from '@/components/pricing/PricingCard';
 import { BusinessExcelPreview } from '@/components/pricing/BusinessExcelPreview';
 import { Badge } from '@/components/ui/badge';
+import { HelpTip } from '@/components/ui/help-tip';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getSessionId } from '@/lib/db';
 
@@ -85,6 +86,7 @@ export default function PricingPage() {
           </div>
 
           <div className="mt-10 flex items-center justify-center gap-3">
+            <HelpTip content={t('usageTip')} />
             <Tabs
               value={billing}
               onValueChange={(v) => setBilling(v as BillingPeriod)}

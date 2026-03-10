@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Download, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { HelpTip } from '@/components/ui/help-tip';
 import type { LocalProduct } from '@/lib/db';
 import { getCompanyProfile, getProjectDetails, getStoredPlan } from '@/lib/db';
 import type { CompanyProfile, ProjectDetails } from '@/types';
@@ -86,9 +87,12 @@ export function ZipDownloader({ selectedProducts, template, projectName, project
 
   return (
     <div className="space-y-3">
-      <p className="text-sm font-medium text-slate-700">
-        {t('selected', { count })}
-      </p>
+      <div className="flex items-center gap-2">
+        <p className="text-sm font-medium text-slate-700">
+          {t('selected', { count })}
+        </p>
+        <HelpTip content={t('help')} />
+      </div>
 
       {isGenerating && (
         <div className="space-y-1">

@@ -6,6 +6,7 @@ import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { HelpTip } from '@/components/ui/help-tip';
 import type { PlanType } from '@/types';
 
 const EXAMPLES = [
@@ -54,6 +55,11 @@ export function ProductInput({ onSearch, isSearching, plan, searchesLeft }: Prod
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
+        <span>{t('search_help_label')}</span>
+        <HelpTip content={t('usageTip')} />
+      </div>
+
       <div className="relative">
         <Textarea
           value={text}
