@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getStripeServer } from '@/lib/stripe';
+import { getStripeServer, readStripeEnv } from '@/lib/stripe';
 import { Redis } from '@upstash/redis';
 
 export async function POST(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.text();
     const signature = request.headers.get('stripe-signature');
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const webhookSecret = readStripeEnv('STRIPE_WEBHOOK_SECRET');
 
     if (!signature || !webhookSecret) {
       return NextResponse.json(
@@ -82,10 +82,10 @@ export async function POST(request: NextRequest) {
 }
 
 function determinePlan(priceId: string): string {
-  const proMonthly = process.env.STRIPE_PRO_MONTHLY_PRICE_ID;
-  const proYearly = process.env.STRIPE_PRO_YEARLY_PRICE_ID;
-  const businessMonthly = process.env.STRIPE_BUSINESS_MONTHLY_PRICE_ID;
-  const businessYearly = process.env.STRIPE_BUSINESS_YEARLY_PRICE_ID;
+  const proMonthly = readStripeEnv('STRIPE_PRO_MONTHLY_PRICE_ID');
+  const proYearly = readStripeEnv('STRIPE_PRO_YEARLY_PRICE_ID');
+  const businessMonthly = readStripeEnv('STRIPE_BUSINESS_MONTHLY_PRICE_ID');
+  const businessYearly = readStripeEnv('STRIPE_BUSINESS_YEARLY_PRICE_ID');
 
   if (priceId === proMonthly || priceId === proYearly) return 'pro';
   if (priceId === businessMonthly || priceId === businessYearly)
