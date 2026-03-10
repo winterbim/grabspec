@@ -76,7 +76,7 @@ git commit -m "v2.0: Complete 8-phase implementation - Production Ready"
 
 ### Step 3: Push to Production
 ```bash
-git push origin main
+git push origin master
 # Vercel deploys automatically in 2-5 minutes
 ```
 
@@ -140,7 +140,7 @@ TOTAL TIME:      ~12 minutes
 **YES. Deploy immediately.** ✅
 
 ```bash
-git push origin main
+git push origin master
 ```
 
 Your GrabSpec v2.0 with 70+ new features will be live in 2-5 minutes.

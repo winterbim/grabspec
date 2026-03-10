@@ -182,14 +182,14 @@ Add all production secrets from .env.production
 
 #### 4. Deploy
 ```
-Vercel auto-deploys on git push to main
+Vercel auto-deploys on git push to master
 ```
 
 ### Continuous Deployment
 
 ```
 Push Flow:
-  git push origin main
+  git push origin master
     ↓
   GitHub webhook triggers Vercel
     ↓

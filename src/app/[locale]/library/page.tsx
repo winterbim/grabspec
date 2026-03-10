@@ -6,38 +6,64 @@ import { BookOpen } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ProjectSelector } from '@/components/library/ProjectSelector';
-import { LibraryGrid } from '@/components/library/LibraryGrid';
+import { LibraryAdvancedSearch } from '@/components/library/LibraryAdvancedSearch';
 import { NomenclatureConfig } from '@/components/library/NomenclatureConfig';
 import { ZipDownloader } from '@/components/library/ZipDownloader';
 import { CompanySettings } from '@/components/library/CompanySettings';
 import { ProjectDetailsForm } from '@/components/library/ProjectDetailsForm';
+import { ProductCardAdvanced } from '@/components/library/ProductCardAdvanced';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useLibraryStore } from '@/stores/libraryStore';
 import { DEFAULT_TEMPLATE } from '@/lib/nomenclature';
 import { getStoredPlan } from '@/lib/db';
+import {
+  searchProducts as searchLibraryProducts,
+  sortProducts,
+  type SearchFilter,
+  type SortBy,
+} from '@/lib/library-search';
 
 export default function LibraryPage() {
   const t = useTranslations('library');
 
   const {
-    products, projects, isLoading,
-    addProject, deleteProject, updateProjectTemplate, getProductsByProject,
+    products,
+    projects,
+    isLoading,
+    addProject,
+    deleteProject,
+    updateProduct,
+    deleteProduct,
+    permanentlyDeleteProduct,
+    restoreProduct,
+    updateProjectTemplate,
   } = useLibrary();
 
   const {
     selectedIds, currentProjectId, toggleSelect, selectAll, clearSelection, setCurrentProject,
   } = useLibraryStore();
 
-  const filteredProducts = useMemo(
-    () => getProductsByProject(currentProjectId),
-    [getProductsByProject, currentProjectId]
+  const [searchFilters, setSearchFilters] = useState<SearchFilter>({
+    excludeDeleted: true,
+  });
+  const [sortBy, setSortBy] = useState<SortBy>('date-newest');
+
+  const projectProducts = useMemo(
+    () => (currentProjectId ? products.filter((p) => p.projectId === currentProjectId) : products),
+    [products, currentProjectId]
   );
 
+  const filteredProducts = useMemo(() => {
+    const results = searchLibraryProducts(projectProducts, searchFilters);
+    return sortProducts(results.products, sortBy);
+  }, [projectProducts, searchFilters, sortBy]);
+
   const selectedProducts = useMemo(
-    () => filteredProducts.filter((p) => selectedIds.has(p.id)),
-    [filteredProducts, selectedIds]
+    () =>
+      projectProducts.filter((p) => selectedIds.has(p.id) && !p.isDeleted),
+    [projectProducts, selectedIds]
   );
 
   const currentProject = projects.find((p) => p.id === currentProjectId);
@@ -55,10 +81,20 @@ export default function LibraryPage() {
   );
 
   const handleSelectAll = () => {
-    selectAll(filteredProducts.map((p) => p.id));
+    selectAll(filteredProducts.filter((p) => !p.isDeleted).map((p) => p.id));
   };
 
-  const hasSelection = selectedIds.size > 0;
+  const handleSearch = useCallback((filters: SearchFilter, nextSortBy?: SortBy) => {
+    setSearchFilters(filters);
+    setSortBy(nextSortBy ?? 'date-newest');
+  }, []);
+
+  const handleClearSearch = useCallback(() => {
+    setSearchFilters({ excludeDeleted: true });
+    setSortBy('date-newest');
+  }, []);
+
+  const hasSelection = selectedProducts.length > 0;
   const [isBusiness, setIsBusiness] = useState(false);
 
   useEffect(() => {
@@ -100,6 +136,19 @@ export default function LibraryPage() {
             </div>
           )}
 
+          {projectProducts.length > 0 && (
+            <div className="mb-4">
+              <LibraryAdvancedSearch
+                onSearch={handleSearch}
+                onClear={handleClearSearch}
+                isLoading={isLoading}
+              />
+              <p className="text-sm text-slate-500">
+                {t('results', { count: filteredProducts.length, total: projectProducts.length })}
+              </p>
+            </div>
+          )}
+
           {filteredProducts.length > 0 && (
             <div className="mb-4 flex items-center gap-3">
               <Button variant="outline" size="sm" onClick={handleSelectAll}>
@@ -107,25 +156,41 @@ export default function LibraryPage() {
               </Button>
               {hasSelection && (
                 <Button variant="ghost" size="sm" onClick={clearSelection}>
-                  {t('download.selected', { count: selectedIds.size })}
+                  {t('download.selected', { count: selectedProducts.length })}
                 </Button>
               )}
             </div>
           )}
 
-          {filteredProducts.length === 0 ? (
+          {projectProducts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
                 <BookOpen className="h-8 w-8 text-slate-400" />
               </div>
               <p className="max-w-md text-slate-500">{t('empty')}</p>
             </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+                <BookOpen className="h-8 w-8 text-slate-400" />
+              </div>
+              <p className="max-w-md text-slate-500">{t('emptyFiltered')}</p>
+            </div>
           ) : (
-            <LibraryGrid
-              products={filteredProducts}
-              selectedIds={selectedIds}
-              onToggleSelect={toggleSelect}
-            />
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {filteredProducts.map((product) => (
+                <ProductCardAdvanced
+                  key={product.id}
+                  product={product}
+                  isSelected={selectedIds.has(product.id)}
+                  onToggleSelect={toggleSelect}
+                  onDelete={deleteProduct}
+                  onRestore={restoreProduct}
+                  onPermanentDelete={permanentlyDeleteProduct}
+                  onUpdate={updateProduct}
+                />
+              ))}
+            </div>
           )}
         </div>
       </main>

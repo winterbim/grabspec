@@ -14,7 +14,9 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import type { SearchFilter, SortBy } from '@/lib/library-search';
-import { getAllCategories } from '@/lib/smart-categories';
+import { getAllCategories, type ProductCategory } from '@/lib/smart-categories';
+
+const STATUS_OPTIONS = ['found', 'partial', 'pending', 'error'] as const;
 
 interface LibrarySearchProps {
   onSearch: (filters: SearchFilter, sortBy?: SortBy) => void;
@@ -40,7 +42,8 @@ export function LibraryAdvancedSearch({ onSearch, onClear, isLoading }: LibraryS
       (filters.manufacturer ? 1 : 0) +
       (filters.hasPhoto ? 1 : 0) +
       (filters.hasDatasheet ? 1 : 0) +
-      (filters.minConfidence ? 1 : 0);
+      (filters.minConfidence ? 1 : 0) +
+      (filters.excludeDeleted === false ? 1 : 0);
 
     setActiveFiltersCount(count);
   }, [filters, sortBy, onSearch]);
@@ -74,7 +77,7 @@ export function LibraryAdvancedSearch({ onSearch, onClear, isLoading }: LibraryS
             disabled={isLoading}
           >
             <ChevronDown className="w-4 h-4 mr-1" />
-            Filtres
+            {t('filters')}
             {activeFiltersCount > 0 && (
               <Badge className="ml-2 bg-blue-500" variant="secondary">
                 {activeFiltersCount}
@@ -117,7 +120,7 @@ export function LibraryAdvancedSearch({ onSearch, onClear, isLoading }: LibraryS
               onChange={(e) =>
                 setFilters({
                   ...filters,
-                  category: e.target.value ? (e.target.value as any) : undefined,
+                  category: e.target.value ? (e.target.value as ProductCategory) : undefined,
                 })
               }
               className="w-full border rounded px-3 py-2 text-sm"
@@ -145,7 +148,7 @@ export function LibraryAdvancedSearch({ onSearch, onClear, isLoading }: LibraryS
           <div>
             <label className="block text-sm font-medium mb-2">{t('status')}</label>
             <div className="space-y-2">
-              {['pending', 'done', 'error'].map((status) => (
+              {STATUS_OPTIONS.map((status) => (
                 <label key={status} className="flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -162,14 +165,14 @@ export function LibraryAdvancedSearch({ onSearch, onClear, isLoading }: LibraryS
                     }}
                     className="rounded"
                   />
-                  <span className="text-sm capitalize">{status}</span>
+                  <span className="text-sm capitalize">{status.replace('_', ' ')}</span>
                 </label>
               ))}
             </div>
           </div>
 
           {/* Media Filters */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -189,6 +192,20 @@ export function LibraryAdvancedSearch({ onSearch, onClear, isLoading }: LibraryS
                 className="rounded"
               />
               <span className="text-sm">{t('has_datasheets')}</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={filters.excludeDeleted === false}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    excludeDeleted: e.target.checked ? false : true,
+                  })
+                }
+                className="rounded"
+              />
+              <span className="text-sm">{t('show_deleted')}</span>
             </label>
           </div>
 

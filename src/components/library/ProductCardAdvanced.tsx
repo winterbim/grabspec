@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Trash2, RotateCcw, Eye, EyeOff, Tag, FileText, Image } from 'lucide-react';
+import { Trash2, RotateCcw, Tag, FileText, Image as ImageIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -22,14 +23,18 @@ interface ProductCardProps {
   onRestore: (id: string) => Promise<void>;
   onPermanentDelete: (id: string) => Promise<void>;
   onUpdate: (id: string, updates: Partial<LocalProduct>) => Promise<void>;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
 }
 
-export function ProductCard({
+export function ProductCardAdvanced({
   product,
   onDelete,
   onRestore,
   onPermanentDelete,
   onUpdate,
+  isSelected = false,
+  onToggleSelect,
 }: ProductCardProps) {
   const t = useTranslations('library');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -60,16 +65,6 @@ export function ProductCard({
     await onRestore(product.id);
   }, [product.id, onRestore]);
 
-  const handleAddTag = useCallback(
-    async (tag: string) => {
-      const tags = product.tags || [];
-      if (!tags.includes(tag)) {
-        await onUpdate(product.id, { tags: [...tags, tag] });
-      }
-    },
-    [product, onUpdate]
-  );
-
   const handleRemoveTag = useCallback(
     async (tag: string) => {
       const tags = product.tags || [];
@@ -82,33 +77,46 @@ export function ProductCard({
     <div
       className={`border rounded-lg p-4 space-y-3 transition-opacity ${
         product.isDeleted ? 'opacity-50 bg-red-50 dark:bg-red-950' : 'bg-white dark:bg-slate-900'
+      } ${
+        isSelected ? 'ring-2 ring-blue-500 ring-offset-2' : ''
       }`}
     >
       {/* Header with title and status */}
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <h3 className="font-semibold text-sm">{product.inputName}</h3>
-          {product.resolvedName && product.resolvedName !== product.inputName && (
-            <p className="text-xs text-gray-500 mt-1">{product.resolvedName}</p>
-          )}
-        </div>
+      <div className="flex items-start gap-3">
+        {onToggleSelect && (
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => onToggleSelect(product.id)}
+            className="mt-1 shrink-0"
+            aria-label={t('select_product')}
+          />
+        )}
 
-        <div className="flex gap-1">
-          {product.isDeleted ? (
-            <Badge className="bg-red-500">{t('deleted')}</Badge>
-          ) : (
-            <Badge
-              className={
-                product.searchStatus === 'found'
-                  ? 'bg-green-500'
-                  : product.searchStatus === 'pending'
-                    ? 'bg-yellow-500'
-                    : 'bg-red-500'
-              }
-            >
-              {product.searchStatus}
-            </Badge>
-          )}
+        <div className="flex flex-1 items-start justify-between gap-2">
+          <div className="flex-1">
+            <h3 className="font-semibold text-sm">{product.inputName}</h3>
+            {product.resolvedName && product.resolvedName !== product.inputName && (
+              <p className="text-xs text-gray-500 mt-1">{product.resolvedName}</p>
+            )}
+          </div>
+
+          <div className="flex gap-1">
+            {product.isDeleted ? (
+              <Badge className="bg-red-500">{t('deleted')}</Badge>
+            ) : (
+              <Badge
+                className={
+                  product.searchStatus === 'found'
+                    ? 'bg-green-500'
+                    : product.searchStatus === 'pending'
+                      ? 'bg-yellow-500'
+                      : 'bg-red-500'
+                }
+              >
+                {product.searchStatus}
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
@@ -139,13 +147,13 @@ export function ProductCard({
 
       {/* Media indicators */}
       <div className="flex gap-2">
-        {product.photoUrl && (
+        {(product.photoBlobUrl || product.photoUrl) && (
           <div className="flex items-center gap-1 text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">
-            <Image className="w-3 h-3" />
+            <ImageIcon className="w-3 h-3" aria-hidden="true" />
             {t('photo')}
           </div>
         )}
-        {product.datasheetUrl && (
+        {(product.datasheetBlobUrl || product.datasheetUrl) && (
           <div className="flex items-center gap-1 text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">
             <FileText className="w-3 h-3" />
             PDF
@@ -172,7 +180,9 @@ export function ProductCard({
 
       {/* Notes */}
       {product.notes && (
-        <p className="text-xs text-gray-600 dark:text-gray-400 italic">"{product.notes}"</p>
+        <p className="text-xs text-gray-600 dark:text-gray-400 italic">
+          &ldquo;{product.notes}&rdquo;
+        </p>
       )}
 
       {/* Actions */}

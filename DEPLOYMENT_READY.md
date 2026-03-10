@@ -85,7 +85,7 @@ git commit -m "v2.0: Complete implementation of 8 improvement phases
 "
 
 # Push to main branch
-git push origin main
+git push origin master
 ```
 
 ### Option B: Vercel CLI
@@ -282,7 +282,7 @@ For deployment issues:
 
 ```bash
 # Option A (Recommended): Git push
-git add -A && git commit -m "v2.0 Production Release" && git push origin main
+git add -A && git commit -m "v2.0 Production Release" && git push origin master
 
 # Option B: Vercel CLI
 vercel --prod

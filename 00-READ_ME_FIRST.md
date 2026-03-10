@@ -145,7 +145,7 @@ Load Test Ready:     YES ✅
 cd /home/wina/Bureau/Grabspec/grabspec
 git add .
 git commit -m "v2.0: Complete 8-phase implementation - Production Ready"
-git push origin main
+git push origin master
 
 # Option 2: Vercel CLI
 vercel --prod

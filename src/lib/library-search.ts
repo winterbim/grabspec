@@ -24,6 +24,18 @@ export interface SearchResult {
   matchedCount: number;
 }
 
+function hasPhoto(product: LocalProduct): boolean {
+  return Boolean(product.photoBlobUrl || product.photoUrl);
+}
+
+function hasDatasheet(product: LocalProduct): boolean {
+  return Boolean(product.datasheetBlobUrl || product.datasheetUrl);
+}
+
+function normalizeConfidence(value: number): number {
+  return value > 1 ? value / 100 : value;
+}
+
 /**
  * Advanced search with fuzzy matching and multi-criteria filtering
  */
@@ -98,17 +110,18 @@ export function searchProducts(products: LocalProduct[], filters: SearchFilter):
 
   // Has photo filter
   if (filters.hasPhoto !== undefined) {
-    filtered = filtered.filter((p) => (p.photoUrl !== null) === filters.hasPhoto);
+    filtered = filtered.filter((p) => hasPhoto(p) === filters.hasPhoto);
   }
 
   // Has datasheet filter
   if (filters.hasDatasheet !== undefined) {
-    filtered = filtered.filter((p) => (p.datasheetUrl !== null) === filters.hasDatasheet);
+    filtered = filtered.filter((p) => hasDatasheet(p) === filters.hasDatasheet);
   }
 
   // Confidence score filter
   if (filters.minConfidence !== undefined) {
-    filtered = filtered.filter((p) => (p.confidence || 0) >= filters.minConfidence!);
+    const minConfidence = normalizeConfidence(filters.minConfidence);
+    filtered = filtered.filter((p) => (p.confidence || 0) >= minConfidence);
   }
 
   return {
@@ -157,7 +170,10 @@ export function sortProducts(products: LocalProduct[], sortBy: SortBy): LocalPro
       sorted.sort((a, b) => (b.confidence || 0) - (a.confidence || 0));
       break;
     case 'status-pending':
-      sorted.sort((a) => (a.searchStatus === 'pending' ? -1 : 1));
+      sorted.sort(
+        (a, b) =>
+          Number(b.searchStatus === 'pending') - Number(a.searchStatus === 'pending')
+      );
       break;
   }
 
