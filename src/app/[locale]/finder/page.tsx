@@ -13,14 +13,15 @@ import { useSession } from '@/hooks/useSession';
 export default function FinderPage() {
   const t = useTranslations('finder');
   const { products, isSearching, doneCount, search } = useFinder();
-  const { sessionId } = useSession();
+  const { sessionId, plan, searchesLeft, refreshPlan } = useSession();
 
   const handleSearch = useCallback(
-    (queries: string[]) => {
+    async (queries: string[]) => {
       if (!sessionId) return;
-      search(queries, sessionId);
+      await search(queries, sessionId);
+      await refreshPlan();
     },
-    [sessionId, search]
+    [sessionId, search, refreshPlan]
   );
 
   const hasProducts = products.length > 0;
@@ -33,7 +34,12 @@ export default function FinderPage() {
           {t('title')}
         </h1>
 
-        <ProductInput onSearch={handleSearch} isSearching={isSearching} />
+        <ProductInput
+          onSearch={handleSearch}
+          isSearching={isSearching}
+          plan={plan}
+          searchesLeft={searchesLeft}
+        />
 
         {hasProducts && (
           <div className="mt-8 space-y-8">

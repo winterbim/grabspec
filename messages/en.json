@@ -62,6 +62,8 @@
     "title": "Product Search",
     "placeholder": "Paste your product list, one per line...\n\nExample:\nGrohe Eurosmart 33265003\nGeberit Sigma 50\nBosch WAX32M40",
     "productCount": "{count} product(s)",
+    "searchesRemaining": "Free plan: {count} product search(es) left today",
+    "batchLimitExceeded": "This list has {requested} product(s), but you only have {available} search(es) left today.",
     "searchButton": "Search {count} product(s)",
     "searching": "Searching...",
     "progress": "{done}/{total} products processed",
@@ -121,6 +123,7 @@
     "cancel": "Cancel",
     "deleted": "Deleted",
     "photo": "Photo",
+    "open_in_new_tab": "Open in new tab",
     "select_product": "Select product",
     "nomenclature": {
       "title": "File naming",

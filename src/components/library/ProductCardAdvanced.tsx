@@ -1,7 +1,14 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Trash2, RotateCcw, Tag, FileText, Image as ImageIcon } from 'lucide-react';
+import {
+  Trash2,
+  RotateCcw,
+  Tag,
+  FileText,
+  Image as ImageIcon,
+  ExternalLink,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +47,14 @@ export function ProductCardAdvanced({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showPermanentConfirm, setShowPermanentConfirm] = useState(false);
+  const [preview, setPreview] = useState<{
+    type: 'image' | 'pdf';
+    url: string;
+    label: string;
+  } | null>(null);
+
+  const photoUrl = product.photoBlobUrl ?? product.photoUrl;
+  const datasheetUrl = product.datasheetBlobUrl ?? product.datasheetUrl;
 
   const handleDelete = useCallback(async () => {
     setIsDeleting(true);
@@ -72,6 +87,10 @@ export function ProductCardAdvanced({
     },
     [product, onUpdate]
   );
+
+  const openPreview = useCallback((type: 'image' | 'pdf', url: string, label: string) => {
+    setPreview({ type, url, label });
+  }, []);
 
   return (
     <div
@@ -147,27 +166,25 @@ export function ProductCardAdvanced({
 
       {/* Media links */}
       <div className="flex flex-wrap gap-2">
-        {(product.photoBlobUrl || product.photoUrl) && (
-          <a
-            href={product.photoBlobUrl ?? product.photoUrl ?? '#'}
-            target="_blank"
-            rel="noopener noreferrer"
+        {photoUrl && (
+          <button
+            type="button"
+            onClick={() => openPreview('image', photoUrl, t('photo'))}
             className={buttonVariants({ variant: 'outline', size: 'sm' })}
           >
             <ImageIcon className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
             {t('photo')}
-          </a>
+          </button>
         )}
-        {(product.datasheetBlobUrl || product.datasheetUrl) && (
-          <a
-            href={product.datasheetBlobUrl ?? product.datasheetUrl ?? '#'}
-            target="_blank"
-            rel="noopener noreferrer"
+        {datasheetUrl && (
+          <button
+            type="button"
+            onClick={() => openPreview('pdf', datasheetUrl, 'PDF')}
             className={buttonVariants({ variant: 'outline', size: 'sm' })}
           >
             <FileText className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
             PDF
-          </a>
+          </button>
         )}
       </div>
 
@@ -277,6 +294,44 @@ export function ProductCardAdvanced({
           </>
         )}
       </div>
+
+      <Dialog open={Boolean(preview)} onOpenChange={(open) => !open && setPreview(null)}>
+        <DialogContent className="max-w-5xl">
+          <DialogHeader>
+            <DialogTitle>{preview?.label ?? ''}</DialogTitle>
+          </DialogHeader>
+
+          {preview?.type === 'image' ? (
+            <div className="flex max-h-[70vh] items-center justify-center overflow-auto rounded-lg bg-slate-50 p-2">
+              <img
+                src={preview.url}
+                alt={product.resolvedName ?? product.inputName}
+                className="max-h-[68vh] w-auto max-w-full object-contain"
+              />
+            </div>
+          ) : preview?.type === 'pdf' ? (
+            <iframe
+              src={preview.url}
+              title={`${product.resolvedName ?? product.inputName} PDF`}
+              className="h-[70vh] w-full rounded-lg border"
+            />
+          ) : null}
+
+          {preview && (
+            <DialogFooter>
+              <a
+                href={preview.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonVariants({ variant: 'outline' })}
+              >
+                <ExternalLink className="mr-2 h-4 w-4" aria-hidden="true" />
+                {t('open_in_new_tab')}
+              </a>
+            </DialogFooter>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

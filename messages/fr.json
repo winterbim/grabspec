@@ -62,6 +62,8 @@
     "title": "Recherche de produits",
     "placeholder": "Collez votre liste de produits, un par ligne...\n\nExemple :\nGrohe Eurosmart 33265003\nGeberit Sigma 50\nBosch WAX32M40",
     "productCount": "{count} produit(s)",
+    "searchesRemaining": "Plan gratuit : {count} produit(s) restant(s) aujourd'hui",
+    "batchLimitExceeded": "Cette liste contient {requested} produit(s), mais il ne vous reste que {available} recherche(s) aujourd'hui.",
     "searchButton": "Rechercher {count} produit(s)",
     "searching": "Recherche en cours...",
     "progress": "{done}/{total} produits traités",
@@ -121,6 +123,7 @@
     "cancel": "Annuler",
     "deleted": "Supprimé",
     "photo": "Photo",
+    "open_in_new_tab": "Ouvrir dans un nouvel onglet",
     "select_product": "Sélectionner le produit",
     "nomenclature": {
       "title": "Nomenclature",
