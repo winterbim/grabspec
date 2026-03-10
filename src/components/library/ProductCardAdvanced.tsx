@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { Trash2, RotateCcw, Tag, FileText, Image as ImageIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -145,19 +145,29 @@ export function ProductCardAdvanced({
         )}
       </div>
 
-      {/* Media indicators */}
-      <div className="flex gap-2">
+      {/* Media links */}
+      <div className="flex flex-wrap gap-2">
         {(product.photoBlobUrl || product.photoUrl) && (
-          <div className="flex items-center gap-1 text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">
-            <ImageIcon className="w-3 h-3" aria-hidden="true" />
+          <a
+            href={product.photoBlobUrl ?? product.photoUrl ?? '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonVariants({ variant: 'outline', size: 'sm' })}
+          >
+            <ImageIcon className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
             {t('photo')}
-          </div>
+          </a>
         )}
         {(product.datasheetBlobUrl || product.datasheetUrl) && (
-          <div className="flex items-center gap-1 text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">
-            <FileText className="w-3 h-3" />
+          <a
+            href={product.datasheetBlobUrl ?? product.datasheetUrl ?? '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonVariants({ variant: 'outline', size: 'sm' })}
+          >
+            <FileText className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
             PDF
-          </div>
+          </a>
         )}
       </div>
 
