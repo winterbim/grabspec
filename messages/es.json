@@ -196,7 +196,7 @@
   "pricing": {
     "title": "Precios simples y transparentes",
     "subtitle": "Comience gratis, actualice a Pro cuando lo necesite.",
-    "usageTip": "Elija un plan mensual o anual y luego continue con Stripe. Entorno actual: Stripe funciona en modo de prueba mientras no haya claves live configuradas.",
+    "usageTip": "Elija un plan mensual o anual y complete despues la suscripcion en la pagina segura de pago de Stripe.",
     "monthly": "Mensual",
     "yearly": "Anual",
     "yearlyDiscount": "2 meses gratis",

@@ -196,7 +196,7 @@
   "pricing": {
     "title": "Simple and transparent pricing",
     "subtitle": "Start for free, upgrade to Pro when you need it.",
-    "usageTip": "Choose a monthly or yearly plan, then continue to Stripe. Current environment: Stripe payments are running in test mode until live keys are configured.",
+    "usageTip": "Choose a monthly or yearly plan, then complete the subscription on Stripe's secure checkout page.",
     "monthly": "Monthly",
     "yearly": "Yearly",
     "yearlyDiscount": "2 months free",

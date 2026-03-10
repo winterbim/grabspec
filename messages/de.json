@@ -196,7 +196,7 @@
   "pricing": {
     "title": "Einfache und transparente Preise",
     "subtitle": "Starten Sie kostenlos, upgraden Sie auf Pro wenn nötig.",
-    "usageTip": "Wahlen Sie einen monatlichen oder jahrlichen Tarif und fahren Sie dann mit Stripe fort. Aktuelle Umgebung: Stripe lauft im Testmodus, solange keine Live-Schlussel konfiguriert sind.",
+    "usageTip": "Wahlen Sie einen monatlichen oder jahrlichen Tarif und schliessen Sie das Abo anschliessend auf der sicheren Stripe-Zahlungsseite ab.",
     "monthly": "Monatlich",
     "yearly": "Jährlich",
     "yearlyDiscount": "2 Monate gratis",

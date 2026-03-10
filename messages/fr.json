@@ -196,7 +196,7 @@
   "pricing": {
     "title": "Tarifs simples et transparents",
     "subtitle": "Commencez gratuitement, passez à Pro quand vous en avez besoin.",
-    "usageTip": "Choisissez un plan mensuel ou annuel puis poursuivez vers Stripe. Environnement actuel: paiement Stripe en mode test tant que des cles live ne sont pas configurees.",
+    "usageTip": "Choisissez un plan mensuel ou annuel, puis finalisez l'abonnement sur la page de paiement Stripe securisee.",
     "monthly": "Mensuel",
     "yearly": "Annuel",
     "yearlyDiscount": "2 mois offerts",
