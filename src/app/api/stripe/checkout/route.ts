@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod/v4';
 import { getStripeServer, getPriceId } from '@/lib/stripe';
+import { getAppUrl } from '@/lib/app-url';
 
 const bodySchema = z.object({
   plan: z.enum(['pro', 'business']),
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = getAppUrl(request);
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',

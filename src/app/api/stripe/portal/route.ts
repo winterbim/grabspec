@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod/v4';
 import { getStripeServer } from '@/lib/stripe';
+import { getAppUrl } from '@/lib/app-url';
 
 const querySchema = z.object({
   sessionId: z.string().min(1),
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = getAppUrl(request);
 
     // Find the customer by client_reference_id
     const sessions = await stripe.checkout.sessions.list({
