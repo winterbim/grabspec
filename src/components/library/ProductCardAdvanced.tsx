@@ -1,0 +1,262 @@
+'use client';
+
+import { useState, useCallback } from 'react';
+import { Trash2, RotateCcw, Eye, EyeOff, Tag, FileText, Image } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import type { LocalProduct } from '@/lib/db';
+import { getCategoryLabel, type ProductCategory } from '@/lib/smart-categories';
+
+interface ProductCardProps {
+  product: LocalProduct;
+  onDelete: (id: string) => Promise<void>;
+  onRestore: (id: string) => Promise<void>;
+  onPermanentDelete: (id: string) => Promise<void>;
+  onUpdate: (id: string, updates: Partial<LocalProduct>) => Promise<void>;
+}
+
+export function ProductCard({
+  product,
+  onDelete,
+  onRestore,
+  onPermanentDelete,
+  onUpdate,
+}: ProductCardProps) {
+  const t = useTranslations('library');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showPermanentConfirm, setShowPermanentConfirm] = useState(false);
+
+  const handleDelete = useCallback(async () => {
+    setIsDeleting(true);
+    try {
+      await onDelete(product.id);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  }, [product.id, onDelete]);
+
+  const handlePermanentDelete = useCallback(async () => {
+    setIsDeleting(true);
+    try {
+      await onPermanentDelete(product.id);
+    } finally {
+      setIsDeleting(false);
+      setShowPermanentConfirm(false);
+    }
+  }, [product.id, onPermanentDelete]);
+
+  const handleRestore = useCallback(async () => {
+    await onRestore(product.id);
+  }, [product.id, onRestore]);
+
+  const handleAddTag = useCallback(
+    async (tag: string) => {
+      const tags = product.tags || [];
+      if (!tags.includes(tag)) {
+        await onUpdate(product.id, { tags: [...tags, tag] });
+      }
+    },
+    [product, onUpdate]
+  );
+
+  const handleRemoveTag = useCallback(
+    async (tag: string) => {
+      const tags = product.tags || [];
+      await onUpdate(product.id, { tags: tags.filter((t) => t !== tag) });
+    },
+    [product, onUpdate]
+  );
+
+  return (
+    <div
+      className={`border rounded-lg p-4 space-y-3 transition-opacity ${
+        product.isDeleted ? 'opacity-50 bg-red-50 dark:bg-red-950' : 'bg-white dark:bg-slate-900'
+      }`}
+    >
+      {/* Header with title and status */}
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <h3 className="font-semibold text-sm">{product.inputName}</h3>
+          {product.resolvedName && product.resolvedName !== product.inputName && (
+            <p className="text-xs text-gray-500 mt-1">{product.resolvedName}</p>
+          )}
+        </div>
+
+        <div className="flex gap-1">
+          {product.isDeleted ? (
+            <Badge className="bg-red-500">{t('deleted')}</Badge>
+          ) : (
+            <Badge
+              className={
+                product.searchStatus === 'found'
+                  ? 'bg-green-500'
+                  : product.searchStatus === 'pending'
+                    ? 'bg-yellow-500'
+                    : 'bg-red-500'
+              }
+            >
+              {product.searchStatus}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {/* Details grid */}
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        {product.manufacturer && (
+          <div>
+            <span className="text-gray-500">{t('manufacturer')}:</span> {product.manufacturer}
+          </div>
+        )}
+        {product.reference && (
+          <div>
+            <span className="text-gray-500">Ref:</span> {product.reference}
+          </div>
+        )}
+        {product.category && (
+          <div>
+            <span className="text-gray-500">{t('category')}:</span> {getCategoryLabel(product.category as ProductCategory)}
+          </div>
+        )}
+        {product.confidence !== undefined && (
+          <div>
+            <span className="text-gray-500">Confiance:</span>{' '}
+            <Badge variant="secondary">{Math.round(product.confidence * 100)}%</Badge>
+          </div>
+        )}
+      </div>
+
+      {/* Media indicators */}
+      <div className="flex gap-2">
+        {product.photoUrl && (
+          <div className="flex items-center gap-1 text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">
+            <Image className="w-3 h-3" />
+            {t('photo')}
+          </div>
+        )}
+        {product.datasheetUrl && (
+          <div className="flex items-center gap-1 text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">
+            <FileText className="w-3 h-3" />
+            PDF
+          </div>
+        )}
+      </div>
+
+      {/* Tags */}
+      {product.tags && product.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {product.tags.map((tag) => (
+            <Badge
+              key={tag}
+              variant="outline"
+              className="text-xs cursor-pointer hover:bg-red-100"
+              onClick={() => handleRemoveTag(tag)}
+            >
+              <Tag className="w-2 h-2 mr-1" />
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      {/* Notes */}
+      {product.notes && (
+        <p className="text-xs text-gray-600 dark:text-gray-400 italic">"{product.notes}"</p>
+      )}
+
+      {/* Actions */}
+      <div className="flex gap-2 pt-2 border-t">
+        {!product.isDeleted ? (
+          <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+            <DialogTrigger>
+              <Button
+                size="sm"
+                variant="destructive"
+                className="flex-1"
+                disabled={isDeleting}
+              >
+                <Trash2 className="w-3 h-3 mr-1" />
+                {t('delete')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t('delete_product')}</DialogTitle>
+              </DialogHeader>
+              <p className="text-sm text-gray-600">{t('delete_confirm_message')}</p>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  disabled={isDeleting}
+                >
+                  {t('cancel')}
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {t('delete')}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        ) : (
+          <>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRestore}
+              disabled={isDeleting}
+              className="flex-1"
+            >
+              <RotateCcw className="w-3 h-3 mr-1" />
+              {t('restore')}
+            </Button>
+            <Dialog open={showPermanentConfirm} onOpenChange={setShowPermanentConfirm}>
+              <DialogTrigger>
+                <Button size="sm" variant="destructive" disabled={isDeleting}>
+                  <Trash2 className="w-3 h-3" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{t('permanently_delete')}</DialogTitle>
+                </DialogHeader>
+                <p className="text-sm text-gray-600">{t('permanent_delete_warning')}</p>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowPermanentConfirm(false)}
+                    disabled={isDeleting}
+                  >
+                    {t('cancel')}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handlePermanentDelete}
+                    disabled={isDeleting}
+                  >
+                    {t('permanently_delete')}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -22,11 +22,10 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-sm">
-            G
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-icon.svg" alt="" className="h-8 w-8" />
           <span className="text-xl font-bold tracking-tight text-slate-900">
-            GrabSpec
+            Grab<span className="text-blue-600">Spec</span>
           </span>
         </Link>
 

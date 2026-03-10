@@ -2,849 +2,608 @@ import React from "react";
 import {
   AbsoluteFill,
   useCurrentFrame,
-  useVideoConfig,
-  interpolate,
-  spring,
   Sequence,
+  Audio,
   Img,
   staticFile,
 } from "remotion";
 
-/* ════════════════════════════════════════════════════════════════
-   UTILS — smooth easing, no generic Remotion look
-   ════════════════════════════════════════════════════════════════ */
-
-const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-
-const anim = (frame: number, start: number, end: number, from: number, to: number) => {
-  if (frame <= start) return from;
-  if (frame >= end) return to;
-  return from + (to - from) * ease((frame - start) / (end - start));
+/* ── Helpers ─────────────────────────────────────────── */
+const ease = (t: number) =>
+  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const lerp = (
+  f: number,
+  s: number,
+  e: number,
+  a: number,
+  b: number
+) => {
+  if (f <= s) return a;
+  if (f >= e) return b;
+  return a + (b - a) * ease((f - s) / (e - s));
 };
 
-const FONT = "'Inter', 'SF Pro Display', -apple-system, system-ui, sans-serif";
-const MONO = "'JetBrains Mono', 'Fira Code', 'SF Mono', monospace";
+const FONT = "'Inter','SF Pro Display',-apple-system,system-ui,sans-serif";
+const MONO = "'JetBrains Mono','Fira Code','SF Mono',monospace";
 
-/* ════════════════════════════════════════════════════════════════
-   SCENE 1 — COLD OPEN: The Problem (0–4s, frames 0–119)
-   "You manage hundreds of products. Finding photos & datasheets
-   for each one takes forever."
-   ════════════════════════════════════════════════════════════════ */
-const SceneProblem: React.FC = () => {
+/* ── Product data ────────────────────────────────────── */
+const PRODUCTS = [
+  { name: "Eurosmart Mitigeur Lavabo S", maker: "GROHE", ref: "33265003", cat: "Plomberie", dim: "150×120mm", weight: "1.2 kg", img: "grohe.jpg", color: "#0ea5e9", hasPhoto: true, hasPdf: true },
+  { name: "Plaque de commande Sigma50", maker: "GEBERIT", ref: "Sigma 50", cat: "Sanitaire", dim: "246×164mm", weight: "0.8 kg", img: "geberit.jpg", color: "#8b5cf6", hasPhoto: true, hasPdf: true },
+  { name: "Acti9 iC60N Disjoncteur 2P 16A", maker: "SCHNEIDER", ref: "iC60N C16", cat: "Electricite", dim: "72×85mm", weight: "0.2 kg", img: "schneider.jpg", color: "#22c55e", hasPhoto: true, hasPdf: true },
+  { name: "Talis S Mitigeur lavabo", maker: "HANSGROHE", ref: "72020000", cat: "Robinetterie", dim: "161×95mm", weight: "1.4 kg", img: "hansgrohe.svg", color: "#f59e0b", hasPhoto: true, hasPdf: true },
+  { name: "Perfera Mural FTXM35R", maker: "DAIKIN", ref: "FTXM35R", cat: "CVC", dim: "798×295mm", weight: "10 kg", img: "daikin.svg", color: "#06b6d4", hasPhoto: true, hasPdf: false },
+  { name: "Fenêtre de toit GGL", maker: "VELUX", ref: "GGL MK04", cat: "Menuiserie", dim: "780×980mm", weight: "25 kg", img: "velux.svg", color: "#ec4899", hasPhoto: true, hasPdf: true },
+];
+
+/* ═══════════════════════════════════════════════════════
+   SCENE 1 — THE PAIN (0-4s · frames 0-119)
+   ═══════════════════════════════════════════════════════ */
+const ScenePain: React.FC = () => {
   const f = useCurrentFrame();
-
-  // Stagger lines of a spreadsheet appearing
-  const lines = [
-    "Grohe Eurosmart 33265003",
-    "Geberit Sigma30 115.883",
-    "Schneider iC60N C16A",
-    "Legrand Mosaic 077071",
-    "Hansgrohe Talis E 71710",
-    "Roca Gap A801472004",
-    "Villeroy & Boch Subway 2.0",
-    "Duravit Starck 3 220009",
-  ];
-
   return (
-    <AbsoluteFill style={{ background: "#0a0a0a", fontFamily: FONT }}>
-      {/* Subtle grid bg */}
-      <div style={{
-        position: "absolute", inset: 0, opacity: 0.04,
-        backgroundImage: "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)",
-        backgroundSize: "60px 60px",
-      }} />
+    <AbsoluteFill style={{ background: "#050810", fontFamily: FONT }}>
+      {/* Subtle grid */}
+      <div style={{ position: "absolute", inset: 0, opacity: 0.04,
+        backgroundImage: "linear-gradient(rgba(255,255,255,.15) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.15) 1px,transparent 1px)",
+        backgroundSize: "48px 48px" }} />
 
-      {/* Pain point text */}
-      <div style={{
-        position: "absolute", top: 100, left: 120, right: 120,
-        opacity: anim(f, 5, 25, 0, 1),
-        transform: `translateY(${anim(f, 5, 25, 30, 0)}px)`,
-      }}>
-        <div style={{ fontSize: 56, fontWeight: 800, color: "#fff", lineHeight: 1.2, letterSpacing: -1.5 }}>
-          Vous gérez des{" "}
-          <span style={{ color: "#ef4444" }}>centaines de produits.</span>
+      {/* Timer */}
+      <div style={{ position: "absolute", top: 50, right: 100, opacity: lerp(f,8,18,0,1), display: "flex", alignItems: "center", gap: 14 }}>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="#ef4444" strokeWidth="2" opacity="0.2"/>
+          <circle cx="12" cy="12" r="10" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round"
+            strokeDasharray={`${lerp(f,10,100,0,63)} 63`} transform="rotate(-90 12 12)"/>
+        </svg>
+        <span style={{ fontFamily: MONO, fontSize: 26, color: "#ef4444", fontWeight: 700 }}>
+          {Math.floor(lerp(f,10,100,0,45))} min / jour perdues
+        </span>
+      </div>
+
+      {/* Headline */}
+      <div style={{ position: "absolute", top: 120, left: 100, right: 100, opacity: lerp(f,3,15,0,1), transform: `translateY(${lerp(f,3,15,25,0)}px)` }}>
+        <div style={{ fontSize: 60, fontWeight: 800, color: "#fff", lineHeight: 1.15, letterSpacing: -1.5 }}>
+          Chercher des fiches techniques ?
         </div>
-        <div style={{
-          fontSize: 32, color: "rgba(255,255,255,0.5)", marginTop: 16, fontWeight: 400,
-          opacity: anim(f, 20, 40, 0, 1),
-        }}>
-          Trouver les photos HD et fiches techniques de chacun prend des heures...
+        <div style={{ fontSize: 60, fontWeight: 800, color: "#ef4444", lineHeight: 1.15, marginTop: 4 }}>
+          Un cauchemar.
         </div>
       </div>
 
-      {/* Fake spreadsheet — messy, red cross marks */}
-      <div style={{
-        position: "absolute", bottom: 60, left: 120, right: 120,
-        opacity: anim(f, 30, 50, 0, 1),
-        transform: `translateY(${anim(f, 30, 50, 40, 0)}px)`,
-      }}>
-        <div style={{
-          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: 16, overflow: "hidden",
-        }}>
-          {/* Header */}
-          <div style={{
-            display: "flex", padding: "14px 28px", borderBottom: "1px solid rgba(255,255,255,0.06)",
-            background: "rgba(255,255,255,0.02)",
-          }}>
-            {["Produit", "Photo", "Fiche PDF", "Fabricant"].map((h) => (
-              <div key={h} style={{ flex: 1, color: "rgba(255,255,255,0.3)", fontSize: 14, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1.5, fontFamily: MONO }}>{h}</div>
-            ))}
+      {/* Spreadsheet */}
+      <div style={{ position: "absolute", bottom: 40, left: 100, right: 100,
+        opacity: lerp(f,22,38,0,1), transform: `translateY(${lerp(f,22,38,20,0)}px)`,
+        background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)",
+        borderRadius: 16, overflow: "hidden" }}>
+        {/* Header */}
+        <div style={{ display: "flex", padding: "10px 24px", borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(255,255,255,0.015)" }}>
+          {["Produit","Catégorie","Photo HD","Fiche PDF","Specs"].map(h => (
+            <div key={h} style={{ flex: 1, color: "rgba(255,255,255,0.25)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.8, fontFamily: MONO }}>{h}</div>
+          ))}
+        </div>
+        {PRODUCTS.map((p, i) => (
+          <div key={i} style={{ display: "flex", padding: "9px 24px", alignItems: "center",
+            opacity: lerp(f, 28+i*5, 35+i*5, 0, 1),
+            borderBottom: i < 5 ? "1px solid rgba(255,255,255,0.025)" : "none" }}>
+            <div style={{ flex: 1, color: "rgba(255,255,255,0.65)", fontSize: 14, fontFamily: MONO }}>{p.maker} {p.ref}</div>
+            <div style={{ flex: 1, color: "rgba(255,255,255,0.25)", fontSize: 13 }}>{p.cat}</div>
+            <div style={{ flex: 1, fontSize: 20, color: "#ef4444" }}>✗</div>
+            <div style={{ flex: 1, fontSize: 20, color: "#ef4444" }}>✗</div>
+            <div style={{ flex: 1, fontSize: 20, color: "#ef4444" }}>✗</div>
           </div>
-          {lines.map((line, i) => {
-            const rowOpacity = anim(f, 35 + i * 5, 45 + i * 5, 0, 1);
-            return (
-              <div key={i} style={{
-                display: "flex", padding: "12px 28px", alignItems: "center", opacity: rowOpacity,
-                borderBottom: i < lines.length - 1 ? "1px solid rgba(255,255,255,0.03)" : "none",
-              }}>
-                <div style={{ flex: 1, color: "rgba(255,255,255,0.7)", fontSize: 18, fontFamily: MONO }}>{line}</div>
-                <div style={{ flex: 1, color: "#ef4444", fontSize: 18, fontWeight: 700 }}>✕ Manquante</div>
-                <div style={{ flex: 1, color: "#ef4444", fontSize: 18, fontWeight: 700 }}>✕ Manquante</div>
-                <div style={{ flex: 1, color: "rgba(255,255,255,0.3)", fontSize: 18 }}>—</div>
-              </div>
-            );
-          })}
-        </div>
+        ))}
       </div>
-
-      {/* Fade out */}
-      <div style={{
-        position: "absolute", inset: 0, background: "#0a0a0a",
-        opacity: anim(f, 100, 119, 0, 1),
-      }} />
     </AbsoluteFill>
   );
 };
 
-/* ════════════════════════════════════════════════════════════════
-   SCENE 2 — REVEAL: GrabSpec (4–8s, frames 120–239)
-   Logo + tagline + screenshot of the app
-   ════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   SCENE 2 — GRABSPEC REVEAL (4-7s · frames 120-209)
+   ═══════════════════════════════════════════════════════ */
 const SceneReveal: React.FC = () => {
   const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const logoScale = spring({ frame: f - 10, fps, config: { damping: 14, mass: 0.8, stiffness: 120 } });
-  const titleOp = anim(f, 20, 40, 0, 1);
-  const titleY = anim(f, 20, 40, 40, 0);
-  const tagOp = anim(f, 35, 55, 0, 1);
-  const screenshotOp = anim(f, 50, 70, 0, 1);
-  const screenshotY = anim(f, 50, 70, 60, 0);
-  const outOp = anim(f, 105, 119, 1, 0);
-
   return (
-    <AbsoluteFill style={{
-      background: "linear-gradient(160deg, #050d1a 0%, #0c1929 40%, #111827 100%)",
-      fontFamily: FONT, alignItems: "center", justifyContent: "center",
-      opacity: outOp,
-    }}>
-      {/* Ambient glow */}
-      <div style={{ position: "absolute", width: 800, height: 800, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%)", top: "5%", right: "10%" }} />
-      <div style={{ position: "absolute", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%)", bottom: "10%", left: "5%" }} />
+    <AbsoluteFill style={{ background: "#050810", fontFamily: FONT }}>
+      {/* Glow */}
+      <div style={{ position: "absolute", inset: 0,
+        background: "radial-gradient(ellipse at 50% 50%,rgba(37,99,235,0.25) 0%,transparent 65%)",
+        opacity: lerp(f,0,30,0,1) }} />
 
-      {/* Logo */}
-      <div style={{ display: "flex", alignItems: "center", gap: 24, marginBottom: 20, transform: `scale(${logoScale})` }}>
-        <div style={{
-          width: 72, height: 72, borderRadius: 18,
-          background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
+      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 28 }}>
+        {/* Logo icon */}
+        <div style={{ width: 110, height: 110, borderRadius: 26, background: "#2563EB",
           display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 0 50px rgba(37,99,235,0.35), 0 8px 32px rgba(0,0,0,0.4)",
-        }}>
-          <span style={{ fontSize: 40, fontWeight: 900, color: "#fff" }}>G</span>
-        </div>
-        <span style={{ fontSize: 64, fontWeight: 900, color: "#fff", letterSpacing: -2 }}>GrabSpec</span>
-      </div>
-
-      {/* Tagline */}
-      <div style={{ opacity: titleOp, transform: `translateY(${titleY}px)`, fontSize: 44, fontWeight: 300, color: "rgba(255,255,255,0.9)", letterSpacing: -0.5, textAlign: "center" }}>
-        Photos HD & fiches techniques en{" "}
-        <span style={{ fontWeight: 800, background: "linear-gradient(135deg, #3b82f6, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>10 secondes</span>
-      </div>
-
-      <div style={{ opacity: tagOp, fontSize: 22, color: "rgba(255,255,255,0.45)", marginTop: 12, fontWeight: 400, letterSpacing: 0.5 }}>
-        L'outil qui automatise la collecte documentaire produit
-      </div>
-
-      {/* App screenshot in laptop frame */}
-      <div style={{
-        opacity: screenshotOp, transform: `translateY(${screenshotY}px)`,
-        marginTop: 50, position: "relative",
-      }}>
-        <div style={{
-          width: 900, borderRadius: 12, overflow: "hidden",
-          border: "2px solid rgba(255,255,255,0.1)",
-          boxShadow: "0 25px 80px rgba(0,0,0,0.6), 0 0 40px rgba(37,99,235,0.1)",
-        }}>
-          {/* Browser chrome */}
-          <div style={{ height: 32, background: "rgba(30,30,30,0.95)", display: "flex", alignItems: "center", padding: "0 14px", gap: 8 }}>
-            <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ff5f57" }} />
-            <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#febc2e" }} />
-            <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#28c840" }} />
-            <div style={{ flex: 1, marginLeft: 20, height: 20, borderRadius: 6, background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", paddingLeft: 12 }}>
-              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: MONO }}>grabspec.com</span>
-            </div>
-          </div>
-          <Img src={staticFile("screenshots/hero.png")} style={{ width: 900, display: "block" }} />
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-/* ════════════════════════════════════════════════════════════════
-   SCENE 3 — STEP 1: Paste (8–14s, frames 240–419)
-   Show the finder page with typing animation
-   ════════════════════════════════════════════════════════════════ */
-const ScenePaste: React.FC = () => {
-  const f = useCurrentFrame();
-
-  const stepOp = anim(f, 0, 15, 0, 1);
-  const stepY = anim(f, 0, 15, 20, 0);
-  const textareaOp = anim(f, 15, 30, 0, 1);
-
-  const typingLines = [
-    { text: "Grohe Eurosmart 33265003", start: 30 },
-    { text: "Geberit Sigma30 115.883.KH.1", start: 55 },
-    { text: "Schneider iC60N C16", start: 80 },
-    { text: "Hansgrohe Talis E 71710000", start: 100 },
-  ];
-
-  // After typing → button click → results appear
-  const buttonGlow = anim(f, 120, 130, 0, 1);
-  const resultsOp = anim(f, 132, 150, 0, 1);
-  const resultsY = anim(f, 132, 150, 30, 0);
-
-  const resultItems = [
-    { name: "Eurosmart Basin Mixer S", brand: "GROHE", ref: "33265003", status: "Trouvé", statusColor: "#22c55e" },
-    { name: "Sigma30 Actuator Plate", brand: "GEBERIT", ref: "115.883.KH.1", status: "Trouvé", statusColor: "#22c55e" },
-    { name: "iC60N Disjoncteur 16A", brand: "SCHNEIDER", ref: "A9F74216", status: "Partiel", statusColor: "#f59e0b" },
-    { name: "Talis E Basin Mixer", brand: "HANSGROHE", ref: "71710000", status: "Trouvé", statusColor: "#22c55e" },
-  ];
-
-  const outOp = anim(f, 165, 179, 1, 0);
-
-  return (
-    <AbsoluteFill style={{
-      background: "linear-gradient(160deg, #050d1a 0%, #0c1929 40%, #111827 100%)",
-      fontFamily: FONT, padding: 80, opacity: outOp,
-    }}>
-      {/* Step indicator */}
-      <div style={{ opacity: stepOp, transform: `translateY(${stepY}px)`, display: "flex", alignItems: "center", gap: 20, marginBottom: 40 }}>
-        <div style={{
-          width: 52, height: 52, borderRadius: 14,
-          background: "linear-gradient(135deg, #2563eb, #7c3aed)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 24, fontWeight: 900, color: "#fff",
-          boxShadow: "0 0 30px rgba(37,99,235,0.3)",
-        }}>1</div>
-        <div>
-          <div style={{ fontSize: 40, fontWeight: 800, color: "#fff", letterSpacing: -1 }}>Collez votre liste</div>
-          <div style={{ fontSize: 20, color: "rgba(255,255,255,0.45)", marginTop: 4 }}>Références, noms, codes fabricant...</div>
-        </div>
-      </div>
-
-      <div style={{ display: "flex", gap: 50, flex: 1 }}>
-        {/* Left: textarea */}
-        <div style={{ flex: 1, opacity: textareaOp }}>
-          <div style={{
-            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: 16, padding: 32, height: "100%",
-          }}>
-            <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 14, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", marginBottom: 20 }}>Produits</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {typingLines.map((line, i) => {
-                const elapsed = Math.max(0, f - line.start);
-                const chars = Math.min(Math.floor(elapsed / 1.5), line.text.length);
-                const showCursor = f >= line.start && chars <= line.text.length;
-                return (
-                  <div key={i} style={{ display: "flex", alignItems: "center" }}>
-                    <span style={{ color: "rgba(255,255,255,0.15)", fontSize: 16, fontFamily: MONO, width: 30 }}>{i + 1}</span>
-                    <span style={{ color: "#e2e8f0", fontSize: 22, fontFamily: MONO }}>
-                      {line.text.slice(0, chars)}
-                      {showCursor && <span style={{ color: "#3b82f6", opacity: Math.sin(elapsed * 0.25) > 0 ? 1 : 0 }}>▎</span>}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Search button */}
-            <div style={{
-              marginTop: 36,
-              background: buttonGlow > 0.5 ? "linear-gradient(135deg, #1d4ed8, #6d28d9)" : "linear-gradient(135deg, #2563eb, #7c3aed)",
-              borderRadius: 12, padding: "16px 36px",
-              display: "inline-flex", alignItems: "center", gap: 10,
-              fontSize: 20, fontWeight: 700, color: "#fff",
-              boxShadow: buttonGlow > 0.5 ? "0 0 40px rgba(37,99,235,0.5)" : "0 4px 20px rgba(37,99,235,0.3)",
-              transform: `scale(${buttonGlow > 0.5 ? 0.97 : 1})`,
-            }}>
-              ⚡ Rechercher tout
-            </div>
-          </div>
+          boxShadow: "0 0 100px rgba(37,99,235,0.6)",
+          opacity: lerp(f,5,25,0,1), transform: `scale(${lerp(f,5,25,0.6,1)})` }}>
+          <svg width="60" height="60" viewBox="0 0 64 64" fill="none">
+            <rect x="14" y="10" width="22" height="30" rx="2.5" fill="white" opacity="0.9"/>
+            <rect x="19" y="17" width="12" height="2" rx="1" fill="#2563EB" opacity="0.5"/>
+            <rect x="19" y="22" width="9" height="2" rx="1" fill="#2563EB" opacity="0.4"/>
+            <circle cx="40" cy="38" r="12" fill="#1D4ED8" stroke="white" strokeWidth="2.5"/>
+            <line x1="49" y1="47" x2="54" y2="52" stroke="white" strokeWidth="3" strokeLinecap="round"/>
+            <path d="M36 38 L39 41 L45 35" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
 
-        {/* Right: results */}
-        <div style={{ flex: 1, opacity: resultsOp, transform: `translateY(${resultsY}px)` }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            {resultItems.map((item, i) => {
-              const cardDelay = i * 8;
-              const cardOp = anim(f, 135 + cardDelay, 145 + cardDelay, 0, 1);
-              const cardX = anim(f, 135 + cardDelay, 145 + cardDelay, 30, 0);
-              return (
-                <div key={i} style={{
-                  opacity: cardOp, transform: `translateX(${cardX}px)`,
-                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-                  borderRadius: 14, padding: "20px 24px",
-                  display: "flex", alignItems: "center", gap: 18,
-                }}>
-                  {/* Product icon */}
-                  <div style={{
-                    width: 56, height: 56, borderRadius: 12,
-                    background: "linear-gradient(135deg, rgba(37,99,235,0.15), rgba(124,58,237,0.1))",
-                    border: "1px solid rgba(37,99,235,0.2)",
-                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                  }}>
-                    <span style={{ fontSize: 24 }}>📷</span>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase" }}>{item.brand}</div>
-                    <div style={{ color: "#fff", fontSize: 19, fontWeight: 700, marginTop: 2 }}>{item.name}</div>
-                    <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 14, fontFamily: MONO, marginTop: 2 }}>{item.ref}</div>
-                  </div>
-                  {/* Status badge */}
-                  <div style={{
-                    padding: "6px 14px", borderRadius: 8,
-                    background: `${item.statusColor}15`, border: `1px solid ${item.statusColor}30`,
-                    color: item.statusColor, fontSize: 14, fontWeight: 700,
-                  }}>{item.status}</div>
-                  {/* PDF badge */}
-                  <div style={{
-                    width: 44, height: 44, borderRadius: 10,
-                    background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 13, fontWeight: 800, color: "#ef4444", fontFamily: MONO, flexShrink: 0,
-                  }}>PDF</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-/* ════════════════════════════════════════════════════════════════
-   SCENE 4 — STEP 2: Nomenclature (14–20s, frames 420–599)
-   ════════════════════════════════════════════════════════════════ */
-const SceneNomenclature: React.FC = () => {
-  const f = useCurrentFrame();
-
-  const stepOp = anim(f, 0, 15, 0, 1);
-  const stepY = anim(f, 0, 15, 20, 0);
-
-  const tags = [
-    { label: "{PROJET}", color: "#3b82f6", delay: 15 },
-    { label: "{LOT}", color: "#8b5cf6", delay: 22 },
-    { label: "{FABRICANT}", color: "#06b6d4", delay: 29 },
-    { label: "{REF}", color: "#22c55e", delay: 36 },
-    { label: "{NOM}", color: "#f59e0b", delay: 43 },
-    { label: "{TYPE}", color: "#ef4444", delay: 50 },
-  ];
-
-  const templateOp = anim(f, 60, 75, 0, 1);
-  const arrowOp = anim(f, 80, 90, 0, 1);
-  const resultOp = anim(f, 95, 110, 0, 1);
-  const resultY = anim(f, 95, 110, 20, 0);
-
-  // Second example
-  const ex2Op = anim(f, 115, 130, 0, 1);
-  const ex2Y = anim(f, 115, 130, 20, 0);
-
-  const outOp = anim(f, 165, 179, 1, 0);
-
-  return (
-    <AbsoluteFill style={{
-      background: "linear-gradient(160deg, #050d1a 0%, #0c1929 40%, #111827 100%)",
-      fontFamily: FONT, padding: 80, justifyContent: "center", opacity: outOp,
-    }}>
-      <div style={{ opacity: stepOp, transform: `translateY(${stepY}px)`, display: "flex", alignItems: "center", gap: 20, marginBottom: 50 }}>
-        <div style={{
-          width: 52, height: 52, borderRadius: 14,
-          background: "linear-gradient(135deg, #2563eb, #7c3aed)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 24, fontWeight: 900, color: "#fff",
-        }}>2</div>
-        <div>
-          <div style={{ fontSize: 40, fontWeight: 800, color: "#fff", letterSpacing: -1 }}>Nommez vos fichiers</div>
-          <div style={{ fontSize: 20, color: "rgba(255,255,255,0.45)", marginTop: 4 }}>Template de nomenclature personnalisable</div>
-        </div>
-      </div>
-
-      {/* Variable tags */}
-      <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 40 }}>
-        {tags.map((tag) => {
-          const tagOp = anim(f, tag.delay, tag.delay + 10, 0, 1);
-          const tagScale = anim(f, tag.delay, tag.delay + 10, 0.8, 1);
-          return (
-            <div key={tag.label} style={{
-              opacity: tagOp, transform: `scale(${tagScale})`,
-              padding: "10px 20px", borderRadius: 10,
-              background: `${tag.color}15`, border: `1px solid ${tag.color}30`,
-              color: tag.color, fontSize: 20, fontWeight: 700, fontFamily: MONO,
-            }}>{tag.label}</div>
-          );
-        })}
-      </div>
-
-      {/* Template formula */}
-      <div style={{ opacity: templateOp }}>
-        <div style={{
-          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: 14, padding: "20px 32px", display: "inline-block", marginBottom: 8,
-        }}>
-          <span style={{ color: "#3b82f6", fontSize: 24, fontFamily: MONO, fontWeight: 600 }}>
-            {"{"}<span style={{ color: "#3b82f6" }}>PROJET</span>{"}"}_{"{"}<span style={{ color: "#8b5cf6" }}>LOT</span>{"}"}_{"{"}<span style={{ color: "#06b6d4" }}>FABRICANT</span>{"}"}_{"{"}<span style={{ color: "#22c55e" }}>REF</span>{"}"}_{"{"}<span style={{ color: "#ef4444" }}>TYPE</span>{"}"}
-          </span>
-        </div>
-      </div>
-
-      {/* Arrow */}
-      <div style={{ opacity: arrowOp, fontSize: 32, color: "rgba(255,255,255,0.25)", margin: "16px 0", paddingLeft: 60 }}>↓</div>
-
-      {/* Result examples */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <div style={{
-          opacity: resultOp, transform: `translateY(${resultY}px)`,
-          background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)",
-          borderRadius: 14, padding: "16px 32px", display: "inline-flex", alignItems: "center", gap: 16,
-        }}>
-          <span style={{ fontSize: 22 }}>📷</span>
-          <span style={{ color: "#22c55e", fontSize: 20, fontFamily: MONO, fontWeight: 600 }}>VILLA-DUPONT_PLOMBERIE_GROHE_33265003_PHOTO.jpg</span>
-        </div>
-        <div style={{
-          opacity: ex2Op, transform: `translateY(${ex2Y}px)`,
-          background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)",
-          borderRadius: 14, padding: "16px 32px", display: "inline-flex", alignItems: "center", gap: 16,
-        }}>
-          <span style={{ fontSize: 22 }}>📄</span>
-          <span style={{ color: "#ef4444", fontSize: 20, fontFamily: MONO, fontWeight: 600 }}>VILLA-DUPONT_PLOMBERIE_GROHE_33265003_FT.pdf</span>
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-/* ════════════════════════════════════════════════════════════════
-   SCENE 5 — STEP 3: Export (20–26s, frames 600–779)
-   ════════════════════════════════════════════════════════════════ */
-const SceneExport: React.FC = () => {
-  const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const stepOp = anim(f, 0, 15, 0, 1);
-  const stepY = anim(f, 0, 15, 20, 0);
-
-  // ZIP animation
-  const zipScale = spring({ frame: f - 25, fps, config: { damping: 12, mass: 0.8 } });
-  const excelScale = spring({ frame: f - 40, fps, config: { damping: 12, mass: 0.8 } });
-
-  // File list animation
-  const filesOp = anim(f, 55, 70, 0, 1);
-  const filesY = anim(f, 55, 70, 30, 0);
-
-  const files = [
-    { name: "VILLA-DUPONT_PLOMBERIE_GROHE_33265003_PHOTO.jpg", icon: "🖼️", size: "245 KB" },
-    { name: "VILLA-DUPONT_PLOMBERIE_GROHE_33265003_FT.pdf", icon: "📄", size: "1.2 MB" },
-    { name: "VILLA-DUPONT_PLOMBERIE_GEBERIT_115883_PHOTO.jpg", icon: "🖼️", size: "189 KB" },
-    { name: "VILLA-DUPONT_PLOMBERIE_GEBERIT_115883_FT.pdf", icon: "📄", size: "856 KB" },
-    { name: "VILLA-DUPONT_recap.xlsx", icon: "📊", size: "34 KB" },
-  ];
-
-  // Progress bar
-  const progress = anim(f, 80, 120, 0, 100);
-  const checkOp = anim(f, 125, 135, 0, 1);
-
-  const outOp = anim(f, 165, 179, 1, 0);
-
-  return (
-    <AbsoluteFill style={{
-      background: "linear-gradient(160deg, #050d1a 0%, #0c1929 40%, #111827 100%)",
-      fontFamily: FONT, padding: 80, opacity: outOp,
-    }}>
-      <div style={{ opacity: stepOp, transform: `translateY(${stepY}px)`, display: "flex", alignItems: "center", gap: 20, marginBottom: 50 }}>
-        <div style={{
-          width: 52, height: 52, borderRadius: 14,
-          background: "linear-gradient(135deg, #2563eb, #7c3aed)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 24, fontWeight: 900, color: "#fff",
-        }}>3</div>
-        <div>
-          <div style={{ fontSize: 40, fontWeight: 800, color: "#fff", letterSpacing: -1 }}>Exportez tout en un clic</div>
-          <div style={{ fontSize: 20, color: "rgba(255,255,255,0.45)", marginTop: 4 }}>ZIP complet + récapitulatif Excel</div>
-        </div>
-      </div>
-
-      <div style={{ display: "flex", gap: 60, flex: 1 }}>
-        {/* Left: ZIP + Excel cards */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          <div style={{
-            transform: `scale(${zipScale})`,
-            background: "rgba(37,99,235,0.08)", border: "1px solid rgba(37,99,235,0.15)",
-            borderRadius: 20, padding: "36px 48px",
-            display: "flex", alignItems: "center", gap: 24,
-          }}>
-            <div style={{ fontSize: 56 }}>📦</div>
-            <div>
-              <div style={{ color: "#fff", fontSize: 28, fontWeight: 800 }}>Export ZIP</div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, marginTop: 4 }}>Photos HD + Fiches PDF</div>
-            </div>
-          </div>
-          <div style={{
-            transform: `scale(${excelScale})`,
-            background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)",
-            borderRadius: 20, padding: "36px 48px",
-            display: "flex", alignItems: "center", gap: 24,
-          }}>
-            <div style={{ fontSize: 56 }}>📊</div>
-            <div>
-              <div style={{ color: "#fff", fontSize: 28, fontWeight: 800 }}>Récap Excel</div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 16, marginTop: 4 }}>Toutes les specs produit</div>
-            </div>
-          </div>
+        {/* Brand */}
+        <div style={{ fontSize: 86, fontWeight: 800, letterSpacing: -3, lineHeight: 1,
+          opacity: lerp(f,12,30,0,1), transform: `translateY(${lerp(f,12,30,15,0)}px)` }}>
+          <span style={{ color: "#fff" }}>Grab</span>
+          <span style={{ color: "#3B82F6" }}>Spec</span>
         </div>
 
-        {/* Right: file tree + progress */}
-        <div style={{ flex: 1, opacity: filesOp, transform: `translateY(${filesY}px)` }}>
-          <div style={{
-            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: 16, overflow: "hidden",
-          }}>
-            {files.map((file, i) => {
-              const fileOp = anim(f, 60 + i * 6, 68 + i * 6, 0, 1);
-              return (
-                <div key={i} style={{
-                  display: "flex", alignItems: "center", gap: 14, padding: "14px 24px",
-                  borderBottom: i < files.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                  opacity: fileOp,
-                }}>
-                  <span style={{ fontSize: 20 }}>{file.icon}</span>
-                  <span style={{ flex: 1, color: "rgba(255,255,255,0.7)", fontSize: 15, fontFamily: MONO }}>{file.name}</span>
-                  <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 14 }}>{file.size}</span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Progress bar */}
-          <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 16 }}>
-            <div style={{ flex: 1, height: 8, borderRadius: 4, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${progress}%`, borderRadius: 4, background: "linear-gradient(90deg, #2563eb, #7c3aed)", transition: "none" }} />
-            </div>
-            <span style={{ color: progress >= 100 ? "#22c55e" : "rgba(255,255,255,0.5)", fontSize: 16, fontWeight: 700, fontFamily: MONO }}>
-              {progress >= 100 ? "✓" : `${Math.round(progress)}%`}
-            </span>
-          </div>
-
-          {/* Success message */}
-          {checkOp > 0 && (
-            <div style={{
-              opacity: checkOp, marginTop: 20,
-              background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)",
-              borderRadius: 12, padding: "14px 24px",
-              color: "#22c55e", fontSize: 18, fontWeight: 700,
-              display: "flex", alignItems: "center", gap: 10,
-            }}>
-              <span style={{ fontSize: 22 }}>✅</span> Téléchargement prêt — 2.4 MB
-            </div>
-          )}
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-/* ════════════════════════════════════════════════════════════════
-   SCENE 6 — BONUS: Converter + i18n (26–32s, frames 780–959)
-   ════════════════════════════════════════════════════════════════ */
-const SceneBonus: React.FC = () => {
-  const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const titleOp = anim(f, 0, 15, 0, 1);
-  const titleY = anim(f, 0, 15, 20, 0);
-
-  // Converter card
-  const convOp = anim(f, 20, 35, 0, 1);
-  const convY = anim(f, 20, 35, 30, 0);
-
-  // Arrow animation
-  const arrowPhase = anim(f, 40, 60, 0, 1);
-
-  // Languages
-  const langs = [
-    { code: "FR", name: "Français", delay: 70 },
-    { code: "EN", name: "English", delay: 78 },
-    { code: "ES", name: "Español", delay: 86 },
-    { code: "DE", name: "Deutsch", delay: 94 },
-  ];
-
-  // Free badge
-  const freeOp = anim(f, 105, 115, 0, 1);
-  const freeScale = spring({ frame: f - 105, fps, config: { damping: 10, mass: 0.5 } });
-
-  // App screenshot
-  const screenshotOp = anim(f, 50, 65, 0, 1);
-
-  const outOp = anim(f, 165, 179, 1, 0);
-
-  return (
-    <AbsoluteFill style={{
-      background: "linear-gradient(160deg, #050d1a 0%, #0c1929 40%, #111827 100%)",
-      fontFamily: FONT, padding: 80, opacity: outOp,
-    }}>
-      <div style={{ opacity: titleOp, transform: `translateY(${titleY}px)`, fontSize: 44, fontWeight: 800, color: "#fff", letterSpacing: -1, marginBottom: 50 }}>
-        Et en bonus...
-      </div>
-
-      <div style={{ display: "flex", gap: 50 }}>
-        {/* Left column */}
-        <div style={{ flex: 1 }}>
-          {/* Converter card */}
-          <div style={{
-            opacity: convOp, transform: `translateY(${convY}px)`,
-            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: 20, padding: "40px 48px", marginBottom: 30,
-          }}>
-            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 14, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 20 }}>Convertisseur gratuit</div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 32 }}>
-              <div style={{
-                padding: "20px 36px", borderRadius: 14,
-                background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
-              }}>
-                <div style={{ fontSize: 40 }}>📄</div>
-                <div style={{ color: "#ef4444", fontSize: 20, fontWeight: 800, textAlign: "center", marginTop: 8 }}>PDF</div>
-              </div>
-              <div style={{
-                fontSize: 40, color: "rgba(255,255,255,0.4)",
-                transform: `scaleX(${arrowPhase > 0.5 ? -1 : 1})`,
-              }}>→</div>
-              <div style={{
-                padding: "20px 36px", borderRadius: 14,
-                background: "rgba(37,99,235,0.1)", border: "1px solid rgba(37,99,235,0.2)",
-              }}>
-                <div style={{ fontSize: 40 }}>📝</div>
-                <div style={{ color: "#3b82f6", fontSize: 20, fontWeight: 800, textAlign: "center", marginTop: 8 }}>Word</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Languages */}
-          <div style={{ display: "flex", gap: 14 }}>
-            {langs.map((lang) => {
-              const langScale = spring({ frame: f - lang.delay, fps, config: { damping: 10, mass: 0.4, stiffness: 180 } });
-              return (
-                <div key={lang.code} style={{
-                  transform: `scale(${langScale})`,
-                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-                  borderRadius: 14, padding: "16px 24px", textAlign: "center", flex: 1,
-                }}>
-                  <div style={{ fontSize: 20, fontWeight: 900, color: "#fff", letterSpacing: 1 }}>{lang.code}</div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginTop: 4 }}>{lang.name}</div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Free badge */}
-          <div style={{
-            opacity: freeOp, transform: `scale(${freeScale})`,
-            marginTop: 30,
-            background: "linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.05))",
-            border: "1px solid rgba(34,197,94,0.2)",
-            borderRadius: 14, padding: "14px 28px",
-            display: "inline-flex", alignItems: "center", gap: 10,
-          }}>
-            <span style={{ fontSize: 24 }}>✨</span>
-            <span style={{ color: "#22c55e", fontSize: 22, fontWeight: 800 }}>100% Gratuit — Sans inscription</span>
-          </div>
+        {/* Tagline */}
+        <div style={{ fontSize: 28, color: "rgba(255,255,255,0.55)", fontWeight: 400,
+          opacity: lerp(f,28,45,0,1), transform: `translateY(${lerp(f,28,45,12,0)}px)` }}>
+          Photos HD · Fiches techniques · Specs — en 1 clic
         </div>
 
-        {/* Right: converter screenshot */}
-        <div style={{ flex: 1, opacity: screenshotOp, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{
-            width: 700, borderRadius: 12, overflow: "hidden",
-            border: "2px solid rgba(255,255,255,0.08)",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
-          }}>
-            <div style={{ height: 28, background: "rgba(30,30,30,0.95)", display: "flex", alignItems: "center", padding: "0 12px", gap: 7 }}>
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ff5f57" }} />
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#febc2e" }} />
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#28c840" }} />
-            </div>
-            <Img src={staticFile("screenshots/converter.png")} style={{ width: 700, display: "block" }} />
-          </div>
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-/* ════════════════════════════════════════════════════════════════
-   SCENE 7 — BUSINESS EXCEL (32–38s, frames 960–1139)
-   Shows the branded Excel export with company logo + project details
-   ════════════════════════════════════════════════════════════════ */
-const SceneBusinessExcel: React.FC = () => {
-  const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const titleOp = anim(f, 0, 15, 0, 1);
-  const titleY = anim(f, 0, 15, 20, 0);
-
-  // Excel mockup animation
-  const excelOp = anim(f, 20, 35, 0, 1);
-  const excelScale = anim(f, 20, 35, 0.95, 1);
-
-  // Company header reveal
-  const headerOp = anim(f, 35, 50, 0, 1);
-  const headerY = anim(f, 35, 50, -20, 0);
-
-  // Logo pop
-  const logoScale = spring({ frame: f - 40, fps, config: { damping: 12, mass: 0.6 } });
-
-  // Project details
-  const projOp = anim(f, 55, 70, 0, 1);
-  const projX = anim(f, 55, 70, 30, 0);
-
-  // Data rows
-  const dataOp = anim(f, 75, 90, 0, 1);
-
-  // Highlight glow
-  const glowOp = anim(f, 100, 115, 0, 0.6);
-  const glowOp2 = anim(f, 115, 130, 0.6, 0);
-  const totalGlow = Math.max(glowOp - (1 - glowOp2) + glowOp2, 0);
-
-  // Badge
-  const badgeOp = anim(f, 120, 135, 0, 1);
-  const badgeScale = spring({ frame: f - 120, fps, config: { damping: 10, mass: 0.5 } });
-
-  const outOp = anim(f, 165, 179, 1, 0);
-
-  const excelRows = [
-    ["Eurosmart Basin Mixer", "GROHE", "33265003", "Plomberie", "Robinetterie"],
-    ["Sigma30 Actuator Plate", "GEBERIT", "115.883.KH.1", "Plomberie", "WC"],
-    ["iC60N 16A", "SCHNEIDER", "A9F74216", "Electricité", "Disjoncteur"],
-    ["Talis E Basin Mixer", "HANSGROHE", "71710000", "Plomberie", "Robinetterie"],
-  ];
-
-  return (
-    <AbsoluteFill style={{
-      background: "linear-gradient(160deg, #050d1a 0%, #0c1929 40%, #111827 100%)",
-      fontFamily: FONT, padding: 80, opacity: outOp,
-    }}>
-      <div style={{ opacity: titleOp, transform: `translateY(${titleY}px)`, display: "flex", alignItems: "center", gap: 20, marginBottom: 40 }}>
-        <div style={{
-          width: 52, height: 52, borderRadius: 14,
-          background: "linear-gradient(135deg, #7c3aed, #a78bfa)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 24, fontWeight: 900, color: "#fff",
-        }}>B</div>
-        <div>
-          <div style={{ fontSize: 40, fontWeight: 800, color: "#fff", letterSpacing: -1 }}>Excel personnalisé Business</div>
-          <div style={{ fontSize: 20, color: "rgba(255,255,255,0.45)", marginTop: 4 }}>Votre entreprise sur chaque export</div>
-        </div>
-      </div>
-
-      {/* Excel mockup */}
-      <div style={{
-        opacity: excelOp, transform: `scale(${excelScale})`,
-        background: "#fff", borderRadius: 16, overflow: "hidden",
-        boxShadow: `0 25px 80px rgba(0,0,0,0.5), 0 0 ${totalGlow * 60}px rgba(124,58,237,${totalGlow * 0.3})`,
-        border: "1px solid rgba(255,255,255,0.1)",
-      }}>
-        {/* Company header section */}
-        <div style={{
-          opacity: headerOp, transform: `translateY(${headerY}px)`,
-          padding: "24px 32px", background: "#fafbfc",
-          borderBottom: "3px solid #2563eb",
-          display: "flex", justifyContent: "space-between", alignItems: "flex-start",
-        }}>
-          {/* Left: logo + company info */}
-          <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
-            <div style={{
-              transform: `scale(${logoScale})`,
-              width: 64, height: 64, borderRadius: 12,
-              background: "linear-gradient(135deg, #1e3a5f, #2563eb)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-            }}>
-              <span style={{ fontSize: 28, fontWeight: 900, color: "#fff" }}>AC</span>
-            </div>
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: "#1e3a5f" }}>ACME Construction SA</div>
-              <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>Rue du Commerce 42, 1003 Lausanne</div>
-              <div style={{ fontSize: 12, color: "#64748b" }}>+41 21 555 00 00 — info@acme-construction.ch</div>
-            </div>
-          </div>
-
-          {/* Right: project details */}
-          <div style={{ opacity: projOp, transform: `translateX(${projX}px)`, textAlign: "right" }}>
-            <div style={{ fontSize: 14, fontWeight: 800, color: "#1e3a5f" }}>Projet Villa Dupont</div>
-            <div style={{ display: "flex", gap: 20, marginTop: 6 }}>
-              <div>
-                <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, letterSpacing: 1 }}>N° PROJET</div>
-                <div style={{ fontSize: 13, color: "#475569", fontWeight: 600 }}>P-2024-087</div>
-              </div>
-              <div>
-                <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, letterSpacing: 1 }}>CLIENT</div>
-                <div style={{ fontSize: 13, color: "#475569", fontWeight: 600 }}>M. Dupont</div>
-              </div>
-              <div>
-                <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, letterSpacing: 1 }}>ARCHITECTE</div>
-                <div style={{ fontSize: 13, color: "#475569", fontWeight: 600 }}>Studio Arch SA</div>
-              </div>
-            </div>
-            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>09.03.2026</div>
-          </div>
-        </div>
-
-        {/* Data table */}
-        <div style={{ opacity: dataOp }}>
-          {/* Table header */}
-          <div style={{ display: "flex", background: "#2563eb", padding: "10px 20px" }}>
-            {["Nom", "Fabricant", "Référence", "Lot", "Catégorie"].map((h) => (
-              <div key={h} style={{ flex: 1, color: "#fff", fontSize: 13, fontWeight: 700 }}>{h}</div>
-            ))}
-          </div>
-          {/* Table rows */}
-          {excelRows.map((row, i) => (
-            <div key={i} style={{
-              display: "flex", padding: "10px 20px",
-              background: i % 2 === 1 ? "#f1f5f9" : "#fff",
-            }}>
-              {row.map((cell, j) => (
-                <div key={j} style={{ flex: 1, fontSize: 13, color: "#334155", fontFamily: j >= 2 ? MONO : FONT }}>{cell}</div>
-              ))}
+        {/* 3 feature icons */}
+        <div style={{ display: "flex", gap: 32, marginTop: 12 }}>
+          {[
+            { icon: "📷", label: "Photos HD" },
+            { icon: "📄", label: "Fiches PDF" },
+            { icon: "⚙️", label: "Spécifications" },
+          ].map((item, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8,
+              opacity: lerp(f, 40+i*8, 52+i*8, 0, 1),
+              transform: `translateY(${lerp(f, 40+i*8, 52+i*8, 10, 0)}px)`,
+              background: "rgba(255,255,255,0.06)", padding: "8px 18px", borderRadius: 10,
+              border: "1px solid rgba(255,255,255,0.08)" }}>
+              <span style={{ fontSize: 22 }}>{item.icon}</span>
+              <span style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>{item.label}</span>
             </div>
           ))}
         </div>
       </div>
+    </AbsoluteFill>
+  );
+};
 
-      {/* Business badge */}
-      {badgeOp > 0 && (
-        <div style={{
-          opacity: badgeOp, transform: `scale(${badgeScale})`,
-          marginTop: 30, display: "flex", alignItems: "center", gap: 16,
-        }}>
-          <div style={{
-            background: "linear-gradient(135deg, rgba(124,58,237,0.12), rgba(124,58,237,0.06))",
-            border: "1px solid rgba(124,58,237,0.25)",
-            borderRadius: 14, padding: "16px 32px",
-            display: "flex", alignItems: "center", gap: 12,
-          }}>
-            <span style={{ fontSize: 24 }}>✨</span>
-            <span style={{ color: "#a78bfa", fontSize: 20, fontWeight: 800 }}>Exclusif Business — Vos exports à votre image</span>
+/* ═══════════════════════════════════════════════════════
+   SCENE 3 — LIVE DEMO with real images (7-15s · frames 210-449)
+   ═══════════════════════════════════════════════════════ */
+const SceneDemo: React.FC = () => {
+  const f = useCurrentFrame();
+  const query = "Grohe 33265003\nGeberit Sigma 50\nSchneider iC60N C16";
+  const typedLen = Math.min(Math.floor(lerp(f,12,70,0,query.length)), query.length);
+
+  return (
+    <AbsoluteFill style={{ background: "#f8fafc", fontFamily: FONT }}>
+      {/* Browser chrome */}
+      <div style={{ position: "absolute", top: 20, left: 40, right: 40, bottom: 20,
+        background: "#fff", borderRadius: 16, overflow: "hidden",
+        boxShadow: "0 25px 60px rgba(0,0,0,0.12)", border: "1px solid #e2e8f0" }}>
+
+        {/* Title bar */}
+        <div style={{ display: "flex", alignItems: "center", padding: "8px 16px", background: "#f1f5f9", borderBottom: "1px solid #e2e8f0", gap: 8 }}>
+          <div style={{ display: "flex", gap: 6 }}>
+            {["#ef4444","#eab308","#22c55e"].map(c => (
+              <div key={c} style={{ width: 12, height: 12, borderRadius: "50%", background: c }}/>
+            ))}
+          </div>
+          <div style={{ flex: 1, background: "#fff", borderRadius: 8, padding: "5px 14px", fontSize: 13, color: "#64748b", fontFamily: MONO }}>
+            grabspec.vercel.app/fr/finder
+          </div>
+        </div>
+
+        {/* Nav */}
+        <div style={{ display: "flex", alignItems: "center", padding: "8px 20px", borderBottom: "1px solid #f1f5f9" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 26, height: 26, borderRadius: 6, background: "#2563EB", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ color: "#fff", fontWeight: 800, fontSize: 11 }}>G</span>
+            </div>
+            <span style={{ fontSize: 15, fontWeight: 700 }}>
+              <span style={{ color: "#1e293b" }}>Grab</span><span style={{ color: "#2563EB" }}>Spec</span>
+            </span>
+          </div>
+          <div style={{ flex: 1 }}/>
+          <div style={{ display: "flex", gap: 18, fontSize: 13 }}>
+            {["Finder","Bibliothèque","Convertisseur","Tarifs"].map(n => (
+              <span key={n} style={{ color: n === "Finder" ? "#2563EB" : "#94a3b8", fontWeight: n === "Finder" ? 600 : 400 }}>{n}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* Search area */}
+        <div style={{ padding: "16px 24px 8px" }}>
+          <div style={{ background: "#f8fafc", border: "2px solid #2563EB", borderRadius: 12,
+            padding: "12px 16px", fontSize: 14, color: "#1e293b", fontFamily: MONO,
+            minHeight: 56, whiteSpace: "pre-wrap", lineHeight: 1.6, opacity: lerp(f,5,12,0,1) }}>
+            {query.slice(0, typedLen)}
+            <span style={{ opacity: f % 30 < 15 ? 1 : 0, color: "#2563EB" }}>|</span>
+          </div>
+          <div style={{ marginTop: 10, opacity: lerp(f,72,80,0,1), transform: `scale(${lerp(f,72,80,0.95,1)})` }}>
+            <div style={{ display: "inline-flex", background: "#2563EB", color: "#fff", padding: "10px 24px", borderRadius: 10, fontSize: 14, fontWeight: 600, gap: 8, alignItems: "center" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              Rechercher 3 produits
+            </div>
+          </div>
+        </div>
+
+        {/* Loading */}
+        {f >= 82 && f < 110 && (
+          <div style={{ padding: "8px 24px" }}>
+            <div style={{ height: 4, borderRadius: 2, background: "#e2e8f0", overflow: "hidden" }}>
+              <div style={{ height: "100%", borderRadius: 2, background: "linear-gradient(90deg,#2563EB,#3B82F6)",
+                width: `${lerp(f,82,108,0,100)}%`, transition: "width 0.1s" }}/>
+            </div>
+            <div style={{ fontSize: 12, color: "#94a3b8", fontFamily: MONO, marginTop: 6 }}>
+              Recherche en cours… {Math.floor(lerp(f,82,108,1,3))}/3 produits
+            </div>
+          </div>
+        )}
+
+        {/* Product cards with REAL images */}
+        {f >= 110 && (
+          <div style={{ padding: "8px 24px", display: "flex", gap: 14, opacity: lerp(f,110,125,0,1) }}>
+            {PRODUCTS.slice(0, 3).map((p, i) => {
+              const delay = 112 + i * 15;
+              return (
+                <div key={i} style={{ flex: 1, background: "#fff", borderRadius: 14,
+                  border: "1px solid #e2e8f0", overflow: "hidden",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+                  opacity: lerp(f, delay, delay+15, 0, 1),
+                  transform: `translateY(${lerp(f, delay, delay+15, 18, 0)}px)` }}>
+
+                  {/* Product image */}
+                  <div style={{ height: 140, background: `linear-gradient(135deg,${p.color}08,${p.color}18)`,
+                    display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+                    <Img src={staticFile(`video/${p.img}`)} style={{ height: 110, objectFit: "contain", borderRadius: 6 }}/>
+                    <div style={{ position: "absolute", top: 8, right: 8, background: "#22c55e", color: "#fff",
+                      fontSize: 9, fontWeight: 800, padding: "3px 8px", borderRadius: 4, letterSpacing: 0.5 }}>
+                      PHOTO HD ✓
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ padding: "10px 12px" }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: p.color, letterSpacing: 0.5 }}>{p.maker}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#1e293b", lineHeight: 1.25, marginTop: 2 }}>{p.name}</div>
+                    <div style={{ fontSize: 11, color: "#94a3b8", fontFamily: MONO, marginTop: 2 }}>Réf: {p.ref}</div>
+
+                    {/* Tags */}
+                    <div style={{ display: "flex", gap: 5, marginTop: 8 }}>
+                      <span style={{ background: "#dcfce7", color: "#16a34a", padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 700 }}>PDF ✓</span>
+                      <span style={{ background: "#dbeafe", color: "#2563EB", padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 700 }}>SPECS ✓</span>
+                      <span style={{ background: "#fef3c7", color: "#d97706", padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 700 }}>+ Biblio</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Specs popup overlay */}
+        {f >= 175 && f < 230 && (
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)",
+            background: "rgba(255,255,255,0.97)", borderRadius: 16, padding: "20px 28px",
+            boxShadow: "0 25px 50px rgba(0,0,0,0.15)", border: "1px solid #e2e8f0",
+            opacity: lerp(f,175,185,0,1) * lerp(f,220,230,1,0),
+            minWidth: 420 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ color: "#0ea5e9", fontSize: 12, fontWeight: 800 }}>GROHE</span>
+              Spécifications extraites
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 24px", fontSize: 13 }}>
+              {[
+                ["Dimensions","150 × 120 mm"],
+                ["Poids","1.2 kg"],
+                ["Matériau","Laiton chromé"],
+                ["Débit","5.7 L/min"],
+                ["Pression","0.5 – 10 bar"],
+                ["Garantie","5 ans"],
+              ].map(([k,v]) => (
+                <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderBottom: "1px solid #f1f5f9" }}>
+                  <span style={{ color: "#94a3b8" }}>{k}</span>
+                  <span style={{ color: "#1e293b", fontWeight: 600, fontFamily: MONO, fontSize: 12 }}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════
+   SCENE 4 — LIBRARY + ZIP (15-20s · frames 450-599)
+   ═══════════════════════════════════════════════════════ */
+const SceneLibrary: React.FC = () => {
+  const f = useCurrentFrame();
+  return (
+    <AbsoluteFill style={{ background: "#f8fafc", fontFamily: FONT }}>
+      {/* Header */}
+      <div style={{ position: "absolute", top: 40, left: 80, display: "flex", alignItems: "center", gap: 14,
+        opacity: lerp(f,5,18,0,1), transform: `translateX(${lerp(f,5,18,-20,0)}px)` }}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span style={{ fontSize: 32, fontWeight: 800, color: "#1e293b" }}>Bibliothèque</span>
+        <div style={{ background: "#dbeafe", color: "#2563EB", padding: "4px 14px", borderRadius: 8, fontSize: 13, fontWeight: 600, marginLeft: 12 }}>
+          Projet: Hôtel Marriott
+        </div>
+      </div>
+
+      {/* Product grid with real images */}
+      <div style={{ position: "absolute", top: 100, left: 80, right: 80,
+        display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+        {PRODUCTS.map((p, i) => {
+          const delay = 15 + i * 8;
+          return (
+            <div key={i} style={{ background: "#fff", borderRadius: 14, border: "1px solid #e2e8f0",
+              overflow: "hidden", opacity: lerp(f, delay, delay+12, 0, 1),
+              transform: `translateY(${lerp(f, delay, delay+12, 12, 0)}px)`,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}>
+              <div style={{ height: 100, background: `linear-gradient(135deg,${p.color}06,${p.color}15)`,
+                display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+                <Img src={staticFile(`video/${p.img}`)} style={{ height: 75, objectFit: "contain" }}/>
+                {/* Checkbox */}
+                <div style={{ position: "absolute", top: 8, left: 8, width: 20, height: 20, borderRadius: 5,
+                  background: i < 4 ? "#2563EB" : "#e2e8f0",
+                  display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {i < 4 && <span style={{ color: "#fff", fontSize: 12, fontWeight: 700 }}>✓</span>}
+                </div>
+              </div>
+              <div style={{ padding: "8px 10px" }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: p.color }}>{p.maker}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#1e293b", lineHeight: 1.2 }}>{p.name}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Bottom bar — selection + ZIP */}
+      <div style={{ position: "absolute", bottom: 30, left: 80, right: 80,
+        opacity: lerp(f,65,80,0,1), transform: `translateY(${lerp(f,65,80,15,0)}px)` }}>
+
+        {/* Selection bar */}
+        <div style={{ background: "#fff", borderRadius: 14, padding: "14px 24px", border: "1px solid #e2e8f0",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.06)", display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ background: "#2563EB", color: "#fff", padding: "4px 12px", borderRadius: 6, fontSize: 13, fontWeight: 700 }}>
+            4 sélectionnés
+          </div>
+          <div style={{ flex: 1, fontFamily: MONO, fontSize: 12, color: "#64748b", background: "#f8fafc", padding: "6px 12px", borderRadius: 6 }}>
+            {"MARRIOTT_{LOT}_{FABRICANT}_{REF}_{TYPE}"}
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <div style={{ background: "#2563EB", color: "#fff", padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+              📦 Export ZIP
+            </div>
+            <div style={{ background: "#217346", color: "#fff", padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+              📊 Export Excel
+            </div>
+          </div>
+        </div>
+
+        {/* ZIP folder tree */}
+        {f >= 90 && (
+          <div style={{ marginTop: 14, background: "#0f172a", borderRadius: 12, padding: "16px 22px",
+            fontFamily: MONO, fontSize: 13, lineHeight: 1.9,
+            opacity: lerp(f,90,105,0,1), transform: `scale(${lerp(f,90,105,0.96,1)})` }}>
+            {[
+              { t: "📁 HOTEL_MARRIOTT.zip", c: "#94a3b8", d: 92 },
+              { t: "  📂 PHOTOS/", c: "#22c55e", d: 96 },
+              { t: "    MARRIOTT_PLOMB_GROHE_33265003_PHOTO.jpg", c: "#e2e8f0", d: 100 },
+              { t: "    MARRIOTT_ELEC_SCHNEIDER_iC60N_PHOTO.jpg", c: "#e2e8f0", d: 103 },
+              { t: "  📂 FICHES_TECHNIQUES/", c: "#3B82F6", d: 107 },
+              { t: "    MARRIOTT_PLOMB_GROHE_33265003_FT.pdf", c: "#e2e8f0", d: 110 },
+              { t: "  📊 RECAPITULATIF.xlsx", c: "#22c55e", d: 114 },
+            ].map((line, i) => (
+              <div key={i} style={{ color: line.c, opacity: lerp(f, line.d, line.d+6, 0, 1) }}>{line.t}</div>
+            ))}
+          </div>
+        )}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════
+   SCENE 5 — EXCEL EXPORT PRO (20-25s · frames 600-749)
+   ═══════════════════════════════════════════════════════ */
+const SceneExcel: React.FC = () => {
+  const f = useCurrentFrame();
+  const cols = ["N°","Produit","Fabricant","Réf","Catégorie","Dim.","Poids","Photo URL","Fiche PDF URL"];
+
+  return (
+    <AbsoluteFill style={{ background: "#050810", fontFamily: FONT }}>
+      <div style={{ position: "absolute", inset: 0,
+        background: "radial-gradient(ellipse at 30% 40%,rgba(33,115,70,0.12) 0%,transparent 50%),radial-gradient(ellipse at 70% 60%,rgba(37,99,235,0.08) 0%,transparent 50%)" }}/>
+
+      {/* Title */}
+      <div style={{ position: "absolute", top: 40, left: 0, right: 0, textAlign: "center",
+        opacity: lerp(f,3,16,0,1) }}>
+        <div style={{ fontSize: 42, fontWeight: 800, color: "#fff", letterSpacing: -1 }}>
+          Export Excel Professionnel
+        </div>
+        <div style={{ fontSize: 20, color: "rgba(255,255,255,0.35)", marginTop: 6 }}>
+          Logo, nomenclature, hyperliens cliquables
+        </div>
+      </div>
+
+      {/* Excel mockup */}
+      <div style={{ position: "absolute", top: 130, left: 70, right: 70,
+        background: "#fff", borderRadius: 12, overflow: "hidden",
+        boxShadow: "0 25px 60px rgba(0,0,0,0.4)",
+        opacity: lerp(f,16,30,0,1), transform: `translateY(${lerp(f,16,30,15,0)}px)` }}>
+
+        {/* Excel toolbar */}
+        <div style={{ display: "flex", alignItems: "center", padding: "6px 14px", background: "#217346", gap: 8 }}>
+          <span style={{ color: "rgba(255,255,255,0.9)", fontSize: 12, fontWeight: 500 }}>
+            ✕ GrabSpec_Export_Hotel_Marriott_2026-03-09.xlsx
+          </span>
+        </div>
+
+        {/* Company header with logo */}
+        <div style={{ display: "flex", alignItems: "center", padding: "12px 18px",
+          background: "#f0f9ff", borderBottom: "3px solid #2563EB",
+          opacity: lerp(f,28,38,0,1) }}>
+          <div style={{ width: 44, height: 44, borderRadius: 10, background: "#2563EB",
+            display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ color: "#fff", fontWeight: 800, fontSize: 18 }}>G</span>
+          </div>
+          <div style={{ marginLeft: 12 }}>
+            <div style={{ fontSize: 16, fontWeight: 700 }}>
+              <span style={{ color: "#1e293b" }}>Grab</span><span style={{ color: "#2563EB" }}>Spec</span>
+            </div>
+            <div style={{ fontSize: 11, color: "#64748b" }}>grabspec@proton.me | grabspec.vercel.app</div>
+          </div>
+          <div style={{ flex: 1 }}/>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontSize: 12, color: "#1e293b", fontWeight: 600 }}>Projet: Hôtel Marriott</div>
+            <div style={{ fontSize: 11, color: "#94a3b8" }}>09.03.2026 · 6 produits · CHF —</div>
+          </div>
+        </div>
+
+        {/* Table header */}
+        <div style={{ display: "flex", padding: "7px 18px", background: "#2563EB" }}>
+          {cols.map((h, i) => (
+            <div key={h} style={{ flex: i === 1 ? 1.4 : i >= 7 ? 1.6 : 0.8,
+              color: "#fff", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.3 }}>{h}</div>
+          ))}
+        </div>
+
+        {/* Table rows with REAL product thumbnails & hyperlinks */}
+        {PRODUCTS.slice(0, 5).map((p, i) => {
+          const rowDelay = 35 + i * 7;
+          return (
+            <div key={i} style={{ display: "flex", padding: "5px 18px", alignItems: "center",
+              background: i % 2 === 0 ? "#fff" : "#f8fafc",
+              borderBottom: "1px solid #f1f5f9",
+              opacity: lerp(f, rowDelay, rowDelay+8, 0, 1) }}>
+              <div style={{ flex: 0.8, fontSize: 11, color: "#94a3b8" }}>{i + 1}</div>
+              <div style={{ flex: 1.4, fontSize: 11, color: "#1e293b", fontWeight: 500, display: "flex", alignItems: "center", gap: 6 }}>
+                {/* Mini product thumbnail */}
+                <Img src={staticFile(`video/${p.img}`)} style={{ width: 28, height: 28, objectFit: "contain", borderRadius: 4 }}/>
+                {p.name.slice(0, 22)}
+              </div>
+              <div style={{ flex: 0.8, fontSize: 11, color: p.color, fontWeight: 700 }}>{p.maker}</div>
+              <div style={{ flex: 0.8, fontSize: 10, fontFamily: MONO, color: "#64748b" }}>{p.ref}</div>
+              <div style={{ flex: 0.8, fontSize: 11, color: "#94a3b8" }}>{p.cat}</div>
+              <div style={{ flex: 0.8, fontSize: 10, fontFamily: MONO, color: "#64748b" }}>{p.dim}</div>
+              <div style={{ flex: 0.8, fontSize: 10, fontFamily: MONO, color: "#64748b" }}>{p.weight}</div>
+              {/* Hyperlinks — blue underlined */}
+              <div style={{ flex: 1.6, fontSize: 9, color: "#2563EB", textDecoration: "underline", fontFamily: MONO, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                https://blob.vercel.../{p.ref}_photo.jpg
+              </div>
+              <div style={{ flex: 1.6, fontSize: 9, color: "#2563EB", textDecoration: "underline", fontFamily: MONO, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {p.hasPdf ? `https://blob.vercel.../${p.ref}_ft.pdf` : "—"}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Hyperlink callout */}
+      <div style={{ position: "absolute", bottom: 60, left: "50%",
+        opacity: lerp(f,80,95,0,1), transform: `translateX(-50%) translateY(${lerp(f,80,95,10,0)}px)`,
+        display: "flex", alignItems: "center", gap: 10, background: "rgba(37,99,235,0.15)",
+        padding: "10px 22px", borderRadius: 10, border: "1px solid rgba(37,99,235,0.2)" }}>
+        <span style={{ fontSize: 20 }}>🔗</span>
+        <span style={{ color: "#93c5fd", fontSize: 15, fontWeight: 600 }}>
+          Liens cliquables vers chaque photo et PDF
+        </span>
+        <span style={{ background: "#2563EB", color: "#fff", padding: "3px 10px", borderRadius: 5, fontSize: 11, fontWeight: 700, marginLeft: 8 }}>
+          PLAN BUSINESS
+        </span>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════
+   SCENE 6 — CONVERTER + STATS (25-29s · frames 750-869)
+   ═══════════════════════════════════════════════════════ */
+const SceneConverterStats: React.FC = () => {
+  const f = useCurrentFrame();
+  return (
+    <AbsoluteFill style={{ background: "#050810", fontFamily: FONT }}>
+      {/* Left: Converter */}
+      {f < 60 && (
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 40,
+            opacity: lerp(f,5,18,0,1), transform: `scale(${lerp(f,5,18,0.92,1)})` }}>
+            {/* Word */}
+            <div style={{ width: 180, height: 230, background: "rgba(37,99,235,0.08)", borderRadius: 16,
+              border: "2px solid rgba(37,99,235,0.2)", padding: 18, display: "flex", flexDirection: "column" }}>
+              <div style={{ fontSize: 28, fontWeight: 800, color: "#3B82F6", marginBottom: 10 }}>.docx</div>
+              {[85,65,75,55,80].map((w,i) => (
+                <div key={i} style={{ background: "rgba(59,130,246,0.15)", height: 5, borderRadius: 3, marginBottom: 6, width: `${w}%` }}/>
+              ))}
+            </div>
+
+            {/* Arrow */}
+            <div>
+              <svg width="80" height="40" viewBox="0 0 80 40">
+                <path d="M5 20 L55 20" stroke="#3B82F6" strokeWidth="2.5" strokeLinecap="round"
+                  strokeDasharray={`${lerp(f,15,35,0,50)} 50`}/>
+                <path d="M50 10 L63 20 L50 30" stroke="#3B82F6" strokeWidth="2.5" fill="none" strokeLinecap="round"
+                  opacity={lerp(f,30,40,0,1)}/>
+              </svg>
+              <div style={{ textAlign: "center", fontFamily: MONO, fontSize: 14, color: "#3B82F6", fontWeight: 700, marginTop: 4 }}>3 sec</div>
+            </div>
+
+            {/* PDF */}
+            <div style={{ width: 180, height: 230, background: "rgba(239,68,68,0.06)", borderRadius: 16,
+              border: "2px solid rgba(239,68,68,0.15)", padding: 18,
+              opacity: lerp(f,30,45,0,1), transform: `translateX(${lerp(f,30,45,15,0)}px)` }}>
+              <div style={{ fontSize: 28, fontWeight: 800, color: "#ef4444", marginBottom: 10 }}>.pdf</div>
+              {[85,65,75,55,80].map((w,i) => (
+                <div key={i} style={{ background: "rgba(239,68,68,0.15)", height: 5, borderRadius: 3, marginBottom: 6, width: `${w}%` }}/>
+              ))}
+            </div>
+          </div>
+
+          {/* Free badge */}
+          <div style={{ position: "absolute", top: 50, left: 0, right: 0, textAlign: "center",
+            opacity: lerp(f,5,15,0,1) }}>
+            <div style={{ fontSize: 36, fontWeight: 800, color: "#fff" }}>Convertisseur PDF ↔ Word</div>
+            <div style={{ marginTop: 10, display: "inline-block", background: "#22c55e", color: "#fff",
+              padding: "6px 22px", borderRadius: 8, fontSize: 16, fontWeight: 700 }}>
+              100% GRATUIT · Sans limite
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Right: Stats */}
+      {f >= 55 && (
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          opacity: lerp(f,55,70,0,1) }}>
+          <div style={{ fontSize: 42, fontWeight: 800, color: "#fff", marginBottom: 40, letterSpacing: -1 }}>
+            Testé sur 20 produits réels
+          </div>
+          <div style={{ display: "flex", gap: 60 }}>
+            {[
+              { val: 20, max: 20, pct: "100%", label: "Produits trouvés", color: "#3B82F6" },
+              { val: 19, max: 20, pct: "95%", label: "Photos HD", color: "#22c55e" },
+              { val: 16, max: 20, pct: "80%", label: "Fiches PDF", color: "#f59e0b" },
+            ].map((s, i) => {
+              const d = 62 + i * 12;
+              const count = Math.floor(lerp(f, d, d+25, 0, s.val));
+              return (
+                <div key={i} style={{ textAlign: "center", opacity: lerp(f, d-5, d+8, 0, 1),
+                  transform: `translateY(${lerp(f, d-5, d+8, 25, 0)}px)` }}>
+                  <svg width="150" height="150" viewBox="0 0 150 150">
+                    <circle cx="75" cy="75" r="65" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7"/>
+                    <circle cx="75" cy="75" r="65" fill="none" stroke={s.color} strokeWidth="7" strokeLinecap="round"
+                      strokeDasharray={`${lerp(f, d, d+25, 0, (s.val / s.max) * 408)} 408`} transform="rotate(-90 75 75)"/>
+                  </svg>
+                  <div style={{ position: "relative", top: -100, fontSize: 36, fontWeight: 800, color: s.color }}>
+                    {count}/{s.max}
+                  </div>
+                  <div style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", marginTop: -50 }}>{s.label}</div>
+                  <div style={{ marginTop: 8, background: `${s.color}20`, color: s.color,
+                    padding: "3px 14px", borderRadius: 6, fontSize: 14, fontWeight: 700, display: "inline-block" }}>{s.pct}</div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -852,193 +611,170 @@ const SceneBusinessExcel: React.FC = () => {
   );
 };
 
-/* ════════════════════════════════════════════════════════════════
-   SCENE 8 — PRICING (38–44s, frames 1140–1319)
-   ════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   SCENE 7 — PRICING + CTA (29-35s · frames 870-1049)
+   ═══════════════════════════════════════════════════════ */
 const ScenePricing: React.FC = () => {
   const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const titleOp = anim(f, 0, 15, 0, 1);
-  const titleY = anim(f, 0, 15, 20, 0);
-
   const plans = [
-    { name: "Gratuit", price: "0 CHF", features: ["3 recherches / jour", "Export ZIP", "Convertisseur PDF gratuit"], color: "#64748b", delay: 20 },
-    { name: "Pro", price: "9.90 CHF", features: ["Recherches illimitées", "Bibliothèque + nomenclature", "Support prioritaire"], color: "#2563eb", featured: true, delay: 30 },
-    { name: "Business", price: "29.90 CHF", features: ["Logo entreprise sur exports", "Détails projet complets", "Excel brandé + multi-projets"], color: "#7c3aed", delay: 40 },
+    { name: "Gratuit", price: "CHF 0", sub: "", features: ["3 recherches/jour","Convertisseur illimité","Bibliothèque locale"], hl: false },
+    { name: "Pro", price: "CHF 9.90", sub: "/mois", features: ["Recherches illimitées","Export Excel + ZIP","Bibliothèque projets","Nomenclature custom"], hl: true },
+    { name: "Business", price: "CHF 29.90", sub: "/mois", features: ["Tout Pro inclus","Excel avec photos","Convertisseur prioritaire","Support dédié"], hl: false },
   ];
 
-  const outOp = anim(f, 165, 179, 1, 0);
-
   return (
-    <AbsoluteFill style={{
-      background: "linear-gradient(160deg, #050d1a 0%, #0c1929 40%, #111827 100%)",
-      fontFamily: FONT, padding: 80, justifyContent: "center", alignItems: "center",
-      opacity: outOp,
-    }}>
-      <div style={{ opacity: titleOp, transform: `translateY(${titleY}px)`, fontSize: 44, fontWeight: 800, color: "#fff", letterSpacing: -1, marginBottom: 60, textAlign: "center" }}>
-        Un prix pour chaque besoin
+    <AbsoluteFill style={{ background: "#050810", fontFamily: FONT }}>
+      {/* Title */}
+      <div style={{ position: "absolute", top: 55, left: 0, right: 0, textAlign: "center",
+        opacity: lerp(f,5,18,0,1) }}>
+        <div style={{ fontSize: 44, fontWeight: 800, color: "#fff" }}>Commencez gratuitement</div>
+        <div style={{ fontSize: 20, color: "rgba(255,255,255,0.35)", marginTop: 6 }}>Pas de compte · Pas de carte bancaire</div>
       </div>
 
-      <div style={{ display: "flex", gap: 28 }}>
-        {plans.map((plan) => {
-          const cardScale = spring({ frame: f - plan.delay, fps, config: { damping: 14, mass: 0.7 } });
-          return (
-            <div key={plan.name} style={{
-              transform: `scale(${cardScale})`,
-              width: 340,
-              background: plan.featured ? "linear-gradient(160deg, rgba(37,99,235,0.12), rgba(124,58,237,0.08))" : "rgba(255,255,255,0.03)",
-              border: plan.featured ? "2px solid rgba(37,99,235,0.3)" : "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 24, padding: "44px 36px",
-              position: "relative",
-            }}>
-              {plan.featured && (
-                <div style={{
-                  position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
-                  background: "linear-gradient(135deg, #2563eb, #7c3aed)",
-                  borderRadius: 20, padding: "6px 20px",
-                  color: "#fff", fontSize: 13, fontWeight: 800, letterSpacing: 1, textTransform: "uppercase",
-                }}>Populaire</div>
-              )}
-              <div style={{ color: plan.color, fontSize: 16, fontWeight: 800, letterSpacing: 2, textTransform: "uppercase" }}>{plan.name}</div>
-              <div style={{ color: "#fff", fontSize: 48, fontWeight: 900, marginTop: 12, letterSpacing: -2 }}>{plan.price}</div>
-              <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 14 }}>
-                {plan.features.map((feat, j) => (
-                  <div key={j} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <span style={{ color: "#22c55e", fontSize: 16 }}>✓</span>
-                    <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 17 }}>{feat}</span>
-                  </div>
-                ))}
+      {/* Pricing cards */}
+      <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-48%)",
+        display: "flex", gap: 24 }}>
+        {plans.map((plan, i) => (
+          <div key={i} style={{ width: 290, padding: "28px 24px", borderRadius: 20,
+            background: plan.hl ? "linear-gradient(135deg,#2563EB,#1d4ed8)" : "rgba(255,255,255,0.03)",
+            border: `1px solid ${plan.hl ? "#3B82F6" : "rgba(255,255,255,0.06)"}`,
+            opacity: lerp(f, 18+i*10, 30+i*10, 0, 1),
+            transform: `translateY(${lerp(f, 18+i*10, 30+i*10, 18, 0)}px) ${plan.hl ? "scale(1.05)" : ""}`,
+            boxShadow: plan.hl ? "0 0 50px rgba(37,99,235,0.4)" : "none" }}>
+            {plan.hl && (
+              <div style={{ background: "#86efac", color: "#166534", padding: "3px 12px", borderRadius: 6,
+                fontSize: 10, fontWeight: 800, display: "inline-block", marginBottom: 10, letterSpacing: 0.5 }}>
+                POPULAIRE
               </div>
-              <div style={{
-                marginTop: 32,
-                background: plan.featured ? "linear-gradient(135deg, #2563eb, #7c3aed)" : "rgba(255,255,255,0.06)",
-                borderRadius: 12, padding: "14px 0", textAlign: "center",
-                color: "#fff", fontSize: 17, fontWeight: 700,
-                border: plan.featured ? "none" : "1px solid rgba(255,255,255,0.1)",
-              }}>
-                {plan.name === "Gratuit" ? "Commencer" : "Essayer"}
-              </div>
+            )}
+            <div style={{ fontSize: 20, fontWeight: 700, color: plan.hl ? "#fff" : "rgba(255,255,255,0.75)" }}>{plan.name}</div>
+            <div style={{ fontSize: 34, fontWeight: 800, color: "#fff", marginTop: 4 }}>
+              {plan.price}
+              {plan.sub && <span style={{ fontSize: 14, fontWeight: 400, color: "rgba(255,255,255,0.45)" }}>{plan.sub}</span>}
             </div>
-          );
-        })}
+            <div style={{ marginTop: 18 }}>
+              {plan.features.map((feat, fi) => (
+                <div key={fi} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 9,
+                  fontSize: 14, color: plan.hl ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.45)" }}>
+                  <span style={{ color: plan.hl ? "#86efac" : "#3B82F6", fontSize: 12 }}>✓</span>
+                  {feat}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
-    </AbsoluteFill>
-  );
-};
 
-/* ════════════════════════════════════════════════════════════════
-   SCENE 8 — CTA (38–45s, frames 1140–1349)
-   ════════════════════════════════════════════════════════════════ */
-const SceneCTA: React.FC = () => {
-  const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const logoScale = spring({ frame: f - 5, fps, config: { damping: 14, mass: 0.6 } });
-  const tagOp = anim(f, 20, 35, 0, 1);
-  const tagY = anim(f, 20, 35, 20, 0);
-
-  const features = [
-    { icon: "⚡", text: "10 secondes par produit", delay: 40 },
-    { icon: "📦", text: "Export ZIP + Excel", delay: 50 },
-    { icon: "🔄", text: "Convertisseur PDF gratuit", delay: 60 },
-    { icon: "🌍", text: "4 langues", delay: 70 },
-  ];
-
-  const ctaOp = anim(f, 85, 100, 0, 1);
-  const ctaScale = spring({ frame: f - 85, fps, config: { damping: 10, mass: 0.5 } });
-
-  const urlOp = anim(f, 105, 115, 0, 1);
-
-  // Final fade
-  const fadeOut = anim(f, 190, 209, 1, 0);
-
-  return (
-    <AbsoluteFill style={{
-      background: "linear-gradient(160deg, #050d1a 0%, #0c1929 40%, #111827 100%)",
-      fontFamily: FONT, justifyContent: "center", alignItems: "center",
-      opacity: fadeOut,
-    }}>
-      {/* Large ambient glow */}
-      <div style={{ position: "absolute", width: 1000, height: 1000, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 65%)", top: "-20%", left: "25%" }} />
-
-      {/* Logo + name */}
-      <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 16, transform: `scale(${logoScale})` }}>
-        <div style={{
-          width: 64, height: 64, borderRadius: 16,
-          background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 0 50px rgba(37,99,235,0.3)",
-        }}>
-          <span style={{ fontSize: 36, fontWeight: 900, color: "#fff" }}>G</span>
+      {/* CTA */}
+      <div style={{ position: "absolute", bottom: 45, left: 0, right: 0, textAlign: "center",
+        opacity: lerp(f,100,120,0,1) }}>
+        <div style={{ display: "inline-block", background: "#2563EB", color: "#fff",
+          padding: "14px 48px", borderRadius: 14, fontSize: 22, fontWeight: 700, letterSpacing: -0.3,
+          boxShadow: "0 0 40px rgba(37,99,235,0.5)" }}>
+          grabspec.vercel.app
         </div>
-        <span style={{ fontSize: 56, fontWeight: 900, color: "#fff", letterSpacing: -2 }}>GrabSpec</span>
-      </div>
-
-      {/* Tagline */}
-      <div style={{
-        opacity: tagOp, transform: `translateY(${tagY}px)`,
-        fontSize: 30, color: "rgba(255,255,255,0.6)", fontWeight: 400, marginBottom: 50, textAlign: "center",
-      }}>
-        Photos HD & fiches techniques, automatiquement.
-      </div>
-
-      {/* Feature pills */}
-      <div style={{ display: "flex", gap: 16, marginBottom: 50, flexWrap: "wrap", justifyContent: "center" }}>
-        {features.map((feat) => {
-          const pillOp = anim(f, feat.delay, feat.delay + 12, 0, 1);
-          const pillY = anim(f, feat.delay, feat.delay + 12, 15, 0);
-          return (
-            <div key={feat.text} style={{
-              opacity: pillOp, transform: `translateY(${pillY}px)`,
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 50, padding: "12px 28px",
-              display: "flex", alignItems: "center", gap: 10,
-              color: "rgba(255,255,255,0.7)", fontSize: 19, fontWeight: 500,
-            }}>
-              <span style={{ fontSize: 20 }}>{feat.icon}</span> {feat.text}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* CTA button */}
-      <div style={{
-        opacity: ctaOp, transform: `scale(${ctaScale})`,
-        background: "linear-gradient(135deg, #2563eb, #7c3aed)",
-        borderRadius: 16, padding: "22px 60px",
-        fontSize: 28, fontWeight: 800, color: "#fff",
-        boxShadow: "0 0 60px rgba(37,99,235,0.4), 0 15px 40px rgba(0,0,0,0.3)",
-      }}>
-        Essayer gratuitement
-      </div>
-
-      {/* URL */}
-      <div style={{
-        opacity: urlOp, marginTop: 24,
-        fontSize: 24, color: "rgba(255,255,255,0.4)", fontWeight: 500, letterSpacing: 1,
-      }}>
-        grabspec.com
+        <div style={{ fontSize: 16, color: "rgba(255,255,255,0.3)", marginTop: 10 }}>
+          Essayez gratuitement · Aucune inscription
+        </div>
       </div>
     </AbsoluteFill>
   );
 };
 
-/* ════════════════════════════════════════════════════════════════
-   MAIN COMPOSITION — 51 seconds, 1530 frames @ 30fps
-   ════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   SUBTITLES — English scrolling at bottom
+   ═══════════════════════════════════════════════════════ */
+const SUBTITLES: { from: number; to: number; text: string }[] = [
+  { from: 0, to: 80, text: "Searching for product datasheets? A nightmare." },
+  { from: 80, to: 119, text: "45 minutes per day wasted — every single day." },
+  { from: 120, to: 209, text: "GrabSpec: HD photos, datasheets & specs in one click." },
+  { from: 210, to: 280, text: "Paste your product list. Click search." },
+  { from: 280, to: 370, text: "Real product images, PDF datasheets, full specifications — instantly." },
+  { from: 370, to: 449, text: "Detailed specs extracted automatically: dimensions, weight, materials..." },
+  { from: 450, to: 530, text: "All products saved in your library, organized by project." },
+  { from: 530, to: 599, text: "Custom naming convention. Download everything as a structured ZIP." },
+  { from: 600, to: 680, text: "Professional Excel export with your logo and clickable hyperlinks." },
+  { from: 680, to: 749, text: "Embedded thumbnails, blue clickable URLs to every photo and PDF." },
+  { from: 750, to: 810, text: "Free PDF ↔ Word converter included. No limits. No signup." },
+  { from: 810, to: 869, text: "Tested on 20 real products: 100% found, 95% photos, 80% datasheets." },
+  { from: 870, to: 960, text: "Start free — 3 searches/day. Pro: unlimited for CHF 9.90/month." },
+  { from: 960, to: 1049, text: "Try it now — no account needed → grabspec.vercel.app" },
+];
+
+const Subtitles: React.FC = () => {
+  const f = useCurrentFrame();
+  const current = SUBTITLES.find((s) => f >= s.from && f < s.to);
+  if (!current) return null;
+
+  const fadeIn = lerp(f, current.from, current.from + 10, 0, 1);
+  const fadeOut = lerp(f, current.to - 10, current.to, 1, 0);
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        bottom: 28,
+        left: 0,
+        right: 0,
+        textAlign: "center",
+        zIndex: 100,
+        opacity: fadeIn * fadeOut,
+        transform: `translateY(${lerp(f, current.from, current.from + 10, 6, 0)}px)`,
+      }}
+    >
+      <div
+        style={{
+          display: "inline-block",
+          background: "rgba(0,0,0,0.7)",
+          backdropFilter: "blur(8px)",
+          padding: "8px 28px",
+          borderRadius: 10,
+          fontSize: 16,
+          fontWeight: 500,
+          color: "rgba(255,255,255,0.9)",
+          fontFamily: FONT,
+          letterSpacing: 0.2,
+          maxWidth: "80%",
+        }}
+      >
+        {current.text}
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════
+   MAIN COMPOSITION — 35s (1050 frames @ 30fps)
+   ═══════════════════════════════════════════════════════ */
 export const GrabSpecPromo: React.FC = () => {
   return (
-    <AbsoluteFill style={{ backgroundColor: "#0a0a0a" }}>
-      <Sequence from={0} durationInFrames={120}><SceneProblem /></Sequence>
-      <Sequence from={120} durationInFrames={120}><SceneReveal /></Sequence>
-      <Sequence from={240} durationInFrames={180}><ScenePaste /></Sequence>
-      <Sequence from={420} durationInFrames={180}><SceneNomenclature /></Sequence>
-      <Sequence from={600} durationInFrames={180}><SceneExport /></Sequence>
-      <Sequence from={780} durationInFrames={180}><SceneBonus /></Sequence>
-      <Sequence from={960} durationInFrames={180}><SceneBusinessExcel /></Sequence>
-      <Sequence from={1140} durationInFrames={180}><ScenePricing /></Sequence>
-      <Sequence from={1320} durationInFrames={210}><SceneCTA /></Sequence>
+    <AbsoluteFill>
+      <Audio src={staticFile("video/music.mp3")} volume={0.35} />
+
+      <Sequence from={0} durationInFrames={120}>
+        <ScenePain />
+      </Sequence>
+      <Sequence from={120} durationInFrames={90}>
+        <SceneReveal />
+      </Sequence>
+      <Sequence from={210} durationInFrames={240}>
+        <SceneDemo />
+      </Sequence>
+      <Sequence from={450} durationInFrames={150}>
+        <SceneLibrary />
+      </Sequence>
+      <Sequence from={600} durationInFrames={150}>
+        <SceneExcel />
+      </Sequence>
+      <Sequence from={750} durationInFrames={120}>
+        <SceneConverterStats />
+      </Sequence>
+      <Sequence from={870} durationInFrames={180}>
+        <ScenePricing />
+      </Sequence>
+
+      {/* English subtitles overlay */}
+      <Subtitles />
     </AbsoluteFill>
   );
 };

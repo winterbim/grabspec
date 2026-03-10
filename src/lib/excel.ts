@@ -21,6 +21,17 @@ function isValidLocale(locale: string): locale is SupportedLocale {
   return ['fr', 'en', 'es', 'de'].includes(locale);
 }
 
+// GrabSpec default logo (blue square with document+magnifier icon) as inline SVG → PNG via canvas
+const GRABSPEC_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><rect width="64" height="64" rx="14" fill="#2563EB"/><rect x="14" y="10" width="22" height="30" rx="2.5" fill="white" opacity="0.9"/><rect x="19" y="17" width="12" height="2" rx="1" fill="#2563EB" opacity="0.5"/><rect x="19" y="22" width="9" height="2" rx="1" fill="#2563EB" opacity="0.4"/><rect x="19" y="27" width="11" height="2" rx="1" fill="#2563EB" opacity="0.3"/><path d="M27 10 L36 10 L36 17 L30 17 C28.5 17 27 15.5 27 14 Z" fill="#DBEAFE"/><circle cx="40" cy="38" r="12" fill="#1D4ED8" stroke="white" stroke-width="2.5"/><circle cx="40" cy="38" r="7" fill="#2563EB" stroke="white" stroke-width="1.5" opacity="0.8"/><line x1="49" y1="47" x2="54" y2="52" stroke="white" stroke-width="3" stroke-linecap="round"/><path d="M36 38 L39 41 L45 35" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+function svgToBase64Png(): string {
+  // Return as SVG data URI — ExcelJS can handle this if we encode as base64
+  const b64 = typeof Buffer !== 'undefined'
+    ? Buffer.from(GRABSPEC_LOGO_SVG).toString('base64')
+    : btoa(GRABSPEC_LOGO_SVG);
+  return b64;
+}
+
 export interface ExcelOptions {
   products: LocalProduct[];
   locale?: string;
@@ -48,8 +59,9 @@ export async function generateExcel({
 
   let dataStartRow = 1;
 
-  if (hasCompanyData || hasProjectDetails) {
-    // --- Company logo ---
+  // Always show header section (with GrabSpec branding at minimum)
+  {
+    // --- Company logo or GrabSpec default logo ---
     let logoEndCol = 1;
     if (company?.logo) {
       try {
@@ -64,12 +76,25 @@ export async function generateExcel({
       } catch {
         // Skip logo if invalid
       }
+    } else {
+      // Use GrabSpec default logo
+      try {
+        const imageId = workbook.addImage({ base64: svgToBase64Png(), extension: 'png' });
+        sheet.addImage(imageId, {
+          tl: { col: 0, row: 0 },
+          ext: { width: 60, height: 60 },
+        });
+        logoEndCol = 1;
+      } catch {
+        // Skip if SVG not supported
+      }
     }
 
     // --- Company info (col C-D, rows 1-4) ---
     const infoCol = logoEndCol + 1;
     const companyLines: string[] = [];
     if (company?.name) companyLines.push(company.name);
+    else companyLines.push('GrabSpec');
     if (company?.address) companyLines.push(company.address);
     const cityLine = [company?.zipCode, company?.city].filter(Boolean).join(' ');
     if (cityLine) companyLines.push(cityLine);
@@ -78,7 +103,9 @@ export async function generateExcel({
     const contactLines: string[] = [];
     if (company?.phone) contactLines.push(company.phone);
     if (company?.email) contactLines.push(company.email);
+    else contactLines.push('grabspec@proton.me');
     if (company?.website) contactLines.push(company.website);
+    else contactLines.push('https://grabspec.vercel.app');
 
     companyLines.forEach((line, i) => {
       const cell = sheet.getCell(i + 1, infoCol);

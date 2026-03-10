@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+  <rect width="500" height="500" fill="#f8fafc" rx="20"/>
+  <g transform="translate(250,230)">
+    <ellipse cx="0" cy="80" rx="45" ry="7" fill="#d4d4d8"/>
+    <rect x="-7" y="-70" width="14" height="150" rx="7" fill="#a1a1aa"/>
+    <path d="M0,-70 Q0,-110 50,-110 Q100,-110 100,-70 L100,-62 Q92,-62 92,-70 Q92,-102 50,-102 Q8,-102 7,-70" fill="#b4b4ba" stroke="#9ca3af" stroke-width="1"/>
+    <rect x="-25" y="-80" width="50" height="10" rx="5" fill="#9ca3af"/>
+    <ellipse cx="0" cy="80" rx="30" ry="5" fill="#c4c4ca"/>
+    <path d="M100,-60 Q102,-48 100,-38" stroke="#60a5fa" stroke-width="2" fill="none" opacity="0.5"/>
+  </g>
+  <text x="250" y="440" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="600" fill="#475569">Hansgrohe Talis S</text>
+  <text x="250" y="462" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="13" fill="#94a3b8">Mitigeur lavabo</text>
+</svg>

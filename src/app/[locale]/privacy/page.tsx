@@ -110,10 +110,10 @@ export default function PrivacyPage() {
                 rectification et de suppression de vos donnees. Pour exercer
                 ces droits, contactez-nous a{' '}
                 <a
-                  href="mailto:contact@grabspec.com"
+                  href="mailto:grabspec@proton.me"
                   className="text-blue-600 hover:underline"
                 >
-                  contact@grabspec.com
+                  grabspec@proton.me
                 </a>
                 .
               </p>
@@ -127,10 +127,10 @@ export default function PrivacyPage() {
                 Pour toute question relative a la protection de vos donnees,
                 contactez-nous a{' '}
                 <a
-                  href="mailto:contact@grabspec.com"
+                  href="mailto:grabspec@proton.me"
                   className="text-blue-600 hover:underline"
                 >
-                  contact@grabspec.com
+                  grabspec@proton.me
                 </a>
                 .
               </p>

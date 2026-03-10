@@ -29,10 +29,10 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-medium text-slate-900">E-mail</h3>
                   <a
-                    href="mailto:contact@grabspec.com"
+                    href="mailto:grabspec@proton.me"
                     className="mt-1 text-blue-600 hover:underline"
                   >
-                    contact@grabspec.com
+                    grabspec@proton.me
                   </a>
                 </div>
 

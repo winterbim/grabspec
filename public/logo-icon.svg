@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Background circle -->
+  <rect width="64" height="64" rx="14" fill="#2563EB"/>
+  <!-- Document -->
+  <rect x="14" y="10" width="22" height="30" rx="2.5" fill="white" opacity="0.9"/>
+  <rect x="19" y="17" width="12" height="2" rx="1" fill="#2563EB" opacity="0.5"/>
+  <rect x="19" y="22" width="9" height="2" rx="1" fill="#2563EB" opacity="0.4"/>
+  <rect x="19" y="27" width="11" height="2" rx="1" fill="#2563EB" opacity="0.3"/>
+  <!-- Corner fold -->
+  <path d="M27 10 L36 10 L36 17 L30 17 C28.5 17 27 15.5 27 14 Z" fill="#DBEAFE"/>
+  <!-- Magnifying glass -->
+  <circle cx="40" cy="38" r="12" fill="#1D4ED8" stroke="white" stroke-width="2.5"/>
+  <circle cx="40" cy="38" r="7" fill="#2563EB" stroke="white" stroke-width="1.5" opacity="0.8"/>
+  <!-- Glass handle -->
+  <line x1="49" y1="47" x2="54" y2="52" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <!-- Checkmark -->
+  <path d="M36 38 L39 41 L45 35" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

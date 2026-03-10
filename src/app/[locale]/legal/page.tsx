@@ -29,10 +29,10 @@ export default function LegalPage() {
                 <li>
                   Contact :{' '}
                   <a
-                    href="mailto:contact@grabspec.com"
+                    href="mailto:grabspec@proton.me"
                     className="text-blue-600 hover:underline"
                   >
-                    contact@grabspec.com
+                    grabspec@proton.me
                   </a>
                 </li>
                 <li>Site web : https://grabspec.com</li>

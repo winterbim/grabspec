@@ -17,6 +17,11 @@ export interface LocalProduct {
   specs: Record<string, string | null> | null;
   searchStatus: SearchStatus;
   createdAt: string;
+  isDeleted?: boolean;
+  tags?: string[];
+  notes?: string;
+  confidence?: number;
+  source?: string;
 }
 
 export interface LocalProject {
@@ -38,8 +43,8 @@ class GrabSpecDB extends Dexie {
 
   constructor() {
     super('grabspec');
-    this.version(1).stores({
-      products: 'id, projectId, manufacturer, searchStatus, createdAt',
+    this.version(2).stores({
+      products: 'id, projectId, manufacturer, category, searchStatus, createdAt, isDeleted',
       projects: 'id, name, createdAt',
       settings: 'key',
     });

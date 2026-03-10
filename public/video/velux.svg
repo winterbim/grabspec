@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+  <rect width="500" height="500" fill="#f8fafc" rx="20"/>
+  <g transform="translate(250,225)">
+    <path d="M-170,100 L0,-80 L170,100" fill="#d97706" opacity="0.1"/>
+    <rect x="-70" y="-80" width="140" height="180" rx="2" fill="#92400e" opacity="0.25"/>
+    <rect x="-62" y="-72" width="124" height="164" rx="1" fill="#fef9c3" stroke="#b45309" stroke-width="3"/>
+    <rect x="-55" y="-65" width="110" height="72" fill="#93c5fd" opacity="0.5"/>
+    <rect x="-55" y="14" width="110" height="72" fill="#93c5fd" opacity="0.5"/>
+    <rect x="-62" y="7" width="124" height="7" fill="#b45309"/>
+    <rect x="-2" y="-72" width="4" height="164" fill="#b45309"/>
+    <rect x="-12" y="3" width="24" height="5" rx="2.5" fill="#78716c"/>
+    <circle cx="-25" cy="-35" r="12" fill="white" opacity="0.25"/>
+  </g>
+  <text x="250" y="440" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="600" fill="#475569">Velux GGL MK04</text>
+  <text x="250" y="462" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="13" fill="#94a3b8">Fenetre de toit</text>
+</svg>
