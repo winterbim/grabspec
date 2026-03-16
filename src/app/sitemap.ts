@@ -18,7 +18,7 @@ const legalPages = [
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://grabspec.com';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://grabspec.vercel.app';
   const entries: MetadataRoute.Sitemap = [];
 
   for (const locale of locales) {

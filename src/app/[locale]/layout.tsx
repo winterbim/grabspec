@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: 'metadata' });
 
   const baseUrl =
-    process.env.NEXT_PUBLIC_APP_URL || 'https://grabspec.com';
+    process.env.NEXT_PUBLIC_APP_URL || 'https://grabspec.vercel.app';
 
   const title = t('title');
   const description = t('description');
