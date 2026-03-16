@@ -52,6 +52,10 @@
       "step2": { "title": "GrabSpec busca", "description": "Fotos HD y fichas técnicas se encuentran automáticamente." },
       "step3": { "title": "Descargue en ZIP", "description": "Todos los archivos, nombrados según su plantilla de proyecto." }
     },
+    "brandBar": {
+      "label": "Funciona con:",
+      "more": "+ miles más"
+    },
     "cta": {
       "title": "¿Listo para ahorrar tiempo?",
       "subtitle": "3 búsquedas gratuitas por día. Sin tarjeta de crédito.",
@@ -191,7 +195,9 @@
     "wordToPdf": "Word → PDF",
     "convertAnother": "Convertir otro archivo",
     "autoDetect": "El tipo de conversión se detecta automáticamente.",
-    "secure": "Sus archivos se eliminan después de 1 hora."
+    "secure": "Sus archivos se eliminan después de 1 hora.",
+    "crossSell": "¿También busca fichas técnicas de productos?",
+    "crossSellCta": "Pruebe el Finder — 3 búsquedas gratuitas por día →"
   },
   "pricing": {
     "title": "Precios simples y transparentes",

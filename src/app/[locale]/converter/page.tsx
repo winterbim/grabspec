@@ -4,6 +4,7 @@ import { useEffect, useCallback, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { ArrowRightLeft } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { DropZone } from '@/components/converter/DropZone';
@@ -80,6 +81,15 @@ export default function ConverterPage() {
             <ArrowRightLeft className="h-4 w-4 text-slate-400" />
             <span>{t('wordToPdf')}</span>
           </div>
+        </div>
+
+        <div className="mt-10 rounded-lg bg-blue-50 p-4 text-center">
+          <p className="text-sm text-blue-800">
+            {t('crossSell')}{' '}
+            <Link href="/finder" className="font-semibold underline hover:text-blue-600">
+              {t('crossSellCta')}
+            </Link>
+          </p>
         </div>
       </main>
 

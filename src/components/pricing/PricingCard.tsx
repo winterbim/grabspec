@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Check } from 'lucide-react';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ interface PricingCardProps {
 
 export function PricingCard({ planKey, price, featured = false, loading = false, onSelect }: PricingCardProps) {
   const t = useTranslations(`pricing.${planKey}`);
+  const tCommon = useTranslations('common');
 
   const features: string[] = t.raw('features') as string[];
 
@@ -46,7 +48,7 @@ export function PricingCard({ planKey, price, featured = false, loading = false,
         <div className="mt-4">
           <span className="text-4xl font-bold text-slate-900">{price}</span>
           {planKey !== 'free' && (
-            <span className="ml-1 text-sm text-slate-500">/mo</span>
+            <span className="ml-1 text-sm text-slate-500">/{tCommon('month')}</span>
           )}
         </div>
       </CardHeader>

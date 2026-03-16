@@ -3,6 +3,7 @@
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Hero } from '@/components/landing/Hero';
+import { BrandBar } from '@/components/landing/BrandBar';
 import { Features } from '@/components/landing/Features';
 import { HowItWorks } from '@/components/landing/HowItWorks';
 import { CTASection } from '@/components/landing/CTASection';
@@ -13,6 +14,7 @@ export default function LandingPage() {
       <Header />
       <main>
         <Hero />
+        <BrandBar />
         <Features />
         <HowItWorks />
         <CTASection />

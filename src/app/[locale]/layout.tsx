@@ -81,8 +81,32 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://grabspec.com';
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'GrabSpec',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    url: baseUrl,
+    description:
+      'Recherche automatisée de photos HD et fiches techniques PDF pour les professionnels de la construction',
+    offers: [
+      { '@type': 'Offer', name: 'Gratuit', price: '0', priceCurrency: 'CHF' },
+      { '@type': 'Offer', name: 'Pro', price: '9.90', priceCurrency: 'CHF' },
+      { '@type': 'Offer', name: 'Business', price: '29.90', priceCurrency: 'CHF' },
+    ],
+  };
+
   return (
     <html lang={locale} className={inter.variable}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
           {children}

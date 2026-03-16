@@ -52,6 +52,10 @@
       "step2": { "title": "GrabSpec searches", "description": "HD photos and datasheets are found automatically." },
       "step3": { "title": "Download as ZIP", "description": "All files, named according to your project template." }
     },
+    "brandBar": {
+      "label": "Works with:",
+      "more": "+ thousands more"
+    },
     "cta": {
       "title": "Ready to save time?",
       "subtitle": "3 free searches per day. No credit card required.",
@@ -191,7 +195,9 @@
     "wordToPdf": "Word → PDF",
     "convertAnother": "Convert another file",
     "autoDetect": "Conversion type is detected automatically.",
-    "secure": "Your files are deleted after 1 hour."
+    "secure": "Your files are deleted after 1 hour.",
+    "crossSell": "Also looking for product datasheets?",
+    "crossSellCta": "Try the Finder — 3 free searches per day →"
   },
   "pricing": {
     "title": "Simple and transparent pricing",

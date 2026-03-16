@@ -52,6 +52,10 @@
       "step2": { "title": "GrabSpec sucht", "description": "HD-Fotos und Datenblätter werden automatisch gefunden." },
       "step3": { "title": "Als ZIP herunterladen", "description": "Alle Dateien, benannt nach Ihrer Projektvorlage." }
     },
+    "brandBar": {
+      "label": "Funktioniert mit:",
+      "more": "+ tausende weitere"
+    },
     "cta": {
       "title": "Bereit Zeit zu sparen?",
       "subtitle": "3 kostenlose Suchen pro Tag. Keine Kreditkarte erforderlich.",
@@ -191,7 +195,9 @@
     "wordToPdf": "Word → PDF",
     "convertAnother": "Weitere Datei konvertieren",
     "autoDetect": "Der Konvertierungstyp wird automatisch erkannt.",
-    "secure": "Ihre Dateien werden nach 1 Stunde gelöscht."
+    "secure": "Ihre Dateien werden nach 1 Stunde gelöscht.",
+    "crossSell": "Suchen Sie auch nach Produktdatenblättern?",
+    "crossSellCta": "Finder ausprobieren — 3 kostenlose Suchen pro Tag →"
   },
   "pricing": {
     "title": "Einfache und transparente Preise",
