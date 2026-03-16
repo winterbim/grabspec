@@ -208,46 +208,47 @@
     "yearlyDiscount": "2 meses gratis",
     "stripeNotConfigured": "Stripe no está configurado",
     "checkoutError": "Error al crear la sesión de pago",
+    "reassurance": "🇨🇭 Precios en CHF · Sin compromiso · Cancele cuando quiera",
     "free": {
       "name": "Gratis",
       "price": "0 CHF",
-      "description": "Para empezar",
+      "description": "Pruébalo — sin tarjeta",
       "features": [
         "3 búsquedas de productos por día",
         "Convertidor PDF ↔ Word ilimitado",
         "Descarga directa"
       ],
-      "cta": "Comenzar"
+      "cta": "Empezar gratis"
     },
     "pro": {
       "name": "Pro",
-      "priceMonthly": "9.90 CHF/mes",
-      "priceYearly": "8.25 CHF/mes",
-      "description": "Para profesionales",
+      "priceMonthly": "9.90 CHF",
+      "priceYearly": "8.25 CHF",
+      "description": "Rentable desde la 1ª lista",
       "features": [
-        "Búsquedas ilimitadas",
-        "Biblioteca personal",
-        "Nomenclatura personalizada",
-        "Exportación ZIP",
+        "Búsquedas ilimitadas — hasta 100 productos a la vez",
+        "Biblioteca personal por proyecto",
+        "Nomenclatura BIM-ready",
+        "Exportación ZIP en 1 clic",
         "Soporte prioritario"
       ],
-      "cta": "Actualizar a Pro",
+      "cta": "Iniciar Pro",
       "popular": "Más popular"
     },
     "business": {
       "name": "Business",
-      "priceMonthly": "29.90 CHF/mes",
-      "priceYearly": "24.90 CHF/mes",
-      "description": "Para equipos",
+      "priceMonthly": "29.90 CHF",
+      "priceYearly": "24.90 CHF",
+      "description": "Para equipos y oficinas",
       "features": [
         "Todo en Pro",
-        "Logo y datos de empresa en los exports",
-        "Detalles completos del proyecto (cliente, arquitecto, etc.)",
+        "Logo y datos de empresa en todos los exports",
+        "Detalles completos del proyecto (cliente, arquitecto, fase…)",
         "Excel personalizado con encabezado de empresa",
         "Proyectos ilimitados",
         "Soporte dedicado"
       ],
-      "cta": "Actualizar a Business",
+      "cta": "Iniciar Business",
       "excelPreviewLabel": "Vista previa de su export Excel"
     }
   },

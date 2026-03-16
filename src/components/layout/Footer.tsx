@@ -15,6 +15,7 @@ export function Footer() {
               G
             </div>
             <span className="text-lg font-bold text-slate-900">GrabSpec</span>
+            <span className="text-base" title="Switzerland">🇨🇭</span>
           </div>
 
           <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500">

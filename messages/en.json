@@ -208,46 +208,47 @@
     "yearlyDiscount": "2 months free",
     "stripeNotConfigured": "Stripe is not configured",
     "checkoutError": "Failed to create checkout session",
+    "reassurance": "🇨🇭 Prices in CHF · No commitment · Cancel anytime",
     "free": {
       "name": "Free",
       "price": "0 CHF",
-      "description": "To get started",
+      "description": "Try it — no credit card",
       "features": [
         "3 product searches per day",
         "Unlimited PDF ↔ Word converter",
         "Direct download"
       ],
-      "cta": "Get started"
+      "cta": "Start for free"
     },
     "pro": {
       "name": "Pro",
-      "priceMonthly": "CHF 9.90/mo",
-      "priceYearly": "CHF 8.25/mo",
-      "description": "For professionals",
+      "priceMonthly": "CHF 9.90",
+      "priceYearly": "CHF 8.25",
+      "description": "Pays for itself on day one",
       "features": [
-        "Unlimited searches",
-        "Personal library",
-        "Custom file naming",
-        "ZIP export",
+        "Unlimited searches — even 100 products at once",
+        "Personal library per project",
+        "Custom file naming (BIM-ready)",
+        "ZIP export in 1 click",
         "Priority support"
       ],
-      "cta": "Upgrade to Pro",
+      "cta": "Start Pro",
       "popular": "Most popular"
     },
     "business": {
       "name": "Business",
-      "priceMonthly": "CHF 29.90/mo",
-      "priceYearly": "CHF 24.90/mo",
-      "description": "For teams",
+      "priceMonthly": "CHF 29.90",
+      "priceYearly": "CHF 24.90",
+      "description": "For firms & teams",
       "features": [
         "Everything in Pro",
-        "Company logo & details on exports",
-        "Full project details (client, architect, etc.)",
+        "Company logo & details on all exports",
+        "Full project details (client, architect, phase…)",
         "Branded Excel with company header",
         "Unlimited projects",
         "Dedicated support"
       ],
-      "cta": "Upgrade to Business",
+      "cta": "Start Business",
       "excelPreviewLabel": "Preview of your Excel export"
     }
   },
@@ -257,7 +258,7 @@
     "privacy": "Privacy policy",
     "terms": "Terms of service",
     "contact": "Contact",
-    "madeWith": "Made with ❤️ for professionals"
+    "madeWith": "🇨🇭 Made in Switzerland for construction professionals"
   },
   "metadata": {
     "title": "GrabSpec — Product photos & datasheets in 10 seconds",

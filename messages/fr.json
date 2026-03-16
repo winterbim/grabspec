@@ -208,46 +208,47 @@
     "yearlyDiscount": "2 mois offerts",
     "stripeNotConfigured": "Stripe n'est pas configuré",
     "checkoutError": "Impossible de créer la session de paiement",
+    "reassurance": "🇨🇭 Prix en CHF · Sans engagement · Résiliable en 1 clic",
     "free": {
       "name": "Gratuit",
       "price": "0 CHF",
-      "description": "Pour découvrir",
+      "description": "Testez sans carte bancaire",
       "features": [
         "3 recherches produit par jour",
         "Convertisseur PDF ↔ Word illimité",
         "Téléchargement direct"
       ],
-      "cta": "Commencer"
+      "cta": "Commencer gratuitement"
     },
     "pro": {
       "name": "Pro",
-      "priceMonthly": "9.90 CHF/mois",
-      "priceYearly": "8.25 CHF/mois",
-      "description": "Pour les professionnels",
+      "priceMonthly": "9.90 CHF",
+      "priceYearly": "8.25 CHF",
+      "description": "Rentabilisé dès la 1ère liste",
       "features": [
-        "Recherches illimitées",
-        "Bibliothèque personnelle",
-        "Nomenclature personnalisée",
-        "Export ZIP",
+        "Recherches illimitées — même 100 produits d'un coup",
+        "Bibliothèque personnelle par projet",
+        "Nomenclature personnalisée (BIM-ready)",
+        "Export ZIP en 1 clic",
         "Support prioritaire"
       ],
-      "cta": "Passer à Pro",
+      "cta": "Démarrer Pro",
       "popular": "Le plus populaire"
     },
     "business": {
       "name": "Business",
-      "priceMonthly": "29.90 CHF/mois",
-      "priceYearly": "24.90 CHF/mois",
-      "description": "Pour les équipes",
+      "priceMonthly": "29.90 CHF",
+      "priceYearly": "24.90 CHF",
+      "description": "Pour bureaux & équipes",
       "features": [
         "Tout Pro inclus",
-        "Logo & coordonnées entreprise sur les exports",
-        "Détails projet complets (maître d'ouvrage, architecte, etc.)",
-        "Excel personnalisé avec en-tête entreprise",
+        "Logo & coordonnées entreprise sur tous les exports",
+        "Détails projet complets (MOA, architecte, phase…)",
+        "Excel récapitulatif avec en-tête entreprise",
         "Multi-projets illimités",
         "Support dédié"
       ],
-      "cta": "Passer à Business",
+      "cta": "Démarrer Business",
       "excelPreviewLabel": "Aperçu de votre export Excel"
     }
   },
@@ -257,7 +258,7 @@
     "privacy": "Politique de confidentialité",
     "terms": "Conditions d'utilisation",
     "contact": "Contact",
-    "madeWith": "Fait avec ❤️ pour les professionnels"
+    "madeWith": "Fait avec ❤️ pour les professionnels de la construction"
   },
   "metadata": {
     "title": "GrabSpec — Photos & fiches techniques produit en 10 secondes",

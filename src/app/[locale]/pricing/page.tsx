@@ -108,7 +108,11 @@ export default function PricingPage() {
             </Tabs>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="mt-4 text-center text-sm text-slate-400">
+            {t('reassurance')}
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
             <PricingCard
               planKey="free"
               price={t('free.price')}

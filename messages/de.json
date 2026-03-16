@@ -208,46 +208,47 @@
     "yearlyDiscount": "2 Monate gratis",
     "stripeNotConfigured": "Stripe ist nicht konfiguriert",
     "checkoutError": "Fehler beim Erstellen der Checkout-Sitzung",
+    "reassurance": "🇨🇭 Preise in CHF · Keine Bindung · Jederzeit kündbar",
     "free": {
       "name": "Kostenlos",
       "price": "0 CHF",
-      "description": "Zum Einstieg",
+      "description": "Testen — ohne Kreditkarte",
       "features": [
         "3 Produktsuchen pro Tag",
         "Unbegrenzter PDF ↔ Word Konverter",
         "Direkter Download"
       ],
-      "cta": "Starten"
+      "cta": "Kostenlos starten"
     },
     "pro": {
       "name": "Pro",
-      "priceMonthly": "9.90 CHF/Mt.",
-      "priceYearly": "8.25 CHF/Mt.",
-      "description": "Für Profis",
+      "priceMonthly": "9.90 CHF",
+      "priceYearly": "8.25 CHF",
+      "description": "Ab der 1. Liste rentabel",
       "features": [
-        "Unbegrenzte Suchen",
-        "Persönliche Bibliothek",
-        "Individuelle Dateibenennung",
-        "ZIP-Export",
+        "Unbegrenzte Suchen — auch 100 auf einmal",
+        "Persönliche Bibliothek pro Projekt",
+        "BIM-ready Dateibenennung",
+        "ZIP-Export mit 1 Klick",
         "Prioritäts-Support"
       ],
-      "cta": "Auf Pro upgraden",
+      "cta": "Pro starten",
       "popular": "Am beliebtesten"
     },
     "business": {
       "name": "Business",
-      "priceMonthly": "29.90 CHF/Mt.",
-      "priceYearly": "24.90 CHF/Mt.",
-      "description": "Für Teams",
+      "priceMonthly": "29.90 CHF",
+      "priceYearly": "24.90 CHF",
+      "description": "Für Büros & Teams",
       "features": [
         "Alles in Pro",
-        "Firmenlogo & Daten auf Exporten",
-        "Vollständige Projektdetails (Bauherr, Architekt, etc.)",
+        "Firmenlogo & Daten auf allen Exporten",
+        "Vollständige Projektdetails (Bauherr, Architekt, Phase…)",
         "Personalisiertes Excel mit Firmenkopf",
         "Unbegrenzte Projekte",
         "Dedizierter Support"
       ],
-      "cta": "Auf Business upgraden",
+      "cta": "Business starten",
       "excelPreviewLabel": "Vorschau Ihres Excel-Exports"
     }
   },
