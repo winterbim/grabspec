@@ -52,9 +52,17 @@
       "step2": { "title": "GrabSpec searches", "description": "HD photos and datasheets are found automatically." },
       "step3": { "title": "Download as ZIP", "description": "All files, named according to your project template." }
     },
+    "ticker": {
+      "label": "Recent searches"
+    },
     "brandBar": {
       "label": "Works with:",
       "more": "+ thousands more"
+    },
+    "chart": {
+      "badge": "Trends",
+      "title": "Top 10 most searched manufacturers",
+      "footnote": "Based on GrabSpec search data"
     },
     "cta": {
       "title": "Ready to save time?",

@@ -52,9 +52,17 @@
       "step2": { "title": "GrabSpec cherche", "description": "Photos HD et fiches techniques sont trouvées automatiquement." },
       "step3": { "title": "Téléchargez en ZIP", "description": "Tous les fichiers, nommés selon votre nomenclature projet." }
     },
+    "ticker": {
+      "label": "Recherches récentes"
+    },
     "brandBar": {
       "label": "Fonctionne avec :",
       "more": "+ des milliers d'autres"
+    },
+    "chart": {
+      "badge": "Tendances",
+      "title": "Top 10 des fabricants les plus recherchés",
+      "footnote": "Données basées sur les recherches GrabSpec"
     },
     "cta": {
       "title": "Prêt à gagner du temps ?",
@@ -184,7 +192,7 @@
     "title": "Convertisseur PDF ↔ Word",
     "subtitle": "Convertissez gratuitement vos documents. Rapide, sécurisé, sans inscription.",
     "help_label": "Aide conversion",
-    "usageTip": "Deposez un PDF, DOC ou DOCX. Le type est detecte automatiquement et le fichier converti reste telechargeable a la fin du traitement.",
+    "usageTip": "Déposez un PDF, DOC ou DOCX. Le type est détecté automatiquement et le fichier converti reste téléchargeable à la fin du traitement.",
     "dropzone": "Glissez votre fichier PDF ou Word ici",
     "dropzoneOr": "ou cliquez pour sélectionner",
     "maxSize": "Taille maximale : 20 MB",
@@ -202,7 +210,7 @@
   "pricing": {
     "title": "Tarifs simples et transparents",
     "subtitle": "Commencez gratuitement, passez à Pro quand vous en avez besoin.",
-    "usageTip": "Choisissez un plan mensuel ou annuel, puis finalisez l'abonnement sur la page de paiement Stripe securisee.",
+    "usageTip": "Choisissez un plan mensuel ou annuel, puis finalisez l'abonnement sur la page de paiement Stripe sécurisée.",
     "monthly": "Mensuel",
     "yearly": "Annuel",
     "yearlyDiscount": "2 mois offerts",

@@ -52,9 +52,17 @@
       "step2": { "title": "GrabSpec sucht", "description": "HD-Fotos und Datenblätter werden automatisch gefunden." },
       "step3": { "title": "Als ZIP herunterladen", "description": "Alle Dateien, benannt nach Ihrer Projektvorlage." }
     },
+    "ticker": {
+      "label": "Letzte Suchen"
+    },
     "brandBar": {
       "label": "Funktioniert mit:",
       "more": "+ tausende weitere"
+    },
+    "chart": {
+      "badge": "Trends",
+      "title": "Top 10 der meistgesuchten Hersteller",
+      "footnote": "Basierend auf GrabSpec-Suchdaten"
     },
     "cta": {
       "title": "Bereit Zeit zu sparen?",

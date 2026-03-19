@@ -52,9 +52,17 @@
       "step2": { "title": "GrabSpec busca", "description": "Fotos HD y fichas técnicas se encuentran automáticamente." },
       "step3": { "title": "Descargue en ZIP", "description": "Todos los archivos, nombrados según su plantilla de proyecto." }
     },
+    "ticker": {
+      "label": "Búsquedas recientes"
+    },
     "brandBar": {
       "label": "Funciona con:",
       "more": "+ miles más"
+    },
+    "chart": {
+      "badge": "Tendencias",
+      "title": "Top 10 fabricantes más buscados",
+      "footnote": "Basado en datos de búsqueda de GrabSpec"
     },
     "cta": {
       "title": "¿Listo para ahorrar tiempo?",
