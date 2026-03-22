@@ -7,7 +7,7 @@ import {
   ShieldCheck,
   ServerOff,
   Users,
-  Linkedin,
+
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -57,27 +57,9 @@ export function TrustSection() {
             &ldquo;{t('quote')}&rdquo;
           </blockquote>
 
-          <div className="mt-6 flex items-center justify-center gap-3">
-            {/* Avatar — initials fallback */}
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-800 text-sm font-bold text-white">
-              NR
-            </div>
-            <div className="text-left">
-              <p className="text-sm font-semibold text-slate-900">
-                {t('founderName')}
-              </p>
-              <p className="text-xs text-slate-500">{t('founderRole')}</p>
-            </div>
-            <a
-              href="https://www.linkedin.com/in/nuno-rodrigues-grabspec/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-1 rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-blue-600"
-              aria-label="LinkedIn"
-            >
-              <Linkedin className="h-4 w-4" />
-            </a>
-          </div>
+          <p className="mt-4 text-sm text-slate-500">
+            — {t('founderRole')}
+          </p>
         </div>
 
         {/* Trust grid */}
