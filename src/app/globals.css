@@ -159,3 +159,114 @@
     @apply font-sans;
   }
 }
+
+/* ── DocForge-inspired converter animations ─────────────── */
+
+/* Drop zone animated dashed border */
+.drop-zone-border {
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%23CBD5E1' stroke-width='2' stroke-dasharray='10%2c 8' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+  border-radius: 16px;
+  transition: background-image 200ms ease;
+}
+
+.drop-zone-border-active {
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%233B82F6' stroke-width='2.5' stroke-dasharray='10%2c 8' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e");
+  animation: dash-march 0.6s linear infinite;
+  border-radius: 16px;
+  box-shadow: inset 0 0 24px rgba(59, 130, 246, 0.08);
+}
+
+@keyframes dash-march {
+  to { background-position: 18px 0; }
+}
+
+/* Progress bar shimmer overlay */
+.progress-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  animation: shimmer-slide 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* Progress indeterminate bounce */
+.progress-indeterminate {
+  position: absolute;
+  height: 100%;
+  border-radius: 9999px;
+  animation: progress-bounce 1.5s ease-in-out infinite;
+}
+
+@keyframes progress-bounce {
+  0%  { left: -40%; width: 40%; }
+  50% { left: 20%;  width: 60%; }
+  100% { left: 100%; width: 40%; }
+}
+
+/* Ambient glow pulse */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* Format badge hover scale */
+.format-badge {
+  transition: transform 150ms ease-out, filter 150ms ease-out;
+}
+
+.format-badge:hover {
+  transform: scale(1.08);
+  filter: brightness(1.1);
+}
+
+/* Confetti success animation */
+@keyframes confetti-fall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(40px) rotate(360deg); opacity: 0; }
+}
+
+.confetti-particle {
+  animation: confetti-fall 1s ease-out forwards;
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .drop-zone-border-active,
+  .progress-shimmer::after,
+  .progress-indeterminate,
+  .animate-glow-pulse,
+  .confetti-particle {
+    animation: none !important;
+  }
+  .format-badge:hover {
+    transform: none;
+    filter: none;
+  }
+}
