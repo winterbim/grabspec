@@ -33,19 +33,20 @@ interface DropZoneProps {
   onFileSelect: (file: File) => void;
 }
 
-function isMacPlatform(): boolean {
-  if (typeof navigator === 'undefined') return false;
-  return /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
 export function DropZone({ onFileSelect }: DropZoneProps) {
   const t = useTranslations('converter');
   const [isDragOver, setIsDragOver] = useState(false);
   const [glowPos, setGlowPos] = useState<{ x: number; y: number } | null>(null);
+  const [pasteShortcut, setPasteShortcut] = useState('Ctrl+V');
   const inputRef = useRef<HTMLInputElement>(null);
   const zoneRef = useRef<HTMLDivElement>(null);
 
-  const pasteShortcut = isMacPlatform() ? '\u2318V' : 'Ctrl+V';
+  // Detect Mac only on client to avoid hydration mismatch
+  useEffect(() => {
+    if (/Mac|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      setPasteShortcut('\u2318V');
+    }
+  }, []);
 
   const validateAndSelect = useCallback(
     (file: File) => {
