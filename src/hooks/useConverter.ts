@@ -73,8 +73,14 @@ export function useConverter() {
         const res = await fetch('/api/converter/pdf-to-word', { method: 'POST', body: formData });
 
         if (!res.ok) {
-          const json: { error?: string } = await res.json();
-          throw new Error(json.error || 'Conversion failed');
+          let message = 'Conversion failed';
+          try {
+            const json: { error?: string } = await res.json();
+            message = json.error || message;
+          } catch {
+            // Response was not JSON
+          }
+          throw new Error(message);
         }
 
         const blob = await res.blob();

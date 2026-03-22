@@ -17,10 +17,10 @@ interface ConversionRoute {
 }
 
 const CONVERSION_ROUTES: ConversionRoute[] = [
-  // ── Documents (server-side) ──
+  // ── Documents ──
   { from: 'pdf', to: 'docx', label: 'PDF → DOCX', category: 'document', color: '#3B82F6' },
-  { from: 'docx', to: 'pdf', label: 'DOCX → PDF', category: 'document', color: '#EF4444' },
-  { from: 'doc', to: 'pdf', label: 'DOC → PDF', category: 'document', color: '#EF4444' },
+  { from: 'docx', to: 'pdf', label: 'DOCX → PDF', category: 'document', color: '#EF4444', clientSide: true },
+  { from: 'doc', to: 'pdf', label: 'DOC → PDF', category: 'document', color: '#EF4444', clientSide: true },
 
   // ── JPG / JPEG ──
   { from: 'jpg', to: 'png', label: 'JPG → PNG', category: 'image', outputMime: 'image/png', color: '#10B981', clientSide: true },
