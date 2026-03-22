@@ -42,9 +42,10 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('PDF to Word conversion error:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('PDF to Word conversion error:', message, error);
     return NextResponse.json(
-      { error: 'Conversion failed', status: 500 },
+      { error: `Conversion failed: ${message}` },
       { status: 500 }
     );
   }

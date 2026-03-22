@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '**' },
     ],
   },
-  serverExternalPackages: ['exceljs', 'mammoth', 'pdfkit'],
+  serverExternalPackages: ['exceljs', 'mammoth', 'pdfkit', '@sparticuz/chromium', 'puppeteer-core'],
   async headers() {
     return [
       {
