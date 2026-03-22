@@ -87,12 +87,12 @@ export function useConverter() {
     setError(null);
   }, []);
 
-  const download = useCallback(() => {
+  const download = useCallback((customFilename?: string) => {
     if (!result) return;
     const url = URL.createObjectURL(result.blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = result.filename;
+    a.download = customFilename || result.filename;
     a.click();
     URL.revokeObjectURL(url);
   }, [result]);

@@ -42,8 +42,12 @@
         "description": "Configurez un modèle de nommage par projet. Tous vos fichiers sont renommés automatiquement au téléchargement."
       },
       "converter": {
-        "title": "Convertisseur PDF ↔ Word",
-        "description": "Convertissez gratuitement vos documents PDF en Word et inversement. Rapide, sécurisé, sans inscription."
+        "title": "Convertisseur 30+ formats",
+        "description": "PDF, Word, JPG, PNG, WEBP, SVG, AVIF, TIFF, ICO — convertissez tout gratuitement, côté client, en millisecondes."
+      },
+      "rename": {
+        "title": "Renommage sémantique",
+        "description": "Renommez vos fichiers convertis avec un nom personnalisé avant le téléchargement. Fini les « image(3).png »."
       }
     },
     "howItWorks": {
@@ -201,6 +205,8 @@
     "converting": "Conversion en cours...",
     "done": "Conversion terminée !",
     "downloadResult": "Télécharger le résultat",
+    "renameLabel": "Nom du fichier",
+    "renameEdit": "Renommer",
     "pdfToWord": "PDF → Word",
     "wordToPdf": "Word → PDF",
     "convertAnother": "Convertir un autre fichier",

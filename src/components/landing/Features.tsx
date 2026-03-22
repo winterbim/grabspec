@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Search, FolderOpen, ArrowRightLeft } from 'lucide-react';
+import { Search, FolderOpen, ArrowRightLeft, PenLine } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface FeatureCard {
@@ -14,6 +14,7 @@ const features: FeatureCard[] = [
   { icon: Search, titleKey: 'features.search.title', descKey: 'features.search.description' },
   { icon: FolderOpen, titleKey: 'features.nomenclature.title', descKey: 'features.nomenclature.description' },
   { icon: ArrowRightLeft, titleKey: 'features.converter.title', descKey: 'features.converter.description' },
+  { icon: PenLine, titleKey: 'features.rename.title', descKey: 'features.rename.description' },
 ];
 
 export function Features() {
@@ -28,7 +29,7 @@ export function Features() {
           </h2>
         </div>
 
-        <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature) => (
             <div
               key={feature.titleKey}

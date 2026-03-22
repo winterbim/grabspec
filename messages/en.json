@@ -42,8 +42,12 @@
         "description": "Set up a naming template per project. All your files are renamed automatically on download."
       },
       "converter": {
-        "title": "PDF ↔ Word Converter",
-        "description": "Convert your PDF documents to Word and back for free. Fast, secure, no sign-up required."
+        "title": "30+ Format Converter",
+        "description": "PDF, Word, JPG, PNG, WEBP, SVG, AVIF, TIFF, ICO — convert everything for free, client-side, in milliseconds."
+      },
+      "rename": {
+        "title": "Semantic Renaming",
+        "description": "Rename your converted files with a custom name before download. No more 'image(3).png'."
       }
     },
     "howItWorks": {
@@ -201,6 +205,8 @@
     "converting": "Converting...",
     "done": "Conversion complete!",
     "downloadResult": "Download result",
+    "renameLabel": "File name",
+    "renameEdit": "Rename",
     "pdfToWord": "PDF → Word",
     "wordToPdf": "Word → PDF",
     "convertAnother": "Convert another file",
