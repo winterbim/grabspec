@@ -252,6 +252,7 @@
     "orChoose": "ou choisissez une conversion",
     "instant": "Instantané",
     "categoryDocument": "Documents",
+    "categorySpreadsheet": "Tableurs & données",
     "categoryImage": "Images",
     "featureInstant": "Instantané",
     "featureInstantDesc": "Images converties côté client, résultat en millisecondes",

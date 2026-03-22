@@ -5,22 +5,28 @@ import { useTranslations } from 'next-intl';
 import { Upload, FileUp, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const ACCEPTED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.tiff', '.tif', '.svg', '.ico', '.avif'];
-const MAX_SIZE_BYTES = 20 * 1024 * 1024;
+const ACCEPTED_EXTENSIONS = [
+  '.pdf', '.doc', '.docx',
+  '.xlsx', '.xls', '.csv', '.tsv',
+  '.txt', '.html', '.htm', '.md', '.json',
+  '.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.tiff', '.tif', '.svg', '.ico', '.avif',
+];
+const MAX_SIZE_BYTES = 50 * 1024 * 1024;
 
-/** Format badges with colors inspired by DocForge */
+/** Format badges with colors */
 const FORMAT_BADGES: { label: string; color: string }[] = [
   { label: 'PDF', color: '#EF4444' },
   { label: 'DOCX', color: '#3B82F6' },
+  { label: 'XLSX', color: '#16A34A' },
+  { label: 'CSV', color: '#64748B' },
+  { label: 'JSON', color: '#8B5CF6' },
+  { label: 'TXT', color: '#78716C' },
+  { label: 'HTML', color: '#F97316' },
+  { label: 'MD', color: '#0EA5E9' },
   { label: 'JPG', color: '#F59E0B' },
   { label: 'PNG', color: '#10B981' },
   { label: 'WEBP', color: '#8B5CF6' },
   { label: 'SVG', color: '#EC4899' },
-  { label: 'TIFF', color: '#64748B' },
-  { label: 'GIF', color: '#F97316' },
-  { label: 'BMP', color: '#06B6D4' },
-  { label: 'AVIF', color: '#0EA5E9' },
-  { label: 'ICO', color: '#A855F7' },
 ];
 
 interface DropZoneProps {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { FileText, ImageIcon, ArrowRight } from 'lucide-react';
+import { FileText, ImageIcon, ArrowRight, TableIcon } from 'lucide-react';
 import type { ImageOutputFormat } from '@/lib/image-converter';
 
 /** All conversion routes available */
@@ -9,7 +9,7 @@ interface ConversionRoute {
   readonly from: string;
   readonly to: string;
   readonly label: string;
-  readonly category: 'document' | 'image';
+  readonly category: 'document' | 'spreadsheet' | 'image';
   readonly outputMime?: ImageOutputFormat;
   readonly color: string;
   /** Whether this conversion runs client-side (instant) */
@@ -21,6 +21,27 @@ const CONVERSION_ROUTES: ConversionRoute[] = [
   { from: 'pdf', to: 'docx', label: 'PDF → DOCX', category: 'document', color: '#3B82F6' },
   { from: 'docx', to: 'pdf', label: 'DOCX → PDF', category: 'document', color: '#EF4444', clientSide: true },
   { from: 'doc', to: 'pdf', label: 'DOC → PDF', category: 'document', color: '#EF4444', clientSide: true },
+  { from: 'txt', to: 'pdf', label: 'TXT → PDF', category: 'document', color: '#EF4444', clientSide: true },
+  { from: 'html', to: 'pdf', label: 'HTML → PDF', category: 'document', color: '#EF4444', clientSide: true },
+  { from: 'htm', to: 'pdf', label: 'HTM → PDF', category: 'document', color: '#EF4444', clientSide: true },
+  { from: 'md', to: 'pdf', label: 'MD → PDF', category: 'document', color: '#EF4444', clientSide: true },
+  { from: 'md', to: 'html', label: 'MD → HTML', category: 'document', color: '#F97316', clientSide: true },
+
+  // ── Spreadsheets ──
+  { from: 'xlsx', to: 'csv', label: 'XLSX → CSV', category: 'spreadsheet', color: '#16A34A', clientSide: true },
+  { from: 'xlsx', to: 'json', label: 'XLSX → JSON', category: 'spreadsheet', color: '#8B5CF6', clientSide: true },
+  { from: 'xlsx', to: 'txt', label: 'XLSX → TXT', category: 'spreadsheet', color: '#64748B', clientSide: true },
+  { from: 'xlsx', to: 'html', label: 'XLSX → HTML', category: 'spreadsheet', color: '#F97316', clientSide: true },
+  { from: 'xlsx', to: 'pdf', label: 'XLSX → PDF', category: 'spreadsheet', color: '#EF4444', clientSide: true },
+  { from: 'xls', to: 'csv', label: 'XLS → CSV', category: 'spreadsheet', color: '#16A34A', clientSide: true },
+  { from: 'xls', to: 'json', label: 'XLS → JSON', category: 'spreadsheet', color: '#8B5CF6', clientSide: true },
+  { from: 'xls', to: 'xlsx', label: 'XLS → XLSX', category: 'spreadsheet', color: '#16A34A', clientSide: true },
+  { from: 'csv', to: 'xlsx', label: 'CSV → XLSX', category: 'spreadsheet', color: '#16A34A', clientSide: true },
+  { from: 'csv', to: 'json', label: 'CSV → JSON', category: 'spreadsheet', color: '#8B5CF6', clientSide: true },
+  { from: 'tsv', to: 'xlsx', label: 'TSV → XLSX', category: 'spreadsheet', color: '#16A34A', clientSide: true },
+  { from: 'tsv', to: 'csv', label: 'TSV → CSV', category: 'spreadsheet', color: '#64748B', clientSide: true },
+  { from: 'json', to: 'csv', label: 'JSON → CSV', category: 'spreadsheet', color: '#64748B', clientSide: true },
+  { from: 'json', to: 'xlsx', label: 'JSON → XLSX', category: 'spreadsheet', color: '#16A34A', clientSide: true },
 
   // ── JPG / JPEG ──
   { from: 'jpg', to: 'png', label: 'JPG → PNG', category: 'image', outputMime: 'image/png', color: '#10B981', clientSide: true },
@@ -86,21 +107,28 @@ export function getRoutesForFile(filename: string): ConversionRoute[] {
  */
 export function getAllConversionGroups(): { category: string; conversions: ConversionRoute[] }[] {
   const docRoutes = CONVERSION_ROUTES.filter((r) => r.category === 'document');
+  const sheetRoutes = CONVERSION_ROUTES.filter((r) => r.category === 'spreadsheet');
   const imgRoutes = CONVERSION_ROUTES.filter((r) => r.category === 'image');
 
-  // Deduplicate image routes by label pattern (jpeg/jpg are same visually)
-  const seenLabels = new Set<string>();
-  const uniqueImgRoutes = imgRoutes.filter((r) => {
-    // Normalize: treat jpeg and jpg as same
-    const normalizedLabel = r.label.replace('JPEG', 'JPG');
-    if (seenLabels.has(normalizedLabel)) return false;
-    seenLabels.add(normalizedLabel);
-    return true;
-  });
+  // Deduplicate: treat jpeg/jpg as same, xls/xlsx as same, htm/html as same
+  const dedupe = (routes: ConversionRoute[]): ConversionRoute[] => {
+    const seen = new Set<string>();
+    return routes.filter((r) => {
+      const key = r.label
+        .replace('JPEG', 'JPG')
+        .replace('HTM →', 'HTML →')
+        .replace('XLS →', 'XLSX →')
+        .replace('TIF →', 'TIFF →');
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
 
   return [
-    { category: 'document', conversions: docRoutes },
-    { category: 'image', conversions: uniqueImgRoutes },
+    { category: 'document', conversions: dedupe(docRoutes) },
+    { category: 'spreadsheet', conversions: dedupe(sheetRoutes) },
+    { category: 'image', conversions: dedupe(imgRoutes) },
   ];
 }
 
@@ -119,7 +147,37 @@ export function FormatSelector({ filename, selectedFormat, onSelect }: FormatSel
   if (routes.length === 0) return null;
 
   const documentRoutes = routes.filter((r) => r.category === 'document');
+  const spreadsheetRoutes = routes.filter((r) => r.category === 'spreadsheet');
   const imageRoutes = routes.filter((r) => r.category === 'image');
+
+  const renderGroup = (groupRoutes: ConversionRoute[], icon: React.ReactNode, labelKey: string) => {
+    if (groupRoutes.length === 0) return null;
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center gap-1.5">
+          {icon}
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            {t(labelKey)}
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {groupRoutes.map((route) => (
+            <button
+              key={route.to}
+              onClick={() => onSelect(route)}
+              className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-150 ${
+                selectedFormat === route.to
+                  ? 'border-blue-500 bg-blue-500 text-white shadow-md shadow-blue-500/20'
+                  : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-blue-700'
+              }`}
+            >
+              .{route.to.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -130,57 +188,9 @@ export function FormatSelector({ filename, selectedFormat, onSelect }: FormatSel
         {t('chooseFormat')}
       </h3>
 
-      {documentRoutes.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-1.5">
-            <FileText className="h-3.5 w-3.5 text-slate-400" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-              {t('categoryDocument')}
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {documentRoutes.map((route) => (
-              <button
-                key={route.to}
-                onClick={() => onSelect(route)}
-                className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-150 ${
-                  selectedFormat === route.to
-                    ? 'border-blue-500 bg-blue-500 text-white shadow-md shadow-blue-500/20'
-                    : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-blue-700'
-                }`}
-              >
-                .{route.to.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {imageRoutes.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-1.5">
-            <ImageIcon className="h-3.5 w-3.5 text-slate-400" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-              {t('categoryImage')}
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {imageRoutes.map((route) => (
-              <button
-                key={route.to}
-                onClick={() => onSelect(route)}
-                className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all duration-150 ${
-                  selectedFormat === route.to
-                    ? 'border-blue-500 bg-blue-500 text-white shadow-md shadow-blue-500/20'
-                    : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-blue-700'
-                }`}
-              >
-                .{route.to.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      {renderGroup(documentRoutes, <FileText className="h-3.5 w-3.5 text-slate-400" />, 'categoryDocument')}
+      {renderGroup(spreadsheetRoutes, <TableIcon className="h-3.5 w-3.5 text-slate-400" />, 'categorySpreadsheet')}
+      {renderGroup(imageRoutes, <ImageIcon className="h-3.5 w-3.5 text-slate-400" />, 'categoryImage')}
     </div>
   );
 }
@@ -202,11 +212,13 @@ export function ConversionGrid({ onConversionClick }: ConversionGridProps) {
           <div className="mb-3 flex items-center gap-2">
             {group.category === 'document' ? (
               <FileText className="h-4 w-4 text-slate-400" />
+            ) : group.category === 'spreadsheet' ? (
+              <TableIcon className="h-4 w-4 text-slate-400" />
             ) : (
               <ImageIcon className="h-4 w-4 text-slate-400" />
             )}
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              {t(group.category === 'document' ? 'categoryDocument' : 'categoryImage')}
+              {t(group.category === 'document' ? 'categoryDocument' : group.category === 'spreadsheet' ? 'categorySpreadsheet' : 'categoryImage')}
             </span>
             <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500 dark:bg-slate-800">
               {group.conversions.length}
