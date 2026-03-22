@@ -21,7 +21,8 @@
     "finder": "Recherche produits",
     "library": "Bibliothèque",
     "converter": "Convertisseur",
-    "pricing": "Tarifs"
+    "pricing": "Tarifs",
+    "analyzer": "Analyseur"
   },
   "landing": {
     "hero": {
@@ -323,6 +324,26 @@
     "terms": "Conditions d'utilisation",
     "contact": "Contact",
     "madeWith": "Fait avec ❤️ pour les professionnels de la construction"
+  },
+  "analyzer": {
+    "title": "Analyseur de documents",
+    "subtitle": "Déposez un document — l'IA extrait les KPIs, graphiques et insights",
+    "businessOnly": "Fonctionnalité réservée au plan Business",
+    "businessCta": "Passer au plan Business — 21.90 CHF/mois",
+    "dropzone": "Déposez votre document ici",
+    "dropzoneFormats": "PDF, DOCX, XLSX, CSV, TXT, JSON, MD — max 20 Mo",
+    "analyzing": "Analyse en cours…",
+    "stepExtract": "Extraction du contenu…",
+    "stepAnalyze": "Analyse par l'IA…",
+    "stepGenerate": "Génération des résultats…",
+    "summary": "Résumé",
+    "kpis": "Indicateurs clés",
+    "charts": "Graphiques",
+    "keyInsights": "Points clés",
+    "exportPng": "Exporter en PNG",
+    "exportHtml": "Présentation HTML",
+    "analyzeAnother": "Analyser un autre document",
+    "tooLarge": "Document trop volumineux (max 20 Mo)"
   },
   "metadata": {
     "title": "GrabSpec — Photos & fiches techniques produit en 10 secondes",

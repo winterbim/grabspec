@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { Search, BookOpen, ArrowRightLeft, CreditCard, Menu, X } from 'lucide-react';
+import { Search, BookOpen, ArrowRightLeft, CreditCard, Brain, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useState } from 'react';
@@ -15,6 +15,7 @@ export function Header() {
     { href: '/finder' as const, label: t('finder'), icon: Search },
     { href: '/library' as const, label: t('library'), icon: BookOpen },
     { href: '/converter' as const, label: t('converter'), icon: ArrowRightLeft },
+    { href: '/analyzer' as const, label: t('analyzer'), icon: Brain },
     { href: '/pricing' as const, label: t('pricing'), icon: CreditCard },
   ];
 

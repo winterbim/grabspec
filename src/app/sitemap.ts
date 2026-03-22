@@ -8,6 +8,7 @@ const mainPages = [
   { path: '/converter', changeFrequency: 'monthly' as const, priority: 0.8 },
   { path: '/pricing', changeFrequency: 'monthly' as const, priority: 0.8 },
   { path: '/library', changeFrequency: 'weekly' as const, priority: 0.7 },
+  { path: '/analyzer', changeFrequency: 'monthly' as const, priority: 0.7 },
 ];
 
 const legalPages = [

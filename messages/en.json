@@ -21,7 +21,8 @@
     "finder": "Product Search",
     "library": "Library",
     "converter": "Converter",
-    "pricing": "Pricing"
+    "pricing": "Pricing",
+    "analyzer": "Analyzer"
   },
   "landing": {
     "hero": {
@@ -323,6 +324,26 @@
     "terms": "Terms of service",
     "contact": "Contact",
     "madeWith": "🇨🇭 Made in Switzerland for construction professionals"
+  },
+  "analyzer": {
+    "title": "Document Analyzer",
+    "subtitle": "Drop a document — AI extracts KPIs, charts, and insights",
+    "businessOnly": "Business plan feature",
+    "businessCta": "Upgrade to Business — CHF 21.90/month",
+    "dropzone": "Drop your document here",
+    "dropzoneFormats": "PDF, DOCX, XLSX, CSV, TXT, JSON, MD — max 20 MB",
+    "analyzing": "Analyzing…",
+    "stepExtract": "Extracting content…",
+    "stepAnalyze": "AI analysis…",
+    "stepGenerate": "Generating results…",
+    "summary": "Summary",
+    "kpis": "Key indicators",
+    "charts": "Charts",
+    "keyInsights": "Key insights",
+    "exportPng": "Export as PNG",
+    "exportHtml": "HTML Presentation",
+    "analyzeAnother": "Analyze another document",
+    "tooLarge": "File too large (max 20 MB)"
   },
   "metadata": {
     "title": "GrabSpec — Product photos & datasheets in 10 seconds",
