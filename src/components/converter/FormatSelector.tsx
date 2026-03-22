@@ -57,6 +57,16 @@ const CONVERSION_ROUTES: ConversionRoute[] = [
   { from: 'svg', to: 'png', label: 'SVG → PNG', category: 'image', outputMime: 'image/png', color: '#10B981', clientSide: true },
   { from: 'svg', to: 'jpg', label: 'SVG → JPG', category: 'image', outputMime: 'image/jpeg', color: '#F59E0B', clientSide: true },
   { from: 'svg', to: 'webp', label: 'SVG → WEBP', category: 'image', outputMime: 'image/webp', color: '#8B5CF6', clientSide: true },
+
+  // ── AVIF (from PixelForge) ──
+  { from: 'avif', to: 'png', label: 'AVIF → PNG', category: 'image', outputMime: 'image/png', color: '#10B981', clientSide: true },
+  { from: 'avif', to: 'jpg', label: 'AVIF → JPG', category: 'image', outputMime: 'image/jpeg', color: '#F59E0B', clientSide: true },
+  { from: 'avif', to: 'webp', label: 'AVIF → WEBP', category: 'image', outputMime: 'image/webp', color: '#8B5CF6', clientSide: true },
+
+  // ── ICO (from PixelForge) ──
+  { from: 'ico', to: 'png', label: 'ICO → PNG', category: 'image', outputMime: 'image/png', color: '#10B981', clientSide: true },
+  { from: 'ico', to: 'jpg', label: 'ICO → JPG', category: 'image', outputMime: 'image/jpeg', color: '#F59E0B', clientSide: true },
+  { from: 'ico', to: 'webp', label: 'ICO → WEBP', category: 'image', outputMime: 'image/webp', color: '#8B5CF6', clientSide: true },
 ];
 
 /** Total unique conversion count for display */

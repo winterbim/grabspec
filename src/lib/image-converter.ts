@@ -29,6 +29,7 @@ export interface ImageConversionResult {
 /** All image extensions we can handle client-side */
 const SUPPORTED_IMAGE_EXTS = new Set([
   '.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.tiff', '.tif', '.svg',
+  '.ico', '.avif',
 ]);
 
 /**
