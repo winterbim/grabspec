@@ -95,7 +95,7 @@ export default async function LocaleLayout({
     offers: [
       { '@type': 'Offer', name: 'Gratuit', price: '0', priceCurrency: 'CHF' },
       { '@type': 'Offer', name: 'Pro', price: '9.90', priceCurrency: 'CHF' },
-      { '@type': 'Offer', name: 'Business', price: '29.90', priceCurrency: 'CHF' },
+      { '@type': 'Offer', name: 'Business', price: '21.90', priceCurrency: 'CHF' },
     ],
   };
 

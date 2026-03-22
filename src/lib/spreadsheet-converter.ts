@@ -1,6 +1,7 @@
 /**
  * Client-side spreadsheet and text document converters.
- * XLSX ↔ CSV, TXT/HTML/MD → PDF, XLSX → PDF — runs entirely in the browser.
+ * Uses ExcelJS for XLSX/XLS/CSV, jsPDF for PDF generation.
+ * Runs entirely in the browser — no server needed.
  */
 
 export interface DocConversionResult {
@@ -12,8 +13,8 @@ export interface DocConversionResult {
 
 // ─── File type detection ───
 
-const SPREADSHEET_EXTS = new Set(['.xlsx', '.xls', '.csv', '.tsv', '.ods']);
-const TEXT_EXTS = new Set(['.txt', '.html', '.htm', '.md', '.rtf', '.xml', '.json']);
+const SPREADSHEET_EXTS = new Set(['.xlsx', '.xls', '.csv', '.tsv']);
+const TEXT_EXTS = new Set(['.txt', '.html', '.htm', '.md', '.json']);
 
 export function isSpreadsheetFile(file: File): boolean {
   return SPREADSHEET_EXTS.has(extOf(file));
@@ -31,97 +32,256 @@ function baseName(file: File): string {
   return file.name.replace(/\.[^.]+$/, '');
 }
 
-// ─── XLSX → CSV (client-side, SheetJS) ───
+// ─── ExcelJS helpers ───
+
+async function loadWorkbook(file: File) {
+  const ExcelJS = await import('exceljs');
+  const wb = new ExcelJS.Workbook();
+  const ext = extOf(file);
+
+  if (ext === '.csv' || ext === '.tsv') {
+    const text = await file.text();
+    const sep = ext === '.tsv' ? '\t' : ',';
+    const ws = wb.addWorksheet('Sheet1');
+    text.split('\n').forEach((line) => {
+      if (line.trim()) ws.addRow(parseCsvLine(line, sep));
+    });
+  } else {
+    const buffer = await file.arrayBuffer();
+    await wb.xlsx.load(buffer);
+  }
+
+  return wb;
+}
+
+/** Simple CSV line parser — handles quoted fields */
+function parseCsvLine(line: string, sep: string): string[] {
+  const result: string[] = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (ch === sep && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+/** Extract all rows from first worksheet as string[][] */
+async function extractRows(file: File): Promise<string[][]> {
+  const wb = await loadWorkbook(file);
+  const ws = wb.worksheets[0];
+  if (!ws) return [];
+
+  const rows: string[][] = [];
+  ws.eachRow((row) => {
+    const cells: string[] = [];
+    row.eachCell({ includeEmpty: true }, (cell) => {
+      cells.push(cell.text || stringifyCell(cell.value));
+    });
+    rows.push(cells);
+  });
+  return rows;
+}
+
+// ─── XLSX → CSV ───
 
 export async function convertXlsxToCsv(file: File): Promise<DocConversionResult> {
   const t0 = performance.now();
-  const XLSX = await import('xlsx');
-  const ab = await file.arrayBuffer();
-  const wb = XLSX.read(ab, { type: 'array' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const csv = XLSX.utils.sheet_to_csv(ws);
+  const rows = await extractRows(file);
+  const csv = rows.map((r) => r.map((c) => `"${c.replaceAll('"', '""')}"`).join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
   return { blob, filename: `${baseName(file)}.csv`, size: blob.size, duration: performance.now() - t0 };
 }
 
-// ─── XLSX → JSON (client-side, SheetJS) ───
+// ─── XLSX → JSON ───
 
 export async function convertXlsxToJson(file: File): Promise<DocConversionResult> {
   const t0 = performance.now();
-  const XLSX = await import('xlsx');
-  const ab = await file.arrayBuffer();
-  const wb = XLSX.read(ab, { type: 'array' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const json = XLSX.utils.sheet_to_json(ws);
-  const text = JSON.stringify(json, null, 2);
-  const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
-  return { blob, filename: `${baseName(file)}.json`, size: blob.size, duration: performance.now() - t0 };
-}
+  const rows = await extractRows(file);
+  if (rows.length < 2) throw new Error('Spreadsheet must have at least a header row and one data row');
 
-// ─── XLSX → TXT (client-side, SheetJS) ───
-
-export async function convertXlsxToTxt(file: File): Promise<DocConversionResult> {
-  const t0 = performance.now();
-  const XLSX = await import('xlsx');
-  const ab = await file.arrayBuffer();
-  const wb = XLSX.read(ab, { type: 'array' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const txt = XLSX.utils.sheet_to_txt(ws);
-  const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
-  return { blob, filename: `${baseName(file)}.txt`, size: blob.size, duration: performance.now() - t0 };
-}
-
-// ─── XLSX → HTML (client-side, SheetJS) ───
-
-export async function convertXlsxToHtml(file: File): Promise<DocConversionResult> {
-  const t0 = performance.now();
-  const XLSX = await import('xlsx');
-  const ab = await file.arrayBuffer();
-  const wb = XLSX.read(ab, { type: 'array' });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${baseName(file)}</title>
-<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:6px 10px;text-align:left}th{background:#f5f5f5;font-weight:600}tr:hover{background:#f9f9f9}</style>
-</head><body>${XLSX.utils.sheet_to_html(ws)}</body></html>`;
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  return { blob, filename: `${baseName(file)}.html`, size: blob.size, duration: performance.now() - t0 };
-}
-
-// ─── CSV → XLSX (client-side, SheetJS) ───
-
-export async function convertCsvToXlsx(file: File): Promise<DocConversionResult> {
-  const t0 = performance.now();
-  const XLSX = await import('xlsx');
-  const text = await file.text();
-  const ws = XLSX.utils.aoa_to_sheet(
-    text.split('\n').map((row) => row.split(isTsv(file) ? '\t' : ',')),
-  );
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-  const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  return { blob, filename: `${baseName(file)}.xlsx`, size: blob.size, duration: performance.now() - t0 };
-}
-
-// ─── CSV → JSON (client-side) ───
-
-export async function convertCsvToJson(file: File): Promise<DocConversionResult> {
-  const t0 = performance.now();
-  const text = await file.text();
-  const sep = isTsv(file) ? '\t' : ',';
-  const lines = text.trim().split('\n');
-  const headers = lines[0].split(sep).map((h) => h.trim().replace(/^"|"$/g, ''));
-  const rows = lines.slice(1).map((line) => {
-    const vals = line.split(sep);
+  const headers = rows[0];
+  const data = rows.slice(1).map((row) => {
     const obj: Record<string, string> = {};
-    headers.forEach((h, i) => { obj[h] = (vals[i] ?? '').trim().replace(/^"|"$/g, ''); });
+    headers.forEach((h, i) => { obj[h] = row[i] ?? ''; });
     return obj;
   });
-  const json = JSON.stringify(rows, null, 2);
+
+  const json = JSON.stringify(data, null, 2);
   const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
   return { blob, filename: `${baseName(file)}.json`, size: blob.size, duration: performance.now() - t0 };
 }
 
-// ─── TXT → PDF (client-side, jsPDF) ───
+// ─── XLSX → TXT ───
+
+export async function convertXlsxToTxt(file: File): Promise<DocConversionResult> {
+  const t0 = performance.now();
+  const rows = await extractRows(file);
+  const txt = rows.map((r) => r.join('\t')).join('\n');
+  const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+  return { blob, filename: `${baseName(file)}.txt`, size: blob.size, duration: performance.now() - t0 };
+}
+
+// ─── XLSX → HTML ───
+
+export async function convertXlsxToHtml(file: File): Promise<DocConversionResult> {
+  const t0 = performance.now();
+  const rows = await extractRows(file);
+  const headerRow = rows[0] ?? [];
+  const dataRows = rows.slice(1);
+
+  const thCells = headerRow.map((h) => `<th>${escapeHtml(h)}</th>`).join('');
+  const bodyRows = dataRows.map((r) => {
+    const tdCells = r.map((c) => `<td>${escapeHtml(c)}</td>`).join('');
+    return `<tr>${tdCells}</tr>`;
+  }).join('\n');
+  const tableHtml = `<table>\n<thead><tr>${thCells}</tr></thead>\n<tbody>${bodyRows}</tbody>\n</table>`;
+
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${escapeHtml(baseName(file))}</title>
+<style>body{font-family:Arial,sans-serif;padding:24px;color:#222}
+table{border-collapse:collapse;width:100%}
+td,th{border:1px solid #ddd;padding:8px 12px;text-align:left}
+th{background:#f8f9fa;font-weight:600;position:sticky;top:0}
+tr:nth-child(even){background:#fafafa}tr:hover{background:#f0f7ff}</style>
+</head><body><h1>${escapeHtml(baseName(file))}</h1>${tableHtml}</body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  return { blob, filename: `${baseName(file)}.html`, size: blob.size, duration: performance.now() - t0 };
+}
+
+// ─── CSV → XLSX ───
+
+export async function convertCsvToXlsx(file: File): Promise<DocConversionResult> {
+  const t0 = performance.now();
+  const ExcelJS = await import('exceljs');
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet('Sheet1');
+  const text = await file.text();
+  const sep = extOf(file) === '.tsv' ? '\t' : ',';
+
+  text.split('\n').forEach((line, i) => {
+    if (!line.trim()) return;
+    const values = parseCsvLine(line, sep);
+    const row = ws.addRow(values);
+    if (i === 0) row.font = { bold: true };
+  });
+
+  // Auto-width columns
+  ws.columns.forEach((col) => {
+    let maxLen = 10;
+    col.eachCell?.((cell) => {
+      const len = stringifyCell(cell.value).length;
+      if (len > maxLen) maxLen = Math.min(len, 50);
+    });
+    col.width = maxLen + 2;
+  });
+
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  return { blob, filename: `${baseName(file)}.xlsx`, size: blob.size, duration: performance.now() - t0 };
+}
+
+// ─── CSV → JSON ───
+
+export async function convertCsvToJson(file: File): Promise<DocConversionResult> {
+  const t0 = performance.now();
+  const text = await file.text();
+  const sep = extOf(file) === '.tsv' ? '\t' : ',';
+  const lines = text.trim().split('\n').filter(Boolean);
+  if (lines.length < 2) throw new Error('File must have at least a header row and one data row');
+
+  const headers = parseCsvLine(lines[0], sep);
+  const data = lines.slice(1).map((line) => {
+    const vals = parseCsvLine(line, sep);
+    const obj: Record<string, string> = {};
+    headers.forEach((h, i) => { obj[h] = vals[i] ?? ''; });
+    return obj;
+  });
+
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+  return { blob, filename: `${baseName(file)}.json`, size: blob.size, duration: performance.now() - t0 };
+}
+
+// ─── JSON → CSV ───
+
+export async function convertJsonToCsv(file: File): Promise<DocConversionResult> {
+  const t0 = performance.now();
+  const text = await file.text();
+  const data: Record<string, unknown>[] = JSON.parse(text);
+  if (!Array.isArray(data) || data.length === 0) throw new Error('JSON must be an array of objects');
+
+  const headers = Object.keys(data[0]);
+  const csv = [
+    headers.map((h) => `"${h}"`).join(','),
+    ...data.map((row) => headers.map((h) => {
+      const s = stringifyCell(row[h]);
+      return `"${s.replaceAll('"', '""')}"`;
+    }).join(',')),
+  ].join('\n');
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  return { blob, filename: `${baseName(file)}.csv`, size: blob.size, duration: performance.now() - t0 };
+}
+
+// ─── JSON → XLSX ───
+
+export async function convertJsonToXlsx(file: File): Promise<DocConversionResult> {
+  const t0 = performance.now();
+  const ExcelJS = await import('exceljs');
+  const text = await file.text();
+  const data: Record<string, unknown>[] = JSON.parse(text);
+  if (!Array.isArray(data) || data.length === 0) throw new Error('JSON must be an array of objects');
+
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet('Sheet1');
+
+  const headers = Object.keys(data[0]);
+  const headerRow = ws.addRow(headers);
+  headerRow.font = { bold: true };
+
+  data.forEach((row) => {
+    ws.addRow(headers.map((h) => stringifyCell(row[h])));
+  });
+
+  ws.columns.forEach((col) => {
+    let maxLen = 10;
+    col.eachCell?.((cell) => {
+      const len = stringifyCell(cell.value).length;
+      if (len > maxLen) maxLen = Math.min(len, 50);
+    });
+    col.width = maxLen + 2;
+  });
+
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  return { blob, filename: `${baseName(file)}.xlsx`, size: blob.size, duration: performance.now() - t0 };
+}
+
+// ─── XLSX → PDF (ExcelJS → HTML → html2canvas → jsPDF) ───
+
+export async function convertXlsxToPdf(file: File): Promise<DocConversionResult> {
+  const htmlResult = await convertXlsxToHtml(file);
+  const htmlFile = new File([htmlResult.blob], 'temp.html', { type: 'text/html' });
+  const pdfResult = await convertHtmlToPdf(htmlFile);
+  return { ...pdfResult, filename: `${baseName(file)}.pdf` };
+}
+
+// ─── TXT → PDF (jsPDF) ───
 
 export async function convertTxtToPdf(file: File): Promise<DocConversionResult> {
   const t0 = performance.now();
@@ -139,12 +299,12 @@ export async function convertTxtToPdf(file: File): Promise<DocConversionResult> 
   const wrappedLines = pdf.splitTextToSize(text, pageWidth);
   let currentLine = 0;
 
-  for (let i = 0; i < wrappedLines.length; i++) {
+  for (const line of wrappedLines) {
     if (currentLine >= maxLines) {
       pdf.addPage();
       currentLine = 0;
     }
-    pdf.text(wrappedLines[i], margin, margin + currentLine * lineHeight);
+    pdf.text(line, margin, margin + currentLine * lineHeight);
     currentLine++;
   }
 
@@ -152,7 +312,7 @@ export async function convertTxtToPdf(file: File): Promise<DocConversionResult> 
   return { blob, filename: `${baseName(file)}.pdf`, size: blob.size, duration: performance.now() - t0 };
 }
 
-// ─── HTML → PDF (client-side, html2canvas + jsPDF) ───
+// ─── HTML → PDF (html2canvas + jsPDF) ───
 
 export async function convertHtmlToPdf(file: File): Promise<DocConversionResult> {
   const t0 = performance.now();
@@ -169,7 +329,7 @@ export async function convertHtmlToPdf(file: File): Promise<DocConversionResult>
   document.body.appendChild(container);
 
   const canvas = await html2canvas(container, { scale: 2, useCORS: true, logging: false, width: 794, windowWidth: 794 });
-  document.body.removeChild(container);
+  container.remove();
 
   const pdf = new jsPDF('p', 'mm', 'a4');
   const imgWidth = 210;
@@ -191,7 +351,7 @@ export async function convertHtmlToPdf(file: File): Promise<DocConversionResult>
   return { blob, filename: `${baseName(file)}.pdf`, size: blob.size, duration: performance.now() - t0 };
 }
 
-// ─── Markdown → PDF (parse → HTML → PDF) ───
+// ─── Markdown → PDF ───
 
 export async function convertMdToPdf(file: File): Promise<DocConversionResult> {
   const text = await file.text();
@@ -219,7 +379,7 @@ img{max-width:100%}a{color:#2563eb}hr{border:0;border-top:1px solid #eee;margin:
 export async function convertMdToHtml(file: File): Promise<DocConversionResult> {
   const t0 = performance.now();
   const text = await file.text();
-  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${baseName(file)}</title>
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${escapeHtml(baseName(file))}</title>
 <style>body{font-family:Arial,sans-serif;line-height:1.7;color:#222;max-width:700px;margin:0 auto;padding:24px}
 h1{border-bottom:2px solid #eee;padding-bottom:8px}code{background:#f5f5f5;padding:2px 5px;border-radius:3px}
 pre{background:#f5f5f5;padding:14px;border-radius:4px;overflow-x:auto}blockquote{border-left:3px solid #ddd;margin:0;padding:4px 16px;color:#555}
@@ -229,86 +389,40 @@ table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:6p
   return { blob, filename: `${baseName(file)}.html`, size: blob.size, duration: performance.now() - t0 };
 }
 
-// ─── JSON → CSV ───
-
-export async function convertJsonToCsv(file: File): Promise<DocConversionResult> {
-  const t0 = performance.now();
-  const text = await file.text();
-  const data: Record<string, unknown>[] = JSON.parse(text);
-  if (!Array.isArray(data) || data.length === 0) throw new Error('JSON must be an array of objects');
-  const headers = Object.keys(data[0]);
-  const csv = [
-    headers.join(','),
-    ...data.map((row) => headers.map((h) => `"${String(row[h] ?? '').replace(/"/g, '""')}"`).join(',')),
-  ].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-  return { blob, filename: `${baseName(file)}.csv`, size: blob.size, duration: performance.now() - t0 };
-}
-
-// ─── JSON → XLSX ───
-
-export async function convertJsonToXlsx(file: File): Promise<DocConversionResult> {
-  const t0 = performance.now();
-  const XLSX = await import('xlsx');
-  const text = await file.text();
-  const data = JSON.parse(text);
-  if (!Array.isArray(data)) throw new Error('JSON must be an array of objects');
-  const ws = XLSX.utils.json_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-  const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  return { blob, filename: `${baseName(file)}.xlsx`, size: blob.size, duration: performance.now() - t0 };
-}
-
-// ─── XLSX → PDF (SheetJS → HTML table → html2canvas → jsPDF) ───
-
-export async function convertXlsxToPdf(file: File): Promise<DocConversionResult> {
-  const result = await convertXlsxToHtml(file);
-  const htmlFile = new File([result.blob], 'temp.html', { type: 'text/html' });
-  const pdfResult = await convertHtmlToPdf(htmlFile);
-  return { ...pdfResult, filename: `${baseName(file)}.pdf` };
-}
-
 // ─── Helpers ───
 
-function isTsv(file: File): boolean {
-  return file.name.toLowerCase().endsWith('.tsv');
+/** Safely convert any cell value to string without [object Object] */
+function stringifyCell(v: unknown): string {
+  if (v == null) return '';
+  if (typeof v === 'object') return JSON.stringify(v);
+  if (typeof v === 'string') return v;
+  return `${v as string | number | boolean}`;
 }
 
-/** Minimal Markdown parser — covers 90% of common use cases */
+function escapeHtml(s: string): string {
+  return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+}
+
 function markdownToHtml(md: string): string {
   let html = md
-    // Code blocks (fenced)
-    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-    // Headings
-    .replace(/^######\s+(.+)$/gm, '<h6>$1</h6>')
-    .replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>')
-    .replace(/^####\s+(.+)$/gm, '<h4>$1</h4>')
-    .replace(/^###\s+(.+)$/gm, '<h3>$1</h3>')
-    .replace(/^##\s+(.+)$/gm, '<h2>$1</h2>')
-    .replace(/^#\s+(.+)$/gm, '<h1>$1</h1>')
-    // Horizontal rules
-    .replace(/^---+$/gm, '<hr>')
-    // Bold + italic
-    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    // Inline code
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    // Links
-    .replace(/\[([^\]]+)]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-    // Images
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
-    // Blockquotes
-    .replace(/^>\s+(.+)$/gm, '<blockquote>$1</blockquote>')
-    // Unordered lists
-    .replace(/^[-*]\s+(.+)$/gm, '<li>$1</li>')
-    // Paragraphs (lines not already wrapped)
-    .replace(/^(?!<[a-z])((?!<\/)[^\n]+)$/gm, '<p>$1</p>');
+    .replaceAll(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+    .replaceAll(/^######\s+(.+)$/gm, '<h6>$1</h6>')
+    .replaceAll(/^#####\s+(.+)$/gm, '<h5>$1</h5>')
+    .replaceAll(/^####\s+(.+)$/gm, '<h4>$1</h4>')
+    .replaceAll(/^###\s+(.+)$/gm, '<h3>$1</h3>')
+    .replaceAll(/^##\s+(.+)$/gm, '<h2>$1</h2>')
+    .replaceAll(/^#\s+(.+)$/gm, '<h1>$1</h1>')
+    .replaceAll(/^---+$/gm, '<hr>')
+    .replaceAll(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replaceAll(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replaceAll(/\*(.+?)\*/g, '<em>$1</em>')
+    .replaceAll(/`([^`]+)`/g, '<code>$1</code>')
+    .replaceAll(/\[([^\]]+)]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+    .replaceAll(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+    .replaceAll(/^>\s+(.+)$/gm, '<blockquote>$1</blockquote>')
+    .replaceAll(/^[-*]\s+(.+)$/gm, '<li>$1</li>')
+    .replaceAll(/^(?!<[a-z])((?!<\/)[^\n]+)$/gm, '<p>$1</p>');
 
-  // Wrap consecutive <li> in <ul>
-  html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-
+  html = html.replaceAll(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
   return html;
 }
