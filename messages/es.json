@@ -25,11 +25,40 @@
   },
   "landing": {
     "hero": {
-      "title": "Encuentre fotos y fichas técnicas de cualquier producto en 10 segundos",
-      "subtitle": "Pegue una lista de productos, GrabSpec recupera automáticamente fotos HD y fichas técnicas PDF. Descargue todo en ZIP con nomenclatura personalizada.",
-      "cta": "Probar gratis",
-      "ctaSecondary": "Ver precios",
-      "noCard": "No se requiere tarjeta de crédito"
+      "badge": "Ahorre 2h por presupuesto",
+      "title": "Fotos HD + Fichas técnicas en 10 segundos",
+      "subtitle": "Pegue sus referencias de producto, GrabSpec encuentra automáticamente fotos y PDF de fabricantes. Descargue todo en ZIP con la nomenclatura de su proyecto.",
+      "placeholder": "Pegue sus productos, uno por línea…\n\nEjemplo:\nGrohe Eurosmart 33265003\nGeberit Sigma 50\nSchneider Odace S520702",
+      "hint": "Un producto por línea",
+      "productCount": "{count, plural, one {# producto} other {# productos}}",
+      "cta": "Buscar ahora",
+      "tryWith": "Pruebe con:",
+      "trustFree": "3 búsquedas gratis/día",
+      "trustInstant": "Resultados en 10 segundos",
+      "trustPrivacy": "Sin datos almacenados",
+      "converterCta": "Convertidor de 31 formatos — gratis, sin registro"
+    },
+    "trust": {
+      "quote": "Estaba harto de perder 2 horas por presupuesto buscando fotos y fichas técnicas en sitios de fabricantes. Así que creé GrabSpec.",
+      "founderName": "Nuno Rodrigues",
+      "founderRole": "Ex ingeniero HVAC · Ginebra 🇨🇭",
+      "builtByPro": {
+        "title": "Hecho por un profesional",
+        "desc": "10 años en la construcción suiza — ingeniero, coordinador BIM."
+      },
+      "madeInGeneva": {
+        "title": "Hecho en Ginebra",
+        "desc": "Desarrollado en Suiza, alojado en Europa, pensado para profesionales."
+      },
+      "noDataStored": {
+        "title": "Sin datos almacenados",
+        "desc": "Sin cuenta, sin seguimiento. Su biblioteca permanece en su navegador."
+      },
+      "clientSide": {
+        "title": "100% lado cliente",
+        "desc": "Conversiones y exportaciones ZIP se ejecutan en su navegador. Privacidad total."
+      },
+      "socialProof": "Ya utilizado por ingenieros, oficinas técnicas e instaladores en Suiza y Francia"
     },
     "features": {
       "title": "Todo lo que necesita",

@@ -25,11 +25,40 @@
   },
   "landing": {
     "hero": {
-      "title": "Trouvez photos et fiches techniques de n'importe quel produit en 10 secondes",
-      "subtitle": "Collez une liste de produits, GrabSpec récupère automatiquement les photos HD et fiches techniques PDF. Téléchargez tout en ZIP avec nomenclature personnalisée.",
-      "cta": "Essayer gratuitement",
-      "ctaSecondary": "Voir les tarifs",
-      "noCard": "Aucune carte bancaire requise"
+      "badge": "Gagnez 2h par devis",
+      "title": "Photos HD + Fiches techniques en 10 secondes",
+      "subtitle": "Collez vos références produit, GrabSpec trouve automatiquement photos et PDF constructeurs. Téléchargez tout en ZIP, nommé selon votre projet.",
+      "placeholder": "Collez vos produits, un par ligne…\n\nExemple :\nGrohe Eurosmart 33265003\nGeberit Sigma 50\nSchneider Odace S520702",
+      "hint": "Un produit par ligne",
+      "productCount": "{count, plural, one {# produit} other {# produits}}",
+      "cta": "Lancer la recherche",
+      "tryWith": "Essayez avec :",
+      "trustFree": "3 recherches gratuites/jour",
+      "trustInstant": "Résultats en 10 secondes",
+      "trustPrivacy": "Aucune donnée stockée",
+      "converterCta": "Convertisseur 31 formats — gratuit, sans inscription"
+    },
+    "trust": {
+      "quote": "J'en avais marre de perdre 2h par devis à chercher des photos et fiches techniques sur des sites constructeurs. Alors j'ai créé GrabSpec.",
+      "founderName": "Nuno Rodrigues",
+      "founderRole": "Ancien projeteur CVC · Genève 🇨🇭",
+      "builtByPro": {
+        "title": "Fait par un pro du métier",
+        "desc": "10 ans dans la construction suisse — projeteur, coordinateur BIM."
+      },
+      "madeInGeneva": {
+        "title": "Conçu à Genève",
+        "desc": "Développé en Suisse, hébergé en Europe, pensé pour les pros."
+      },
+      "noDataStored": {
+        "title": "Aucune donnée stockée",
+        "desc": "Pas de compte, pas de tracking. Votre bibliothèque reste dans votre navigateur."
+      },
+      "clientSide": {
+        "title": "100% côté client",
+        "desc": "Conversions et exports ZIP générés dans votre navigateur. Confidentialité totale."
+      },
+      "socialProof": "Déjà utilisé par des projeteurs, bureaux d'études et installateurs en Suisse et en France"
     },
     "features": {
       "title": "Tout ce dont vous avez besoin",

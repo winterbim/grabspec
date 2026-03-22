@@ -25,11 +25,40 @@
   },
   "landing": {
     "hero": {
-      "title": "Finden Sie Produktfotos und Datenblätter für jedes Produkt in 10 Sekunden",
-      "subtitle": "Fügen Sie eine Produktliste ein, GrabSpec ruft automatisch HD-Fotos und technische Datenblätter ab. Laden Sie alles als ZIP mit individueller Benennung herunter.",
-      "cta": "Kostenlos testen",
-      "ctaSecondary": "Preise ansehen",
-      "noCard": "Keine Kreditkarte erforderlich"
+      "badge": "2 Stunden pro Angebot sparen",
+      "title": "HD-Fotos + Datenblätter in 10 Sekunden",
+      "subtitle": "Fügen Sie Ihre Produktreferenzen ein, GrabSpec findet automatisch Herstellerfotos und PDF-Datenblätter. Alles als ZIP herunterladen, nach Ihrem Projekt benannt.",
+      "placeholder": "Produkte einfügen, eines pro Zeile…\n\nBeispiel:\nGrohe Eurosmart 33265003\nGeberit Sigma 50\nSchneider Odace S520702",
+      "hint": "Ein Produkt pro Zeile",
+      "productCount": "{count, plural, one {# Produkt} other {# Produkte}}",
+      "cta": "Jetzt suchen",
+      "tryWith": "Versuchen Sie mit:",
+      "trustFree": "3 kostenlose Suchen/Tag",
+      "trustInstant": "Ergebnisse in 10 Sekunden",
+      "trustPrivacy": "Keine Daten gespeichert",
+      "converterCta": "31-Format-Konverter — kostenlos, ohne Anmeldung"
+    },
+    "trust": {
+      "quote": "Ich hatte es satt, 2 Stunden pro Angebot damit zu verbringen, Fotos und Datenblätter auf Herstellerseiten zu suchen. Also habe ich GrabSpec gebaut.",
+      "founderName": "Nuno Rodrigues",
+      "founderRole": "Ehemaliger HLK-Ingenieur · Genf 🇨🇭",
+      "builtByPro": {
+        "title": "Von einem Branchenprofi gebaut",
+        "desc": "10 Jahre im Schweizer Bauwesen — Ingenieur, BIM-Koordinator."
+      },
+      "madeInGeneva": {
+        "title": "Made in Genf",
+        "desc": "In der Schweiz entwickelt, in Europa gehostet, für Profis gebaut."
+      },
+      "noDataStored": {
+        "title": "Keine Daten gespeichert",
+        "desc": "Kein Konto, kein Tracking. Ihre Bibliothek bleibt in Ihrem Browser."
+      },
+      "clientSide": {
+        "title": "100% clientseitig",
+        "desc": "Konvertierungen und ZIP-Exporte laufen in Ihrem Browser. Vollständiger Datenschutz."
+      },
+      "socialProof": "Bereits von Ingenieuren, Planungsbüros und Installateuren in der Schweiz und Frankreich genutzt"
     },
     "features": {
       "title": "Alles was Sie brauchen",

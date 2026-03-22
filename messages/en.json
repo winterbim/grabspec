@@ -25,11 +25,40 @@
   },
   "landing": {
     "hero": {
-      "title": "Find product photos and datasheets for any product in 10 seconds",
-      "subtitle": "Paste a product list, GrabSpec automatically fetches HD photos and technical datasheets. Download everything as a ZIP with custom naming.",
-      "cta": "Try for free",
-      "ctaSecondary": "View pricing",
-      "noCard": "No credit card required"
+      "badge": "Save 2h per quote",
+      "title": "HD Photos + Datasheets in 10 seconds",
+      "subtitle": "Paste your product references, GrabSpec finds manufacturer photos and PDF datasheets automatically. Download as ZIP, named to your project convention.",
+      "placeholder": "Paste your products, one per line…\n\nExample:\nGrohe Eurosmart 33265003\nGeberit Sigma 50\nSchneider Odace S520702",
+      "hint": "One product per line",
+      "productCount": "{count, plural, one {# product} other {# products}}",
+      "cta": "Search now",
+      "tryWith": "Try with:",
+      "trustFree": "3 free searches/day",
+      "trustInstant": "Results in 10 seconds",
+      "trustPrivacy": "No data stored",
+      "converterCta": "31-format converter — free, no sign-up"
+    },
+    "trust": {
+      "quote": "I was tired of wasting 2 hours per quote searching manufacturer websites for photos and datasheets. So I built GrabSpec.",
+      "founderName": "Nuno Rodrigues",
+      "founderRole": "Former HVAC Engineer · Geneva 🇨🇭",
+      "builtByPro": {
+        "title": "Built by a construction pro",
+        "desc": "10 years in Swiss construction — HVAC engineer, BIM coordinator."
+      },
+      "madeInGeneva": {
+        "title": "Made in Geneva",
+        "desc": "Developed in Switzerland, hosted in Europe, built for professionals."
+      },
+      "noDataStored": {
+        "title": "No data stored",
+        "desc": "No account, no tracking. Your library stays in your browser."
+      },
+      "clientSide": {
+        "title": "100% client-side",
+        "desc": "Conversions and ZIP exports run in your browser. Total privacy."
+      },
+      "socialProof": "Already used by engineers, design offices and installers across Switzerland and France"
     },
     "features": {
       "title": "Everything you need",

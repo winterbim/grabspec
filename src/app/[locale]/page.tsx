@@ -9,6 +9,7 @@ import { Features } from '@/components/landing/Features';
 import { HowItWorks } from '@/components/landing/HowItWorks';
 import { ManufacturersChart } from '@/components/landing/ManufacturersChart';
 import { CTASection } from '@/components/landing/CTASection';
+import { TrustSection } from '@/components/landing/TrustSection';
 
 export default function LandingPage() {
   return (
@@ -20,6 +21,7 @@ export default function LandingPage() {
         <BrandBar />
         <Features />
         <HowItWorks />
+        <TrustSection />
         <ManufacturersChart />
         <CTASection />
       </main>
