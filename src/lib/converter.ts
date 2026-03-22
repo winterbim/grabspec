@@ -5,10 +5,6 @@ import {
   TextRun,
   HeadingLevel,
   Table,
-  TableRow,
-  TableCell,
-  WidthType,
-  BorderStyle,
 } from 'docx';
 
 // ─── Word → PDF (mammoth → HTML → Chromium headless → PDF) ───
@@ -78,14 +74,18 @@ function wrapHtmlDocument(bodyHtml: string): string {
 </head><body>${bodyHtml}</body></html>`;
 }
 
+/** Chromium tar URL for @sparticuz/chromium-min (downloaded at runtime on Vercel) */
+const CHROMIUM_URL =
+  'https://github.com/nichochar/chromium-min/releases/download/v133.0.0/chromium-v133.0.0-pack.tar';
+
 async function renderHtmlToPdf(html: string): Promise<ArrayBuffer> {
-  const chromium = (await import('@sparticuz/chromium')).default;
+  const chromium = (await import('@sparticuz/chromium-min')).default;
   const puppeteer = (await import('puppeteer-core')).default;
 
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: { width: 1280, height: 900 },
-    executablePath: await chromium.executablePath(),
+    executablePath: await chromium.executablePath(CHROMIUM_URL),
     headless: true,
   });
 
