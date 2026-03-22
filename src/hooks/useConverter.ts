@@ -3,10 +3,14 @@
 import { useState, useCallback } from 'react';
 import {
   isImageFile,
-  getImageOutputFormats,
   convertImageClientSide,
   type ImageOutputFormat,
 } from '@/lib/image-converter';
+import {
+  isWordFile,
+  isPdfFile,
+  convertWordToPdfClient,
+} from '@/lib/doc-converter-client';
 
 type ConversionState = 'idle' | 'converting' | 'done' | 'error';
 type ConversionMode = 'server' | 'client';
@@ -25,10 +29,6 @@ export function useConverter() {
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<ConversionMode>('server');
 
-  /**
-   * Convert a file. Routes to client-side (images) or server-side (PDF/Word) automatically.
-   * For images, an outputFormat can be specified; otherwise defaults to the first available.
-   */
   const convert = useCallback(async (file: File, imageOutputFormat?: ImageOutputFormat) => {
     setState('converting');
     setResult(null);
@@ -38,6 +38,7 @@ export function useConverter() {
       if (isImageFile(file)) {
         // Client-side image conversion via Canvas API
         setMode('client');
+        const { getImageOutputFormats } = await import('@/lib/image-converter');
         const formats = getImageOutputFormats(file);
         const target = imageOutputFormat ?? formats[0];
         if (!target) throw new Error('No output format available');
@@ -51,16 +52,25 @@ export function useConverter() {
           mode: 'client',
         });
         setState('done');
-      } else {
-        // Server-side PDF/Word conversion
+      } else if (isWordFile(file)) {
+        // Client-side Word → PDF via mammoth + jsPDF + html2canvas
+        setMode('client');
+        const convResult = await convertWordToPdfClient(file);
+        setResult({
+          blob: convResult.blob,
+          filename: convResult.filename,
+          size: convResult.size,
+          duration: convResult.duration,
+          mode: 'client',
+        });
+        setState('done');
+      } else if (isPdfFile(file)) {
+        // Server-side PDF → Word (needs unpdf server-side)
         setMode('server');
-        const isPdf = file.name.toLowerCase().endsWith('.pdf');
-        const endpoint = isPdf ? '/api/converter/pdf-to-word' : '/api/converter/word-to-pdf';
-
         const formData = new FormData();
         formData.append('file', file);
 
-        const res = await fetch(endpoint, { method: 'POST', body: formData });
+        const res = await fetch('/api/converter/pdf-to-word', { method: 'POST', body: formData });
 
         if (!res.ok) {
           const json: { error?: string } = await res.json();
@@ -68,12 +78,11 @@ export function useConverter() {
         }
 
         const blob = await res.blob();
-        const outputName = isPdf
-          ? file.name.replace(/\.pdf$/i, '.docx')
-          : file.name.replace(/\.(docx?)$/i, '.pdf');
-
+        const outputName = file.name.replace(/\.pdf$/i, '.docx');
         setResult({ blob, filename: outputName, size: blob.size, mode: 'server' });
         setState('done');
+      } else {
+        throw new Error('Unsupported file format');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Conversion failed');
