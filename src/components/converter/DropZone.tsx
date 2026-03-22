@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Upload, FileUp, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const ACCEPTED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif'];
+const ACCEPTED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.tiff', '.tif', '.svg'];
 const MAX_SIZE_BYTES = 20 * 1024 * 1024;
 
 /** Format badges with colors inspired by DocForge */
@@ -15,6 +15,10 @@ const FORMAT_BADGES: { label: string; color: string }[] = [
   { label: 'JPG', color: '#F59E0B' },
   { label: 'PNG', color: '#10B981' },
   { label: 'WEBP', color: '#8B5CF6' },
+  { label: 'SVG', color: '#EC4899' },
+  { label: 'TIFF', color: '#64748B' },
+  { label: 'GIF', color: '#F97316' },
+  { label: 'BMP', color: '#06B6D4' },
 ];
 
 interface DropZoneProps {
