@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
 
     const response = await client.messages.create({
       model,
-      max_tokens: 4096,
+      max_tokens: 8192,
       system: ANALYZER_PROMPT,
       messages: [
         {

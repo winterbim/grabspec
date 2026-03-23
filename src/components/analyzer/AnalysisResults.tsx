@@ -372,7 +372,7 @@ function ChartRenderer({ chart }: { chart: AnalysisChart }) {
             innerRadius={45}
             paddingAngle={3}
             strokeWidth={0}
-            label={({ name, percent }: { name: string; percent: number }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            label={({ name, percent }: { name?: string; percent?: number }) => `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`}
             fontSize={10}
           >
             {data.map((_, i) => (
@@ -433,7 +433,6 @@ function ChartRenderer({ chart }: { chart: AnalysisChart }) {
           dataKey={chart.yKey}
           nameKey={chart.xKey}
           stroke="#fff"
-          strokeWidth={2}
           content={<TreemapCell />}
         >
           <Tooltip {...tooltipStyle} />

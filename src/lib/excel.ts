@@ -280,15 +280,19 @@ export async function generateExcel({
 
     // Col 12: Fiche technique (PDF hyperlink)
     const pdfUrl = product.datasheetBlobUrl ?? product.datasheetUrl;
+    const pdfCell = row.getCell(headers.length);
     if (pdfUrl) {
-      const pdfCell = row.getCell(headers.length);
-      pdfCell.value = {
-        text: '📄 PDF',
-        hyperlink: pdfUrl,
-      };
-      pdfCell.font = { color: { argb: 'FF2563EB' }, underline: true, size: 10 };
+      // Direct PDF link — use separate value + hyperlink for LibreOffice/Excel compat
+      pdfCell.value = { text: 'PDF', hyperlink: pdfUrl };
+      pdfCell.font = { color: { argb: 'FF2563EB' }, underline: true, size: 10, bold: true };
+      pdfCell.alignment = { vertical: 'middle', horizontal: 'center' };
     } else {
-      row.getCell(headers.length).value = '—';
+      // Fallback: Google search link to find the datasheet
+      const searchTerms = [product.manufacturer, product.reference || product.resolvedName || product.inputName, 'fiche technique PDF'].filter(Boolean).join(' ');
+      const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(searchTerms)}`;
+      pdfCell.value = { text: 'Rechercher', hyperlink: googleUrl };
+      pdfCell.font = { color: { argb: 'FF94A3B8' }, underline: true, size: 9, italic: true };
+      pdfCell.alignment = { vertical: 'middle', horizontal: 'center' };
     }
 
     // Alternating row fill
@@ -314,7 +318,7 @@ export async function generateExcel({
     if (i === 0) {
       col.width = 10; // Photo column — narrow
     } else if (i === headers.length - 1) {
-      col.width = 16; // Fiche technique column
+      col.width = 18; // Fiche technique column
     } else {
       col.width = 18;
     }
