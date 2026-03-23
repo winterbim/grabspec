@@ -262,7 +262,20 @@
     "featureFree": "100% free",
     "featureFreeDesc": "No limits, no sign-up, no watermark",
     "crossSell": "Also looking for product datasheets?",
-    "crossSellCta": "Try the Finder — 3 free searches per day →"
+    "crossSellCta": "Try the Finder — 3 free searches per day →",
+    "pdfTools": "PDF Tools",
+    "tool_merge": "Merge PDFs",
+    "tool_merge_desc": "Combine multiple PDFs into one file",
+    "tool_split": "Split PDF",
+    "tool_split_desc": "Separate a PDF into individual pages",
+    "tool_compress": "Compress PDF",
+    "tool_compress_desc": "Reduce your PDF file size",
+    "tool_rotate": "Rotate PDF",
+    "tool_rotate_desc": "Rotate all pages of your PDF",
+    "tool_extract": "Extract pages",
+    "tool_extract_desc": "Select and extract specific pages",
+    "tool_number": "Number pages",
+    "tool_number_desc": "Add page numbers to your PDF"
   },
   "pricing": {
     "title": "Simple and transparent pricing",

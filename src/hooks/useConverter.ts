@@ -25,7 +25,7 @@ interface ConversionResult {
 
 
 /** Extensions handled by the spreadsheet/text converter */
-const SPREADSHEET_EXTS = new Set(['.xlsx', '.xls', '.csv', '.tsv', '.ods']);
+const SPREADSHEET_EXTS = new Set(['.xlsx', '.xls', '.csv', '.tsv']);
 const TEXT_EXTS = new Set(['.txt', '.html', '.htm', '.md', '.json']);
 
 function extOf(file: File): string {

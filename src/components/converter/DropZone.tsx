@@ -31,15 +31,24 @@ const FORMAT_BADGES: { label: string; color: string }[] = [
 
 interface DropZoneProps {
   onFileSelect: (file: File) => void;
+  /** Optional: accept only specific extensions (e.g. ['.pdf'] for PDF-only tools) */
+  accept?: string[];
+  /** Optional: allow multiple files */
+  multiple?: boolean;
+  /** Optional: callback for multiple files */
+  onMultipleFiles?: (files: File[]) => void;
 }
 
-export function DropZone({ onFileSelect }: DropZoneProps) {
+export function DropZone({ onFileSelect, accept, multiple, onMultipleFiles }: DropZoneProps) {
   const t = useTranslations('converter');
   const [isDragOver, setIsDragOver] = useState(false);
   const [glowPos, setGlowPos] = useState<{ x: number; y: number } | null>(null);
   const [pasteShortcut, setPasteShortcut] = useState('Ctrl+V');
+  const [rejectMsg, setRejectMsg] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const zoneRef = useRef<HTMLDivElement>(null);
+
+  const allowedExts = accept ?? ACCEPTED_EXTENSIONS;
 
   // Detect Mac only on client to avoid hydration mismatch
   useEffect(() => {
@@ -48,14 +57,28 @@ export function DropZone({ onFileSelect }: DropZoneProps) {
     }
   }, []);
 
+  // Clear reject message after 3s
+  useEffect(() => {
+    if (!rejectMsg) return;
+    const timer = setTimeout(() => setRejectMsg(null), 3000);
+    return () => clearTimeout(timer);
+  }, [rejectMsg]);
+
   const validateAndSelect = useCallback(
     (file: File) => {
       const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
-      if (!ACCEPTED_EXTENSIONS.includes(ext)) return;
-      if (file.size > MAX_SIZE_BYTES) return;
+      if (!allowedExts.includes(ext)) {
+        setRejectMsg(`Format ${ext.toUpperCase()} non supporté`);
+        return;
+      }
+      if (file.size > MAX_SIZE_BYTES) {
+        setRejectMsg(`Fichier trop volumineux (max ${MAX_SIZE_BYTES / 1024 / 1024} MB)`);
+        return;
+      }
+      setRejectMsg(null);
       onFileSelect(file);
     },
-    [onFileSelect],
+    [onFileSelect, allowedExts],
   );
 
   const handleDrop = useCallback(
@@ -64,10 +87,14 @@ export function DropZone({ onFileSelect }: DropZoneProps) {
       e.stopPropagation();
       setIsDragOver(false);
       setGlowPos(null);
-      const file = e.dataTransfer.files[0];
-      if (file) validateAndSelect(file);
+      const fileList = e.dataTransfer.files;
+      if (multiple && onMultipleFiles && fileList.length > 1) {
+        onMultipleFiles(Array.from(fileList));
+      } else if (fileList[0]) {
+        validateAndSelect(fileList[0]);
+      }
     },
-    [validateAndSelect],
+    [validateAndSelect, multiple, onMultipleFiles],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -96,11 +123,16 @@ export function DropZone({ onFileSelect }: DropZoneProps) {
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) validateAndSelect(file);
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+      if (multiple && onMultipleFiles && files.length > 1) {
+        onMultipleFiles(Array.from(files));
+      } else {
+        validateAndSelect(files[0]);
+      }
       if (inputRef.current) inputRef.current.value = '';
     },
-    [validateAndSelect],
+    [validateAndSelect, multiple, onMultipleFiles],
   );
 
   // Clipboard paste support
@@ -161,7 +193,8 @@ export function DropZone({ onFileSelect }: DropZoneProps) {
       <input
         ref={inputRef}
         type="file"
-        accept={ACCEPTED_EXTENSIONS.join(',')}
+        accept={allowedExts.join(',')}
+        multiple={multiple}
         onChange={handleChange}
         className="hidden"
         aria-label={t('dropzone')}
@@ -251,6 +284,13 @@ export function DropZone({ onFileSelect }: DropZoneProps) {
               {' '}{t('pasteHint')}
             </p>
             <p className="text-xs text-slate-400">{t('maxSize')}</p>
+          </div>
+        )}
+
+        {/* Reject message */}
+        {rejectMsg && (
+          <div className="animate-in fade-in mt-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600 dark:bg-red-950/30 dark:text-red-400">
+            {rejectMsg}
           </div>
         )}
       </div>

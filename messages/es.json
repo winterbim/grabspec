@@ -262,7 +262,20 @@
     "featureFree": "100% gratis",
     "featureFreeDesc": "Sin límites, sin registro, sin marca de agua",
     "crossSell": "¿También busca fichas técnicas de productos?",
-    "crossSellCta": "Pruebe el Finder — 3 búsquedas gratuitas por día →"
+    "crossSellCta": "Pruebe el Finder — 3 búsquedas gratuitas por día →",
+    "pdfTools": "Herramientas PDF",
+    "tool_merge": "Fusionar PDFs",
+    "tool_merge_desc": "Combine varios PDFs en un solo archivo",
+    "tool_split": "Dividir PDF",
+    "tool_split_desc": "Separe un PDF en páginas individuales",
+    "tool_compress": "Comprimir PDF",
+    "tool_compress_desc": "Reduzca el tamaño de su PDF",
+    "tool_rotate": "Rotar PDF",
+    "tool_rotate_desc": "Rote todas las páginas de su PDF",
+    "tool_extract": "Extraer páginas",
+    "tool_extract_desc": "Seleccione y extraiga páginas específicas",
+    "tool_number": "Numerar páginas",
+    "tool_number_desc": "Añada números de página a su PDF"
   },
   "pricing": {
     "title": "Precios simples y transparentes",

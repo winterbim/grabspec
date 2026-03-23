@@ -262,7 +262,20 @@
     "featureFree": "100% gratuit",
     "featureFreeDesc": "Sans limite, sans inscription, sans filigrane",
     "crossSell": "Vous cherchez aussi des fiches techniques produit ?",
-    "crossSellCta": "Essayez le Finder — 3 recherches gratuites par jour →"
+    "crossSellCta": "Essayez le Finder — 3 recherches gratuites par jour →",
+    "pdfTools": "Outils PDF",
+    "tool_merge": "Fusionner des PDF",
+    "tool_merge_desc": "Combinez plusieurs PDF en un seul fichier",
+    "tool_split": "Diviser un PDF",
+    "tool_split_desc": "Séparez un PDF en pages individuelles",
+    "tool_compress": "Compresser un PDF",
+    "tool_compress_desc": "Réduisez la taille de votre PDF",
+    "tool_rotate": "Rotation PDF",
+    "tool_rotate_desc": "Pivotez toutes les pages de votre PDF",
+    "tool_extract": "Extraire des pages",
+    "tool_extract_desc": "Sélectionnez et extrayez des pages spécifiques",
+    "tool_number": "Numéroter les pages",
+    "tool_number_desc": "Ajoutez des numéros de page à votre PDF"
   },
   "pricing": {
     "title": "Tarifs simples et transparents",

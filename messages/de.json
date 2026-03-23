@@ -262,7 +262,20 @@
     "featureFree": "100% kostenlos",
     "featureFreeDesc": "Ohne Limit, ohne Registrierung, ohne Wasserzeichen",
     "crossSell": "Suchen Sie auch nach Produktdatenblättern?",
-    "crossSellCta": "Finder ausprobieren — 3 kostenlose Suchen pro Tag →"
+    "crossSellCta": "Finder ausprobieren — 3 kostenlose Suchen pro Tag →",
+    "pdfTools": "PDF-Werkzeuge",
+    "tool_merge": "PDFs zusammenführen",
+    "tool_merge_desc": "Mehrere PDFs zu einer Datei kombinieren",
+    "tool_split": "PDF teilen",
+    "tool_split_desc": "PDF in einzelne Seiten aufteilen",
+    "tool_compress": "PDF komprimieren",
+    "tool_compress_desc": "Reduzieren Sie die Dateigröße",
+    "tool_rotate": "PDF drehen",
+    "tool_rotate_desc": "Alle Seiten Ihres PDFs drehen",
+    "tool_extract": "Seiten extrahieren",
+    "tool_extract_desc": "Bestimmte Seiten auswählen und extrahieren",
+    "tool_number": "Seiten nummerieren",
+    "tool_number_desc": "Seitenzahlen zu Ihrem PDF hinzufügen"
   },
   "pricing": {
     "title": "Einfache und transparente Preise",
