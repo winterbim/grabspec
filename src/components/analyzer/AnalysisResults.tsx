@@ -43,6 +43,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
+import type { NodeProps, SankeyNodeOptions } from 'recharts/types/chart/Sankey';
 import type { AnalysisResult, AnalysisChart, AnalysisKpi } from '@/hooks/useAnalyzer';
 
 // ── Professional color palette ──
@@ -85,16 +86,34 @@ export function AnalysisResults({ result, filename, onReset }: AnalysisResultsPr
   const dashboardRef = useRef<HTMLDivElement>(null);
   const [showPreview, setShowPreview] = useState(false);
 
+  const [exporting, setExporting] = useState(false);
+
   const exportPng = useCallback(async () => {
-    if (!dashboardRef.current) return;
-    const { default: html2canvas } = await import('html2canvas');
-    const canvas = await html2canvas(dashboardRef.current, { scale: 2, useCORS: true, logging: false });
-    const url = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${filename.replace(/\.[^.]+$/, '')}_dashboard.png`;
-    a.click();
-  }, [filename]);
+    if (!dashboardRef.current || exporting) return;
+    setExporting(true);
+    try {
+      const { toPng } = await import('html-to-image');
+      const dataUrl = await toPng(dashboardRef.current, {
+        pixelRatio: 2,
+        cacheBust: true,
+        backgroundColor: '#ffffff',
+        filter: (node: HTMLElement) => {
+          // Skip invisible nodes that cause issues
+          if (node.tagName === 'NOSCRIPT') return false;
+          return true;
+        },
+      });
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = `${filename.replace(/\.[^.]+$/, '')}_dashboard.png`;
+      a.click();
+    } catch (err) {
+      console.error('PNG export failed:', err);
+      alert('Export PNG échoué. Veuillez réessayer.');
+    } finally {
+      setExporting(false);
+    }
+  }, [filename, exporting]);
 
   const presentationHtml = useMemo(
     () => generatePresentation(result, filename),
@@ -120,9 +139,9 @@ export function AnalysisResults({ result, filename, onReset }: AnalysisResultsPr
           <p className="mt-0.5 text-sm text-slate-500">{filename}</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={exportPng}>
+          <Button variant="outline" size="sm" onClick={exportPng} disabled={exporting}>
             <Download className="mr-1.5 h-3.5 w-3.5" />
-            {t('exportPng')}
+            {exporting ? 'Export…' : t('exportPng')}
           </Button>
           <Button variant="outline" size="sm" onClick={() => setShowPreview(true)}>
             <Eye className="mr-1.5 h-3.5 w-3.5" />
@@ -467,16 +486,28 @@ function ChartRenderer({ chart }: { chart: AnalysisChart }) {
           source: nodeNames.indexOf(l.source),
           target: nodeNames.indexOf(l.target),
           value: l.value,
-        }));
+        })).filter((l) => l.source !== -1 && l.target !== -1 && l.source !== l.target);
+        if (nodes.length < 2 || links.length === 0) return <NoData label="Données Sankey insuffisantes" />;
         return (
           <Sankey
             data={{ nodes, links }}
             nodeWidth={10}
-            nodePadding={20}
+            nodePadding={24}
             linkCurvature={0.5}
-            margin={{ top: 8, right: 8, bottom: 8, left: 8 }}
+            iterations={32}
+            margin={{ top: 12, right: 60, bottom: 12, left: 12 }}
             link={{ stroke: '#a78bfa', strokeOpacity: 0.4 }}
-            node={<SankeyNode />}
+            node={((props: NodeProps) => {
+              const { x, y, width: w, height: h, index, payload } = props;
+              return (
+                <g key={`node-${index}`}>
+                  <rect x={x} y={y} width={w} height={h} fill={PALETTE.full[index % PALETTE.full.length]} rx={2} />
+                  <text x={x + w + 8} y={y + h / 2} textAnchor="start" dominantBaseline="central" fill="#64748b" fontSize={11} fontWeight={500}>
+                    {payload?.name}
+                  </text>
+                </g>
+              );
+            }) as unknown as SankeyNodeOptions}
           >
             <Tooltip {...tooltipStyle} />
           </Sankey>
@@ -511,21 +542,6 @@ function TreemapCell(props: Record<string, unknown>) {
           {String(name).slice(0, 12)}
         </text>
       )}
-    </g>
-  );
-}
-
-// Custom Sankey node
-function SankeyNode(props: Record<string, unknown>) {
-  const { x, y, width, height, payload } = props as {
-    x: number; y: number; width: number; height: number; payload: { name: string };
-  };
-  return (
-    <g>
-      <rect x={x} y={y} width={width} height={height} fill="#6366f1" rx={2} />
-      <text x={x + width + 6} y={y + height / 2} textAnchor="start" dominantBaseline="central" fill="#64748b" fontSize={11}>
-        {payload?.name}
-      </text>
     </g>
   );
 }
@@ -643,6 +659,22 @@ function buildRadarSvg(chart: AnalysisChart): string {
   return svg;
 }
 
+function buildSankeyHtml(chart: AnalysisChart): string {
+  if (!chart.links || chart.links.length === 0) return '<p style="color:var(--muted);font-size:13px;text-align:center;">Pas de données Sankey</p>';
+  const nodeNames = [...new Set([...chart.links.map(l => l.source), ...chart.links.map(l => l.target)])];
+  const totalValue = chart.links.reduce((s, l) => s + l.value, 0);
+  const rows = chart.links.slice(0, 12).map((l, i) => {
+    const pct = totalValue > 0 ? (l.value / totalValue) * 100 : 0;
+    const color = PALETTE.full[i % PALETTE.full.length];
+    return `<div class="bar-row anim-item" style="--delay:${i * 0.06}s">
+      <span class="bar-label">${escHtml(l.source)} → ${escHtml(l.target)}</span>
+      <div class="bar-track"><div class="bar-fill" data-width="${pct}" style="width:0%;background:linear-gradient(90deg,${color},${color}dd)"></div></div>
+      <span class="bar-val">${l.value.toLocaleString('fr-CH')}</span>
+    </div>`;
+  }).join('');
+  return `<div class="sankey-info"><span class="chart-type-badge">FLUX</span> <small style="color:var(--dim);margin-left:8px">${nodeNames.length} nœuds · ${chart.links.length} flux</small></div><div class="bars">${rows}</div>`;
+}
+
 function generatePresentation(result: AnalysisResult, filename: string): string {
   const date = new Date().toLocaleDateString('fr-CH', { day: 'numeric', month: 'long', year: 'numeric' });
   const totalSlides = result.slides.length;
@@ -703,6 +735,7 @@ function generatePresentation(result: AnalysisResult, filename: string): string 
                 let chartHtml = '';
                 if (c.type === 'pie') chartHtml = buildPieChart(c);
                 else if (c.type === 'radar') chartHtml = `<div class="radar-wrap">${buildRadarSvg(c)}</div>`;
+                else if (c.type === 'sankey') chartHtml = buildSankeyHtml(c);
                 else chartHtml = buildBarChart(c);
                 return `
                 <div class="chart-block anim-item" style="--delay:${0.1 + ci * 0.1}s">
