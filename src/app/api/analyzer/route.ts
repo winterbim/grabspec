@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { getPlanFromKV } from '@/lib/ratelimit';
 
 export const maxDuration = 120;
 
@@ -76,9 +77,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check plan — Business only
-    const planRes = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'https://grabspec.vercel.app'}/api/plan?sessionId=${sessionId}`);
-    const planData = await planRes.json();
-    if (planData.data?.plan !== 'business') {
+    const planData = await getPlanFromKV(sessionId);
+    if (planData.plan !== 'business') {
       return NextResponse.json({ error: 'Business plan required' }, { status: 403 });
     }
 
@@ -159,7 +159,8 @@ async function extractFromDocx(file: File): Promise<string> {
 }
 
 async function extractFromXlsx(file: File): Promise<string> {
-  const ExcelJS = await import('exceljs');
+  const excelMod = await import('exceljs');
+  const ExcelJS = 'default' in excelMod ? (excelMod.default as typeof excelMod) : excelMod;
   const wb = new ExcelJS.Workbook();
   const buffer = await file.arrayBuffer();
   await wb.xlsx.load(buffer);
