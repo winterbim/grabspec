@@ -210,10 +210,10 @@ export default function ConverterPage() {
   useEffect(() => {
     if (error) {
       toast.error(error);
-      reset();
-      setCurrentFile(null);
+      handleReset();
+      setActiveView({ type: 'home' });
     }
-  }, [error, reset]);
+  }, [error, handleReset]);
 
   // ── PDF tools handlers ──
 
@@ -421,6 +421,11 @@ export default function ConverterPage() {
         {/* ═══ CONVERT VIEW — File conversion ═══ */}
         {activeView.type === 'convert' && (
           <>
+            {/* IDLE: no file — show dropzone fallback */}
+            {state === 'idle' && !currentFile && (
+              <DropZone onFileSelect={handleFileSelect} />
+            )}
+
             {/* IDLE: file selected, choose format */}
             {state === 'idle' && currentFile && availableRoutes.length > 1 && (
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
