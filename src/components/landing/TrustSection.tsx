@@ -51,15 +51,11 @@ export function TrustSection() {
   return (
     <section className="border-y border-slate-100 bg-slate-50/50 py-16 sm:py-20">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        {/* Founder quote */}
+        {/* Quote — anonymous */}
         <div className="mx-auto max-w-2xl text-center">
           <blockquote className="text-lg leading-relaxed text-slate-700 italic sm:text-xl">
             &ldquo;{t('quote')}&rdquo;
           </blockquote>
-
-          <p className="mt-4 text-sm text-slate-500">
-            — {t('founderRole')}
-          </p>
         </div>
 
         {/* Trust grid */}
