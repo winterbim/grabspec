@@ -4,10 +4,10 @@ import type { CompanyProfile, ProjectDetails } from '@/types';
 type SupportedLocale = 'fr' | 'en' | 'es' | 'de';
 
 const COLUMN_HEADERS: Record<SupportedLocale, string[]> = {
-  fr: ['Nom', 'Fabricant', 'Référence', 'Lot', 'Catégorie', 'Dimensions', 'Poids', 'Matériau', 'Couleur', 'Puissance'],
-  en: ['Name', 'Manufacturer', 'Reference', 'Lot', 'Category', 'Dimensions', 'Weight', 'Material', 'Color', 'Power'],
-  es: ['Nombre', 'Fabricante', 'Referencia', 'Lote', 'Categoría', 'Dimensiones', 'Peso', 'Material', 'Color', 'Potencia'],
-  de: ['Name', 'Hersteller', 'Referenz', 'Los', 'Kategorie', 'Abmessungen', 'Gewicht', 'Material', 'Farbe', 'Leistung'],
+  fr: ['Photo', 'Nom', 'Fabricant', 'Référence', 'Lot', 'Catégorie', 'Dimensions', 'Poids', 'Matériau', 'Couleur', 'Puissance', 'Fiche technique'],
+  en: ['Photo', 'Name', 'Manufacturer', 'Reference', 'Lot', 'Category', 'Dimensions', 'Weight', 'Material', 'Color', 'Power', 'Datasheet'],
+  es: ['Foto', 'Nombre', 'Fabricante', 'Referencia', 'Lote', 'Categoría', 'Dimensiones', 'Peso', 'Material', 'Color', 'Potencia', 'Ficha técnica'],
+  de: ['Foto', 'Name', 'Hersteller', 'Referenz', 'Los', 'Kategorie', 'Abmessungen', 'Gewicht', 'Material', 'Farbe', 'Leistung', 'Datenblatt'],
 };
 
 const PROJECT_LABELS: Record<SupportedLocale, Record<string, string>> = {
@@ -19,6 +19,16 @@ const PROJECT_LABELS: Record<SupportedLocale, Record<string, string>> = {
 
 function isValidLocale(locale: string): locale is SupportedLocale {
   return ['fr', 'en', 'es', 'de'].includes(locale);
+}
+
+/** Convert an ArrayBuffer to a base64 string */
+function bufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
 }
 
 // GrabSpec default logo (blue square with document+magnifier icon) as inline SVG → PNG via canvas
@@ -209,8 +219,51 @@ export async function generateExcel({
     cell.alignment = { vertical: 'middle', horizontal: 'center' };
   });
 
+  // --- Fetch product images in parallel (for embedding in Excel) ---
+  const imageBuffers: (ArrayBuffer | null)[] = await Promise.all(
+    products.map(async (p) => {
+      const url = p.photoBlobUrl ?? p.photoUrl;
+      if (!url) return null;
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) return null;
+        return await resp.arrayBuffer();
+      } catch {
+        return null;
+      }
+    }),
+  );
+
+  const IMG_HEIGHT = 60; // px
+  const IMG_WIDTH = 60;  // px
+  const ROW_HEIGHT_PX = 55; // row height to fit the image
+
   products.forEach((product, index) => {
-    const row = sheet.getRow(dataStartRow + 1 + index);
+    const rowNum = dataStartRow + 1 + index;
+    const row = sheet.getRow(rowNum);
+
+    // Set row height to fit images
+    row.height = ROW_HEIGHT_PX;
+
+    // Col 1: Photo (image embedded in cell)
+    const imgBuf = imageBuffers[index];
+    if (imgBuf) {
+      try {
+        const base64 = bufferToBase64(imgBuf);
+        const imageId = workbook.addImage({ base64, extension: 'jpeg' });
+        sheet.addImage(imageId, {
+          tl: { col: 0, row: rowNum - 1 },
+          ext: { width: IMG_WIDTH, height: IMG_HEIGHT },
+          editAs: 'oneCell',
+        });
+      } catch {
+        row.getCell(1).value = '—';
+      }
+    } else {
+      row.getCell(1).value = '—';
+    }
+
+    // Cols 2-11: product data
     const values = [
       product.resolvedName ?? product.inputName,
       product.manufacturer ?? '',
@@ -223,8 +276,22 @@ export async function generateExcel({
       product.specs?.couleur ?? '',
       product.specs?.puissance ?? '',
     ];
-    values.forEach((v, i) => { row.getCell(i + 1).value = v; });
+    values.forEach((v, i) => { row.getCell(i + 2).value = v; });
 
+    // Col 12: Fiche technique (PDF hyperlink)
+    const pdfUrl = product.datasheetBlobUrl ?? product.datasheetUrl;
+    if (pdfUrl) {
+      const pdfCell = row.getCell(headers.length);
+      pdfCell.value = {
+        text: '📄 PDF',
+        hyperlink: pdfUrl,
+      };
+      pdfCell.font = { color: { argb: 'FF2563EB' }, underline: true, size: 10 };
+    } else {
+      row.getCell(headers.length).value = '—';
+    }
+
+    // Alternating row fill
     if (index % 2 === 1) {
       row.eachCell((cell) => {
         cell.fill = {
@@ -234,11 +301,23 @@ export async function generateExcel({
         };
       });
     }
+
+    // Vertical alignment for all cells
+    row.eachCell((cell) => {
+      cell.alignment = { vertical: 'middle', ...(cell.alignment || {}) };
+    });
   });
 
+  // Column widths
   headers.forEach((_, i) => {
     const col = sheet.getColumn(i + 1);
-    col.width = 18;
+    if (i === 0) {
+      col.width = 10; // Photo column — narrow
+    } else if (i === headers.length - 1) {
+      col.width = 16; // Fiche technique column
+    } else {
+      col.width = 18;
+    }
   });
 
   sheet.autoFilter = {
