@@ -32,7 +32,7 @@ function getRedis(): Redis | null {
 
 /** Verify admin secret from request header */
 export function verifyAdmin(authHeader: string | null): boolean {
-  const secret = process.env.ADMIN_SECRET || 'Graspec91Awaj91@#@';
+  const secret = process.env.ADMIN_SECRET || 'Graspec91Awaj91';
   return authHeader === `Bearer ${secret}`;
 }
 
