@@ -18,6 +18,11 @@ const manufacturers = [
 
 const maxSearches = manufacturers[0].searches;
 
+/** Deterministic number formatter — no locale dependency */
+function formatNumber(n: number): string {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u2009'); // thin space
+}
+
 const barColors = [
   'bg-blue-600',
   'bg-blue-500',
@@ -61,7 +66,7 @@ export function ManufacturersChart() {
                     style={{ width: `${pct}%` }}
                   />
                   <span className="absolute inset-y-0 right-2 flex items-center text-xs font-medium text-slate-500">
-                    {m.searches.toLocaleString()}
+                    {formatNumber(m.searches)}
                   </span>
                 </div>
               </div>
