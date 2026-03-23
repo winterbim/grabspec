@@ -60,6 +60,10 @@ export function useSession(): SessionState {
         if (!cancelled && json.data) {
           setPlan(json.data.plan as PlanType);
           setSearchesLeft(json.data.searchesLeft);
+
+          // Persist to IndexedDB so pages reading getStoredPlan() get the fresh value
+          const { setStoredPlan } = await import('@/lib/db');
+          await setStoredPlan(json.data.plan);
         }
       } catch {
         // Use defaults

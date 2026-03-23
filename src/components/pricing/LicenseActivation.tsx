@@ -45,11 +45,15 @@ export function LicenseActivation() {
       setKey('');
       setShowInput(false);
 
+      // Update local plan cache so all pages see the new plan immediately
+      const { setStoredPlan } = await import('@/lib/db');
+      await setStoredPlan(json.data.plan);
+
       // Refresh plan — dispatching a custom event that useSession listens for
       globalThis.dispatchEvent(new Event('plan-updated'));
 
-      // Also reload after a short delay to ensure the plan is reflected everywhere
-      setTimeout(() => globalThis.location.reload(), 1500);
+      // Reload to ensure the plan is reflected everywhere
+      setTimeout(() => globalThis.location.reload(), 800);
     } catch {
       toast.error(t('error'));
     } finally {
