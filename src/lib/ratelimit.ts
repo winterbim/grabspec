@@ -19,11 +19,14 @@ const ratelimit = redis
     })
   : null;
 
-function getActivePlan(planData: string | null): { plan: string; expiresAt: string } | null {
+function getActivePlan(planData: unknown): { plan: string; expiresAt: string } | null {
   if (!planData) return null;
 
   try {
-    const parsed = JSON.parse(planData) as { plan?: string; expiresAt?: string };
+    // Upstash auto-deserializes JSON, so planData may be an object or a string
+    const parsed = typeof planData === 'string'
+      ? JSON.parse(planData) as { plan?: string; expiresAt?: string }
+      : planData as { plan?: string; expiresAt?: string };
     if (!parsed.plan || !parsed.expiresAt) return null;
     if (new Date(parsed.expiresAt) <= new Date()) return null;
     return { plan: parsed.plan, expiresAt: parsed.expiresAt };
