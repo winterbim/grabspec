@@ -8,20 +8,29 @@ export interface AnalysisKpi {
   unit?: string;
   trend?: 'up' | 'down' | 'stable';
   detail?: string;
+  color?: string;
 }
 
 export interface AnalysisChart {
-  type: 'bar' | 'line' | 'pie' | 'area';
+  type: 'bar' | 'line' | 'pie' | 'area' | 'radar' | 'radialBar' | 'treemap' | 'funnel' | 'sankey';
   title: string;
+  subtitle?: string;
   data: Record<string, unknown>[];
   xKey: string;
   yKey: string;
+  /** For sankey: links array [{source, target, value}] */
+  links?: { source: string; target: string; value: number }[];
+  /** For radar: multiple metric keys */
+  radarKeys?: string[];
 }
 
 export interface AnalysisSlide {
   title: string;
   content: string;
-  type: 'title' | 'kpi' | 'chart' | 'text' | 'conclusion';
+  type: 'cover' | 'kpi' | 'chart' | 'insight' | 'comparison' | 'timeline' | 'conclusion';
+  bullets?: string[];
+  highlight?: string;
+  layout?: 'center' | 'split' | 'grid';
 }
 
 export interface AnalysisResult {
