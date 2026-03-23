@@ -210,10 +210,10 @@ export default function ConverterPage() {
   useEffect(() => {
     if (error) {
       toast.error(error);
-      handleReset();
-      setActiveView({ type: 'home' });
+      // Reset converter state but keep the file and view so user can retry
+      reset();
     }
-  }, [error, handleReset]);
+  }, [error, reset]);
 
   // ── PDF tools handlers ──
 

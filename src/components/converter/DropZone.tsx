@@ -6,7 +6,7 @@ import { Upload, FileUp, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const ACCEPTED_EXTENSIONS = [
-  '.pdf', '.doc', '.docx',
+  '.pdf', '.docx',
   '.xlsx', '.xls', '.csv', '.tsv',
   '.txt', '.html', '.htm', '.md', '.json',
   '.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.tiff', '.tif', '.svg', '.ico', '.avif',

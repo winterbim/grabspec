@@ -328,6 +328,14 @@
       ],
       "cta": "Business starten",
       "excelPreviewLabel": "Vorschau Ihres Excel-Exports"
+    },
+    "license": {
+      "cta": "Haben Sie einen Lizenzschlüssel?",
+      "prompt": "Geben Sie Ihren Lizenzschlüssel ein, um Ihren Zugang zu aktivieren:",
+      "activate": "Aktivieren",
+      "cancel": "Abbrechen",
+      "success": "🎉 Lizenz aktiviert! {plan}-Plan freigeschaltet.",
+      "error": "Ungültiger oder bereits verwendeter Schlüssel"
     }
   },
   "footer": {

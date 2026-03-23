@@ -10,6 +10,7 @@ import { BusinessExcelPreview } from '@/components/pricing/BusinessExcelPreview'
 import { Badge } from '@/components/ui/badge';
 import { HelpTip } from '@/components/ui/help-tip';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LicenseActivation } from '@/components/pricing/LicenseActivation';
 import { getSessionId } from '@/lib/db';
 
 type BillingPeriod = 'monthly' | 'yearly';
@@ -135,6 +136,9 @@ export default function PricingPage() {
               <BusinessExcelPreview />
             </div>
           </div>
+
+          {/* License activation */}
+          <LicenseActivation />
         </div>
       </main>
       <Footer />

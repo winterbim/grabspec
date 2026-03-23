@@ -1,0 +1,6 @@
+GrabSpec Conversion Test
+
+This is a plain text file used for testing.
+Line 3: special chars: éàü ñ ß
+Line 4: numbers 12345
+Line 5: symbols !@#$%

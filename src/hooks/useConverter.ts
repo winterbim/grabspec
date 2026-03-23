@@ -63,6 +63,11 @@ export function useConverter() {
         setResult({ blob: r.blob, filename: r.filename, size: r.size, duration: r.duration, mode: 'client' });
         setState('done');
       } else if (isWordFile(file)) {
+        // mammoth only supports DOCX, not legacy DOC binary format
+        const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+        if (ext === '.doc') {
+          throw new Error('Le format DOC (ancien) n\'est pas supporté. Veuillez convertir votre fichier en DOCX d\'abord (ouvrez-le dans Word ou LibreOffice et enregistrez en .docx).');
+        }
         setMode('client');
         const r = await convertWordToPdfClient(file);
         setResult({ blob: r.blob, filename: r.filename, size: r.size, duration: r.duration, mode: 'client' });
@@ -138,14 +143,16 @@ async function convertDocumentClientSide(
     case 'xls→json':
       return sc.convertXlsxToJson(file);
     case 'xlsx→txt':
+    case 'xls→txt':
       return sc.convertXlsxToTxt(file);
     case 'xlsx→html':
+    case 'xls→html':
       return sc.convertXlsxToHtml(file);
     case 'xlsx→pdf':
     case 'xls→pdf':
       return sc.convertXlsxToPdf(file);
     case 'xls→xlsx':
-      return sc.convertCsvToXlsx(file); // SheetJS reads XLS too
+      return sc.convertXlsToXlsx(file);
     case 'csv→xlsx':
     case 'tsv→xlsx':
       return sc.convertCsvToXlsx(file);
@@ -153,10 +160,22 @@ async function convertDocumentClientSide(
     case 'tsv→json':
       return sc.convertCsvToJson(file);
     case 'tsv→csv': {
-      // TSV → CSV: simple separator replacement
+      // TSV → CSV: proper conversion with field quoting
       const t0 = performance.now();
       const text = await file.text();
-      const csv = text.replaceAll('\t', ',');
+      const csv = text
+        .split('\n')
+        .map((line) => {
+          if (!line.trim()) return '';
+          return line.split('\t').map((field) => {
+            // Quote fields that contain commas, quotes, or newlines
+            if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+              return `"${field.replaceAll('"', '""')}"`;
+            }
+            return field;
+          }).join(',');
+        })
+        .join('\n');
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
       const name = file.name.replace(/\.tsv$/i, '.csv');
       return { blob, filename: name, size: blob.size, duration: performance.now() - t0 };

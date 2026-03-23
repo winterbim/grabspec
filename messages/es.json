@@ -328,6 +328,14 @@
       ],
       "cta": "Iniciar Business",
       "excelPreviewLabel": "Vista previa de su export Excel"
+    },
+    "license": {
+      "cta": "¿Tiene una clave de licencia?",
+      "prompt": "Introduzca su clave de licencia para activar su acceso:",
+      "activate": "Activar",
+      "cancel": "Cancelar",
+      "success": "🎉 ¡Licencia activada! Plan {plan} habilitado.",
+      "error": "Clave inválida o ya utilizada"
     }
   },
   "footer": {

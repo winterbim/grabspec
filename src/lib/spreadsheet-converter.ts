@@ -35,7 +35,8 @@ function baseName(file: File): string {
 // ─── ExcelJS helpers ───
 
 async function loadWorkbook(file: File) {
-  const ExcelJS = await import('exceljs');
+  const ExcelJSModule = await import('exceljs');
+  const ExcelJS = ExcelJSModule.default ?? ExcelJSModule;
   const wb = new ExcelJS.Workbook();
   const ext = extOf(file);
 
@@ -46,12 +47,151 @@ async function loadWorkbook(file: File) {
     text.split('\n').forEach((line) => {
       if (line.trim()) ws.addRow(parseCsvLine(line, sep));
     });
+  } else if (ext === '.xls') {
+    // XLS (BIFF) format: ExcelJS cannot read it directly.
+    // We parse it using a lightweight approach via the binary content.
+    const buffer = await file.arrayBuffer();
+    try {
+      // Try XLSX first in case it's misnamed
+      await wb.xlsx.load(buffer);
+    } catch {
+      // Fallback: extract text content from XLS binary
+      const rows = parseXlsBinary(new Uint8Array(buffer));
+      const ws = wb.addWorksheet('Sheet1');
+      rows.forEach((row) => ws.addRow(row));
+    }
   } else {
     const buffer = await file.arrayBuffer();
     await wb.xlsx.load(buffer);
   }
 
   return wb;
+}
+
+/**
+ * Lightweight XLS (BIFF) parser — extracts cell text from the binary stream.
+ * Handles BIFF8 (Excel 97-2003) which is the most common XLS format.
+ * For complex spreadsheets, some formatting will be lost but data is preserved.
+ */
+function parseXlsBinary(data: Uint8Array): string[][] {
+  const rows: Map<number, Map<number, string>> = new Map();
+  // Shared String Table for BIFF8
+  const sst: string[] = [];
+  let pos = 0;
+
+  // Helper to read a 16-bit little-endian unsigned int
+  const u16 = (offset: number) => data[offset] | (data[offset + 1] << 8);
+  // Helper to read a 32-bit little-endian unsigned int
+  const u32 = (offset: number) =>
+    data[offset] | (data[offset + 1] << 8) | (data[offset + 2] << 16) | ((data[offset + 3] << 24) >>> 0);
+
+  // Read string from BIFF8 format
+  function readBiff8String(offset: number, charCount: number): { text: string; bytesConsumed: number } {
+    if (offset >= data.length) return { text: '', bytesConsumed: 0 };
+    const flags = data[offset];
+    const isUnicode = (flags & 0x01) !== 0;
+    let bytesConsumed = 1; // flags byte
+    let text = '';
+
+    if (isUnicode) {
+      for (let i = 0; i < charCount && offset + bytesConsumed + 1 < data.length; i++) {
+        text += String.fromCharCode(u16(offset + bytesConsumed));
+        bytesConsumed += 2;
+      }
+    } else {
+      for (let i = 0; i < charCount && offset + bytesConsumed < data.length; i++) {
+        text += String.fromCharCode(data[offset + bytesConsumed]);
+        bytesConsumed += 1;
+      }
+    }
+    return { text, bytesConsumed };
+  }
+
+  function setCell(row: number, col: number, value: string) {
+    if (!rows.has(row)) rows.set(row, new Map());
+    rows.get(row)!.set(col, value);
+  }
+
+  while (pos + 4 <= data.length) {
+    const recordType = u16(pos);
+    const recordLen = u16(pos + 2);
+    const recordData = pos + 4;
+
+    if (recordType === 0x00FC && recordLen >= 8) {
+      // SST (Shared String Table)
+      const totalStrings = u32(recordData + 4);
+      let sstPos = recordData + 8;
+      for (let i = 0; i < totalStrings && sstPos + 3 <= pos + 4 + recordLen; i++) {
+        const charCount = u16(sstPos);
+        sstPos += 2;
+        const { text, bytesConsumed } = readBiff8String(sstPos, charCount);
+        sst.push(text);
+        sstPos += bytesConsumed;
+      }
+    } else if (recordType === 0x00FD && recordLen >= 10) {
+      // LABELSST — string cell referencing SST
+      const row = u16(recordData);
+      const col = u16(recordData + 2);
+      const sstIndex = u32(recordData + 6);
+      if (sstIndex < sst.length) {
+        setCell(row, col, sst[sstIndex]);
+      }
+    } else if (recordType === 0x0204 && recordLen >= 7) {
+      // LABEL — inline string cell (BIFF2-BIFF5)
+      const row = u16(recordData);
+      const col = u16(recordData + 2);
+      const strLen = u16(recordData + 6);
+      let text = '';
+      for (let i = 0; i < strLen && recordData + 8 + i < pos + 4 + recordLen; i++) {
+        text += String.fromCharCode(data[recordData + 8 + i]);
+      }
+      setCell(row, col, text);
+    } else if (recordType === 0x0203 && recordLen >= 14) {
+      // NUMBER — numeric cell
+      const row = u16(recordData);
+      const col = u16(recordData + 2);
+      // Read 64-bit IEEE 754 float
+      const buf = new ArrayBuffer(8);
+      const view = new DataView(buf);
+      for (let i = 0; i < 8; i++) view.setUint8(i, data[recordData + 6 + i]);
+      const num = view.getFloat64(0, true);
+      setCell(row, col, Number.isInteger(num) ? num.toString() : num.toFixed(6).replace(/0+$/, '').replace(/\.$/, ''));
+    } else if (recordType === 0x027E && recordLen >= 10) {
+      // RK — compact number cell
+      const row = u16(recordData);
+      const col = u16(recordData + 2);
+      const rkVal = u32(recordData + 6);
+      let num: number;
+      if (rkVal & 0x02) {
+        num = rkVal >> 2;
+      } else {
+        const buf = new ArrayBuffer(8);
+        const view = new DataView(buf);
+        view.setUint32(4, rkVal & 0xFFFFFFFC, true);
+        num = view.getFloat64(0, true);
+      }
+      if (rkVal & 0x01) num /= 100;
+      setCell(row, col, Number.isInteger(num) ? num.toString() : num.toFixed(6).replace(/0+$/, '').replace(/\.$/, ''));
+    }
+
+    pos += 4 + recordLen;
+    if (recordLen === 0 && recordType === 0) break; // EOF safety
+  }
+
+  // Convert map to array
+  if (rows.size === 0) return [];
+  const maxRow = Math.max(...rows.keys());
+  const maxCol = Math.max(...[...rows.values()].flatMap((cols) => [...cols.keys()]));
+  const result: string[][] = [];
+  for (let r = 0; r <= maxRow; r++) {
+    const row: string[] = [];
+    const rowData = rows.get(r);
+    for (let c = 0; c <= maxCol; c++) {
+      row.push(rowData?.get(c) ?? '');
+    }
+    result.push(row);
+  }
+  return result;
 }
 
 /** Simple CSV line parser — handles quoted fields */
@@ -163,11 +303,39 @@ tr:nth-child(even){background:#fafafa}tr:hover{background:#f0f7ff}</style>
   return { blob, filename: `${baseName(file)}.html`, size: blob.size, duration: performance.now() - t0 };
 }
 
+// ─── XLS → XLSX (binary Excel 97-2003 → modern Excel) ───
+
+export async function convertXlsToXlsx(file: File): Promise<DocConversionResult> {
+  const t0 = performance.now();
+  const wb = await loadWorkbook(file); // loadWorkbook now handles XLS
+
+  // Auto-width columns
+  const ws = wb.worksheets[0];
+  if (ws) {
+    ws.columns.forEach((col) => {
+      let maxLen = 10;
+      col.eachCell?.((cell) => {
+        const len = stringifyCell(cell.value).length;
+        if (len > maxLen) maxLen = Math.min(len, 50);
+      });
+      col.width = maxLen + 2;
+    });
+    // Bold first row
+    const firstRow = ws.getRow(1);
+    firstRow.font = { bold: true };
+  }
+
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  return { blob, filename: `${baseName(file)}.xlsx`, size: blob.size, duration: performance.now() - t0 };
+}
+
 // ─── CSV → XLSX ───
 
 export async function convertCsvToXlsx(file: File): Promise<DocConversionResult> {
   const t0 = performance.now();
-  const ExcelJS = await import('exceljs');
+  const ExcelJSModule = await import('exceljs');
+  const ExcelJS = ExcelJSModule.default ?? ExcelJSModule;
   const wb = new ExcelJS.Workbook();
   const ws = wb.addWorksheet('Sheet1');
   const text = await file.text();
@@ -242,7 +410,8 @@ export async function convertJsonToCsv(file: File): Promise<DocConversionResult>
 
 export async function convertJsonToXlsx(file: File): Promise<DocConversionResult> {
   const t0 = performance.now();
-  const ExcelJS = await import('exceljs');
+  const ExcelJSModule = await import('exceljs');
+  const ExcelJS = ExcelJSModule.default ?? ExcelJSModule;
   const text = await file.text();
   const data: Record<string, unknown>[] = JSON.parse(text);
   if (!Array.isArray(data) || data.length === 0) throw new Error('JSON must be an array of objects');

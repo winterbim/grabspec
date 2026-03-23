@@ -328,6 +328,14 @@
       ],
       "cta": "Start Business",
       "excelPreviewLabel": "Preview of your Excel export"
+    },
+    "license": {
+      "cta": "Have a license key?",
+      "prompt": "Enter your license key to activate your access:",
+      "activate": "Activate",
+      "cancel": "Cancel",
+      "success": "🎉 License activated! {plan} plan enabled.",
+      "error": "Invalid or already used key"
     }
   },
   "footer": {

@@ -20,7 +20,6 @@ const CONVERSION_ROUTES: ConversionRoute[] = [
   // ── Documents ──
   { from: 'pdf', to: 'docx', label: 'PDF → DOCX', category: 'document', color: '#3B82F6' },
   { from: 'docx', to: 'pdf', label: 'DOCX → PDF', category: 'document', color: '#EF4444', clientSide: true },
-  { from: 'doc', to: 'pdf', label: 'DOC → PDF', category: 'document', color: '#EF4444', clientSide: true },
   { from: 'txt', to: 'pdf', label: 'TXT → PDF', category: 'document', color: '#EF4444', clientSide: true },
   { from: 'html', to: 'pdf', label: 'HTML → PDF', category: 'document', color: '#EF4444', clientSide: true },
   { from: 'htm', to: 'pdf', label: 'HTM → PDF', category: 'document', color: '#EF4444', clientSide: true },
@@ -36,10 +35,12 @@ const CONVERSION_ROUTES: ConversionRoute[] = [
   { from: 'xls', to: 'csv', label: 'XLS → CSV', category: 'spreadsheet', color: '#16A34A', clientSide: true },
   { from: 'xls', to: 'json', label: 'XLS → JSON', category: 'spreadsheet', color: '#8B5CF6', clientSide: true },
   { from: 'xls', to: 'xlsx', label: 'XLS → XLSX', category: 'spreadsheet', color: '#16A34A', clientSide: true },
+  { from: 'xls', to: 'pdf', label: 'XLS → PDF', category: 'spreadsheet', color: '#EF4444', clientSide: true },
   { from: 'csv', to: 'xlsx', label: 'CSV → XLSX', category: 'spreadsheet', color: '#16A34A', clientSide: true },
   { from: 'csv', to: 'json', label: 'CSV → JSON', category: 'spreadsheet', color: '#8B5CF6', clientSide: true },
   { from: 'tsv', to: 'xlsx', label: 'TSV → XLSX', category: 'spreadsheet', color: '#16A34A', clientSide: true },
   { from: 'tsv', to: 'csv', label: 'TSV → CSV', category: 'spreadsheet', color: '#64748B', clientSide: true },
+  { from: 'tsv', to: 'json', label: 'TSV → JSON', category: 'spreadsheet', color: '#8B5CF6', clientSide: true },
   { from: 'json', to: 'csv', label: 'JSON → CSV', category: 'spreadsheet', color: '#64748B', clientSide: true },
   { from: 'json', to: 'xlsx', label: 'JSON → XLSX', category: 'spreadsheet', color: '#16A34A', clientSide: true },
 
