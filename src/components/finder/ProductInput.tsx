@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,7 +27,14 @@ interface ProductInputProps {
 
 export function ProductInput({ onSearch, isSearching, plan, searchesLeft }: ProductInputProps) {
   const t = useTranslations('finder');
+  const searchParams = useSearchParams();
   const [text, setText] = useState('');
+
+  // Pre-fill from URL params (e.g. /finder?refs=REF1%0AREF2 from analyzer)
+  useEffect(() => {
+    const refs = searchParams.get('refs');
+    if (refs) setText(decodeURIComponent(refs));
+  }, [searchParams]);
   const isFreePlan = plan === 'free';
 
   const queries = useMemo(() => {

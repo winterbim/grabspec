@@ -32,18 +32,47 @@ export function useLibrary() {
   }, [refresh]);
 
   const addProject = useCallback(
-    async (name: string) => {
+    async (data: Partial<LocalProject> & { name: string }) => {
       const { db } = await import('@/lib/db');
       const { nanoid } = await import('nanoid');
+      const now = new Date().toISOString();
       const project: LocalProject = {
         id: nanoid(),
-        name,
         nomenclatureTemplate: '{PROJET}_{LOT}_{FABRICANT}_{REF}_{TYPE}',
-        createdAt: new Date().toISOString(),
+        createdAt: now,
+        updatedAt: now,
+        ...data,
       };
       await db.projects.put(project);
       await refresh();
       return project;
+    },
+    [refresh]
+  );
+
+  const updateProject = useCallback(
+    async (id: string, updates: Partial<LocalProject>) => {
+      const { db } = await import('@/lib/db');
+      await db.projects.update(id, { ...updates, updatedAt: new Date().toISOString() });
+      await refresh();
+    },
+    [refresh]
+  );
+
+  const moveProductToProject = useCallback(
+    async (productId: string, projectId: string | null) => {
+      const { db } = await import('@/lib/db');
+      await db.products.update(productId, { projectId });
+      await refresh();
+    },
+    [refresh]
+  );
+
+  const reorderProducts = useCallback(
+    async (projectId: string, orderedIds: string[]) => {
+      const { db } = await import('@/lib/db');
+      await db.projects.update(projectId, { productOrder: orderedIds, updatedAt: new Date().toISOString() });
+      await refresh();
     },
     [refresh]
   );
@@ -182,7 +211,10 @@ export function useLibrary() {
     isLoading,
     stats,
     addProject,
+    updateProject,
     deleteProject,
+    moveProductToProject,
+    reorderProducts,
     updateProduct,
     deleteProduct,
     permanentlyDeleteProduct,

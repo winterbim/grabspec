@@ -44,7 +44,44 @@ import {
   Cell,
 } from 'recharts';
 import type { NodeProps, SankeyNodeOptions } from 'recharts/types/chart/Sankey';
-import type { AnalysisResult, AnalysisChart, AnalysisKpi } from '@/hooks/useAnalyzer';
+// Types inlined (previously from useAnalyzer hook, now replaced with reference extractor)
+export interface AnalysisKpi {
+  label: string;
+  value: string;
+  unit?: string;
+  trend?: 'up' | 'down' | 'stable';
+  detail?: string;
+  color?: string;
+}
+
+export interface AnalysisChart {
+  type: 'bar' | 'line' | 'pie' | 'area' | 'radar' | 'radialBar' | 'treemap' | 'funnel' | 'sankey';
+  title: string;
+  subtitle?: string;
+  data: Record<string, unknown>[];
+  xKey: string;
+  yKey: string;
+  links?: { source: string; target: string; value: number }[];
+  radarKeys?: string[];
+}
+
+export interface AnalysisSlide {
+  title: string;
+  content: string;
+  type: 'cover' | 'kpi' | 'chart' | 'insight' | 'comparison' | 'timeline' | 'conclusion';
+  bullets?: string[];
+  highlight?: string;
+  layout?: 'center' | 'split' | 'grid';
+}
+
+export interface AnalysisResult {
+  title: string;
+  summary: string;
+  insights: string[];
+  kpis: AnalysisKpi[];
+  charts: AnalysisChart[];
+  slides: AnalysisSlide[];
+}
 
 // ── Professional color palette ──
 

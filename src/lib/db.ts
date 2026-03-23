@@ -27,8 +27,15 @@ export interface LocalProduct {
 export interface LocalProject {
   id: string;
   name: string;
+  description?: string;
+  phase?: 'etudes' | 'dce' | 'exe' | 'reception' | 'chantier';
+  moa?: string;
+  architect?: string;
+  lot?: 'plomberie' | 'electricite' | 'cvc' | 'menuiseries' | 'autre';
   nomenclatureTemplate: string;
+  productOrder?: string[];
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface LocalSettings {

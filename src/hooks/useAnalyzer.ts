@@ -1,79 +1,56 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { parseDocument, isSupportedFormat } from '@/lib/analyzer/documentParser';
+import { extractReferences, type ExtractedReference } from '@/lib/analyzer/referenceExtractor';
 
-export interface AnalysisKpi {
-  label: string;
-  value: string;
-  unit?: string;
-  trend?: 'up' | 'down' | 'stable';
-  detail?: string;
-  color?: string;
+export type AnalyzerState = 'idle' | 'parsing' | 'extracting' | 'done' | 'error';
+
+export interface AnalyzerResult {
+  references: ExtractedReference[];
+  totalLines: number;
+  parseTimeMs: number;
 }
-
-export interface AnalysisChart {
-  type: 'bar' | 'line' | 'pie' | 'area' | 'radar' | 'radialBar' | 'treemap' | 'funnel' | 'sankey';
-  title: string;
-  subtitle?: string;
-  data: Record<string, unknown>[];
-  xKey: string;
-  yKey: string;
-  /** For sankey: links array [{source, target, value}] */
-  links?: { source: string; target: string; value: number }[];
-  /** For radar: multiple metric keys */
-  radarKeys?: string[];
-}
-
-export interface AnalysisSlide {
-  title: string;
-  content: string;
-  type: 'cover' | 'kpi' | 'chart' | 'insight' | 'comparison' | 'timeline' | 'conclusion';
-  bullets?: string[];
-  highlight?: string;
-  layout?: 'center' | 'split' | 'grid';
-}
-
-export interface AnalysisResult {
-  title: string;
-  summary: string;
-  insights: string[];
-  kpis: AnalysisKpi[];
-  charts: AnalysisChart[];
-  slides: AnalysisSlide[];
-}
-
-type AnalyzerState = 'idle' | 'analyzing' | 'done' | 'error';
 
 export function useAnalyzer() {
   const [state, setState] = useState<AnalyzerState>('idle');
-  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [result, setResult] = useState<AnalyzerResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [filename, setFilename] = useState<string>('');
+  const [filename, setFilename] = useState('');
+  const [fileInfo, setFileInfo] = useState<{ name: string; size: number } | null>(null);
 
-  const analyze = useCallback(async (file: File, sessionId: string) => {
-    setState('analyzing');
-    setResult(null);
-    setError(null);
+  const analyze = useCallback(async (file: File) => {
+    if (!isSupportedFormat(file.name)) {
+      setError('unsupportedFormat');
+      setState('error');
+      return;
+    }
+
+    setState('parsing');
     setFilename(file.name);
+    setFileInfo({ name: file.name, size: file.size });
+    setError(null);
+    setResult(null);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('sessionId', sessionId);
+      const start = performance.now();
 
-      const res = await fetch('/api/analyzer', { method: 'POST', body: formData });
+      // Step 1: Parse document to text
+      const text = await parseDocument(file);
 
-      if (!res.ok) {
-        let message = 'Analysis failed';
-        try {
-          const json: { error?: string } = await res.json();
-          message = json.error || message;
-        } catch { /* not JSON */ }
-        throw new Error(message);
-      }
+      setState('extracting');
 
-      const json = await res.json();
-      setResult(json.data as AnalysisResult);
+      // Step 2: Extract references (runs synchronously but UI can update)
+      await new Promise((r) => setTimeout(r, 0)); // yield to UI
+      const references = extractReferences(text);
+
+      const elapsed = performance.now() - start;
+
+      setResult({
+        references,
+        totalLines: text.split('\n').length,
+        parseTimeMs: Math.round(elapsed),
+      });
       setState('done');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Analysis failed');
@@ -86,7 +63,8 @@ export function useAnalyzer() {
     setResult(null);
     setError(null);
     setFilename('');
+    setFileInfo(null);
   }, []);
 
-  return { state, result, error, filename, analyze, reset };
+  return { state, result, error, filename, fileInfo, analyze, reset };
 }
